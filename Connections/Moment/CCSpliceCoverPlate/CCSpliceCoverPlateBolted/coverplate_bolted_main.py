@@ -1097,6 +1097,7 @@ class MainController(QMainWindow):
 		self.enable_buttons()
 
 		self.outputs = coverplateboltedconnection(self.alist)
+		print(self.outputs)
 		a = self.outputs[list(self.outputs.keys())[0]]
 		self.resultObj = self.outputs
 		alist = self.resultObj.values()
@@ -1107,17 +1108,17 @@ class MainController(QMainWindow):
 		if self.ui.combo_flange_preference.currentText() == 'Outside':
 			self.ui.btnPlan.setEnabled(False)
 
-		if isempty[0] is True:
-			status = self.resultObj['Bolt']['status']
-			self.call_3DModel("gradient_bg")
-			if status is True:
-				self.call_2D_drawing("All")
-			else:
-				self.ui.btn_flangePlate.setDisabled(False)
-				self.ui.btn_webPlate.setDisabled(False)
-				self.ui.chkBx_extndPlate.setDisabled(True)
-				self.ui.chkBx_columnSec1.setDisabled(True)
-				self.ui.btn3D.setDisabled(True)
+		# if isempty[0] is True:
+		# 	status = self.resultObj['Bolt']['status']
+		# 	self.call_3DModel("gradient_bg")
+		# 	if status is True:
+		# 		self.call_2D_drawing("All")
+		# 	else:
+		# 		self.ui.btn_flangePlate.setDisabled(False)
+		# 		self.ui.btn_webPlate.setDisabled(False)
+		# 		self.ui.chkBx_extndPlate.setDisabled(True)
+		# 		self.ui.chkBx_columnSec1.setDisabled(True)
+		# 		self.ui.btn3D.setDisabled(True)
 
 	def display_output(self, outputObj):
 		"""

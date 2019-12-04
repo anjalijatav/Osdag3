@@ -151,8 +151,8 @@ class IS800_2007(object):
         "F_u = Ultimate Strength of material"
         "w = outstanding leg width"
         "b_s = shear lag width"
-        "t = thickness of the leg"
         "L_c = length of the end connection"
+        "t = thickness of the leg"
         "gamma_m0 = partial safety factor for failure in tension by yielding"
         "F_y = yield stress of the material"
 
@@ -227,7 +227,7 @@ class IS800_2007(object):
 
     # cl. 10.2.1 Clearances for Holes for Fasteners
     @staticmethod
-    def cl_10_2_1_bolt_hole_size(d, bolt_hole_type='standard'):
+    def cl_10_2_1_bolt_hole_size(d, bolt_hole_type='Standard'):
         """Calculate bolt hole diameter as per Table 19 of IS 800:2007
 
         Args:
@@ -538,6 +538,7 @@ class IS800_2007(object):
         gamma_m0 = IS800_2007.cl_5_4_1_Table_5['gamma_m0']['yielding']
         T_nb = min(0.90 * f_ub * A_n, f_yb * A_sb * gamma_mb / gamma_m0)
         return T_nb / gamma_mb
+
 
     # cl. 10.3.6 Bolt subjected to combined shear and tension of bearing bolts
     @staticmethod

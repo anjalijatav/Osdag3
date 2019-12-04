@@ -57,7 +57,7 @@ class ConnectionCalculations(object):
 
         """
         hole_clearance = 0
-        if bolt_hole_type == "Standard":  # standard hole
+        if bolt_hole_type == "standard":  # standard hole
             hole_clearance = {
                 12: 1,
                 16: 2,
@@ -149,7 +149,7 @@ class ConnectionCalculations(object):
         Returns:
 
         """
-        k_h = {"Standard": 1.0, "Over-sized": 0.85}
+        k_h = {"standard": 1.0, "Over-sized": 0.85}
         return k_h[bolt_hole_type]
 
     @staticmethod
@@ -160,7 +160,7 @@ class ConnectionCalculations(object):
              bolt_fu (int) - ultimate stress of bolt Fu
              mu_f(float) - coefficient of friction/ slip factor
              n_e (int) - number of effective interfaces offering resistance to slip
-             bolt_hole_type (string) - "Standard" or "Over-sized"
+             bolt_hole_type (string) - "standard" or "Over-sized"
 
         Returns:
 
@@ -181,7 +181,7 @@ class ConnectionCalculations(object):
         # proof load (Kn)(minimum bolt tension)
         # F_0 = bolt_area_threads * proof_stress / 1000  # (Kn)
         # k_h = {
-        #     "Standard": 1.0,
+        #     "standard": 1.0,
         #     "Over-sized": 0.85
         # }[bolt_hole_type]
         F_0 = ConnectionCalculations.proof_load_F_0(bolt_diameter, bolt_fu)
