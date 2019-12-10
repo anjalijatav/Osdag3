@@ -33,6 +33,72 @@ def module_setup():
     #######################################################################
     #######################################################################
     ##check for section plastic or elastic###
+# def limiting_width_thk_ratio(compression_element,column_f_t,column_d, column_b, column_fy,epsilon):
+#     epsilon = math.sqrt(250 / column_fy)
+#     r1 = avg_axial_comp_stress/ comp_stress_web
+#     r2 = avg_axial_comp_stress/ comp_stress_section
+#
+#     if compression_element =="External" or "Internal":
+#         if section = "rolled":
+#             if column_b/column_f_t < = float(9.4 * epsilon):
+#                 class_of_section = "plastic"
+#             elif column_b/column_f_t < = 10.5 * epsilon:
+#                 class_of_section = "compact"
+#             elif column_b/column_f_t < = 15.7 * epsilon:
+#                 class_of_section = "semi-compact"
+#             else:
+#                 pass
+#         elif section = "welded":
+#             if column_b / column_f_t < = 8.4 * epsilon:
+#                 class_of_section = "plastic"
+#             elif column_b / column_f_t < = 9.4 * epsilon:
+#                 class_of_section = "compact"
+#             elif column_b / column_f_t < = 13.6 * epsilon:
+#                 class_of_section = "semi-compact"
+#             else:
+#                 pass
+#         elif section = "compression due to bending":
+#             if column_b / column_f_t < = 29.3 * epsilon:
+#                 class_of_section = "plastic"
+#             elif column_b / column_f_t < = 33.5* epsilon:
+#                 class_of_section = "compact"
+#             elif column_b / column_f_t < = 42 * epsilon:
+#                 class_of_section = "semi-compact"
+#             else:
+#                 pass
+#         else:
+#             pass
+#
+#     elif compression_element = "Web of an I-H" or "box section":
+#         if section = "generally":
+#             if r1 is negative:
+#                 if column_d / column_t_w < = (84 * epsilon / (1+ r1)) and column_d / column_t_w <= (42 * epsilon) :
+#                     class_of_section = "plastic"
+#                 elif column_d / column_t_w < = (105 * epsilon /(1+ r1)) :
+#                     class_of_section = "compact"
+#                 elif column_d / column_t_w < = (126* epsilon/(1+ r1)) and column_d / column_t_w < =(42 * epsilon):
+#                     class_of_section = "semi-compact"
+#                 else:
+#                     pass
+#             if r2 is negative:
+#                 if column_d / column_t_w < = (84 * epsilon / (1+ r1)) and column_d / column_t_w < = (42 * epsilon) :
+#                     class_of_section = "plastic"
+#                 elif column_d / column_t_w < = (105 * epsilon /(1+ (r1*1.5))) and column_d / column_t_w <= (42 * epsilon) :
+#                     class_of_section = "compact"
+#                 elif column_d / column_t_w < = (126* epsilon/(1+ r1)) and column_d / column_t_w <= (42 * epsilon):
+#                     class_of_section = "semi-compact"
+#                 else:
+#                     pass
+#         elif section = "Axial compression":
+#             if column_d / column_t_w < =  (42 * epsilon):
+#                 class_of_section = "semi-compact"
+#             else:
+#                 class_of_section = "N/A"
+#         else:
+#             pass
+#     else:
+#         pass
+
 
 
 def flange_force(column_d, column_f_t, column_b, column_area, factored_axial_force, moment_load):
@@ -125,8 +191,8 @@ def func_flangeinnerplatet(column_d, column_f_t, column_area, bolt_diameter, axi
     return round(flangeinnerplatethickness, 2)  # mm
 ## Minimum width of flange splice plate
 
-def flange_plate_width(edge_dist, number_of_column_flange, flange_gauge):
-    flangeplatewidthmin = float((edge_dist + (number_of_column_flange -1)*flange_gauge)*2)
+def flange_plate_width(edge_dist_f, number_of_column_flange, flange_gauge, flange_gauge2):
+    flangeplatewidthmin = float((2*edge_dist_f) + ((number_of_column_flange -1)*flange_gauge) + flange_gauge2)
     return round(flangeplatewidthmin, 2)
 
 ## Maximum width of flange splice plate
@@ -137,9 +203,12 @@ def flange_plate_w_max(column_b):
 def flange_plate_l_max(end_dist_max_f,number_of_row_flange, pitch_dist_max_f):
     flangeplateheightmax = float((end_dist_max_f + (number_of_row_flange -1)* pitch_dist_max_f)*2)
     return round((flangeplateheightmax) ,2)
-## Maximum Height of flange splice plate
-def flange_plate_l_min(end_dist_f,number_of_row_flange, flange_pitch):
-    flangeplateheightmax = float((end_dist_f + (number_of_row_flange -1)* flange_pitch)*2)
+def flange_plate_l_reqd(end_dist_f,number_of_row_flange, flange_pitch):
+    flangeplateheightreqd = float((end_dist_f + (number_of_row_flange -1)* flange_pitch)*2)
+    return round((flangeplateheightreqd) ,2)
+## Minimum Height of flange splice plate
+def flange_plate_l_min(end_dist_min_f,number_of_row_flange, pitch_dist_min_f):
+    flangeplateheightmax = float((end_dist_min_f + (number_of_row_flange -1)* pitch_dist_min_f)*2)
     return round((flangeplateheightmax) ,2)
 
 #######################################################################
@@ -193,8 +262,8 @@ def web_plate_l_max(end_dist_max_w, number_of_row_web, pitch_dist_max_w):
     return round((webplateheight), 2)
 
 ## Minimum thickness of web splice plate
-def web_plate_l_min(end_dist_w, number_of_row_web, web_pitch):
-    webplateheightmin = (float((2*end_dist_w + (number_of_row_web - 1) * web_pitch) * 2))
+def web_plate_l_min(end_dist_min_w, number_of_row_web, pitch_dist_min_w):
+    webplateheightmin = (float((2*end_dist_min_w + (number_of_row_web - 1) * pitch_dist_min_w) * 2))
     return round(webplateheightmin,2)
 
 
@@ -301,7 +370,7 @@ def coverplateboltedconnection(uiObj):
     # Shear Capacity   # kN
 
     A_v = column_area  #todo
-    design_shear_capacity = (A_v *100* column_fy) / (math.sqrt(3) * gamma_m0 * 1000)  # kN # A_v: Total cross sectional area in shear in mm^2 (float)
+    design_shear_capacity = (web_plate_w * web_plate_t *100* column_fy) / (math.sqrt(3) * gamma_m0 * 1000)  # kN # A_v: Total cross sectional area in shear in mm^2 (float)
     if shear_load >= design_shear_capacity:
         design_status = False
 
@@ -329,6 +398,8 @@ def coverplateboltedconnection(uiObj):
     flange_gauge = flange_pitch
     web_pitch = round(pitch_dist_min_w + 10)
     web_gauge = round(pitch_dist_min_w + 10)
+    # if #todo
+    #     pitch = (web_plate_l_opt - 2 * min_end_dist) / (bolts_required - 1)
     # min_end_distance & max_end_distance = Minimum and Maximum end distance
     #       [Cl. 10.2.4.2 & Cl. 10.2.4.3, IS 800:2007]
 
@@ -360,23 +431,54 @@ def coverplateboltedconnection(uiObj):
     flange_gauge2 = ((2 * edge_dist_f) + column_t_w + (2 * column_r1))
     #print(edge_dist_f)
     #print(flange_pitch)
+
+
+
     # Bolts arrrangement in flange plate #todo
+    number_of_column_flange = int ((column_b - column_t_w- (4* edge_dist_w)) / web_gauge)
+    if number_of_column_flange <= 2:
+        number_of_column_flange = 2
+        if number_of_column_flange % 2 != 0:
+            number_of_column_flange = int(number_of_column_flange-1)
+    else:
+        pass
+    # Bolts arrrangement in flange plate #todo
+    number_of_column_web = int((column_d- (2*column_f_t)- (2*gap)- (2* edge_dist_w)) / web_gauge)
+    if number_of_column_web <= 2:
+        number_of_column_web = 2
+    else:
+        pass
+
+#     # Bolts arrrangement in flange plate #todo
     if (flange_plate_w - column_t_w - (2 * column_r1)) > ((2 * edge_dist_f) + (4 * flange_gauge) + flange_gauge2):
         number_of_column_flange = 6
     elif (flange_plate_w - column_t_w - (2 * column_r1)) > ((2 * edge_dist_f) + (2 * flange_gauge) + flange_gauge2):
         number_of_column_flange = 4
-    else:
+    elif (flange_plate_w - column_t_w - (2 * column_r1)) > ((2 * edge_dist_f)  + flange_gauge2):
         number_of_column_flange = 2
+    else:
+        design_status = False
+        logger.info(": Increase the size of bolt or grade of the section")
 
-#    print(number_of_row_flange)
 
-        # Bolts arrrangement in web plate #todo
+# #    print(number_of_row_flange)
+#
+#         # Bolts arrrangement in web plate #todo
     if web_plate_w > ((2 * edge_dist_w) + (3 * web_gauge)):
         number_of_column_web = 4
     elif web_plate_w > ((2 * edge_dist_w) + (2 * web_gauge)):
         number_of_column_web = 3
-    else:
+    elif web_plate_w > ((2 * edge_dist_w) + (web_gauge)):
         number_of_column_web = 2
+    else:
+        design_status = False
+        logger.info(": Increase the size of bolt or grade of the section")
+
+
+
+
+
+
 
 
     #######################################################################
@@ -582,8 +684,8 @@ def coverplateboltedconnection(uiObj):
 
 
     ###outside flange plate width
-    opt_flange_plate_width = flange_plate_width(edge_dist_f, number_of_column_flange, flange_gauge)
-    if flange_plate_w < opt_flange_plate_width:
+    opt_flange_plate_width =  flange_plate_width(edge_dist_f, number_of_column_flange, flange_gauge, flange_gauge2)
+    if flange_plate_w <= opt_flange_plate_width:
         design_status = False
         logger.error(": flange_plate_w is less than opt_flange_plate_width:")
         logger.warning(": Minimum flange_plate_w required is %2.2f mm" % (opt_flange_plate_width))
@@ -595,31 +697,46 @@ def coverplateboltedconnection(uiObj):
     max_flange_width =flange_plate_w_max(column_b)
     if flange_plate_w > max_flange_width:
         design_status = False
-        logger.error(": flange_plate_w is less than opt_flange_plate_width:")
-        logger.warning(": Maximum flange_plate_w required is %2.2f mm" % (column_b))
+        logger.error(": flange_plate_w is greater than max_flange_width:")
+        logger.warning(": Maximum flange_plate_w required is %2.2f mm" % (max_flange_width))
         logger.info(": Decrease the width of flange splice plate")
     else:
-        flange_plate_w = float(uiObj["FlangePlate"]["Width (mm)"])
+        pass
+        #flange_plate_w = float(uiObj["FlangePlate"]["Width (mm)"])
 
-    flangeheightmin = (2 * flange_plate_w)
-    if flange_plate_l < flangeheightmin:
+    flangeheightmin = flange_plate_l_min(end_dist_min_f,number_of_row_flange, pitch_dist_min_f)
+
+    opt_flange_plate_l = flange_plate_l_reqd(end_dist_f, number_of_row_flange, flange_pitch)
+
+    if flange_plate_l <= flangeheightmin:
         design_status = False
         logger.error(": flange_plate_l is less than flangeheightmin:")
-        logger.warning(": Maximum flange_plate_l required is %2.2f mm" % (flangeheightmin))
+        logger.warning(": Minimum flange_plate_l required is %2.2f mm" % (flangeheightmin))
         logger.info(": Increase the height of flange splice plate")
+
+    elif flange_plate_l <= opt_flange_plate_l:
+         design_status = False
+         logger.error(": flange_plate_l is less than flangeheightmin:")
+         logger.warning(": Minimum flange_plate_l required is %2.2f mm" % (opt_flange_plate_l))
+         logger.info(": Increase the height of flange splice plate")
+    else:
+        pass
+    # plate_f_opt= max(flangeheightmin,opt_flange_plate_l)
+    if opt_flange_plate_l < flangeheightmin:
+        plate_f_opt = max(flangeheightmin, opt_flange_plate_l)
     else:
         pass
 
     #number_of_row_flange = 1 #todo
-    opt_flange_plate_l =  flange_plate_l_max(end_dist_f, number_of_row_flange, flange_pitch)
-    # print(opt_flange_plate_l)
-    if flange_plate_l < opt_flange_plate_l:
-        design_status = False
-        logger.error(": flange_plate_l is less than opt_flange_plate_l:")
-        logger.warning(": Maximum flange_plate_l required is %2.2f mm" % (opt_flange_plate_l))
-        logger.info(": Increase the height of flange splice plate")
-    else:
-        flange_plate_l = str(uiObj["FlangePlate"]["Height (mm)"])
+    # opt_flange_plate_l =  flange_plate_l_max(end_dist_f, number_of_row_flange, flange_pitch)
+    # # print(opt_flange_plate_l)
+    # if flange_plate_l < opt_flange_plate_l:
+    #     design_status = False
+    #     logger.error(": flange_plate_l is less than opt_flange_plate_l:")
+    #     logger.warning(": Maximum flange_plate_l required is %2.2f mm" % (opt_flange_plate_l))
+    #     logger.info(": Increase the height of flange splice plate")
+    # else:
+    #     flange_plate_l = str(uiObj["FlangePlate"]["Height (mm)"])
 
 
     ###inner flange plate  thickness,w,l#todo
@@ -636,6 +753,12 @@ def coverplateboltedconnection(uiObj):
         logger.info(": Increase the thickness of web splice plate")
     else:
         pass
+
+    # if web_plate_l < web_plate_l_req:
+    #     design_status = False
+    #     logger.error(": Plate height provided is less than the minimum required [cl. 10.2.2/10.2.4]")
+    #     logger.warning(": Minimum plate width required is %2.2f mm " % (web_plate_l_req))
+    #     logger.info(": Increase the plate width")
 
     maxwebt = web_max_t(bolt_diameter)
     if web_plate_t > maxwebt:
@@ -673,8 +796,10 @@ def coverplateboltedconnection(uiObj):
 
     # Check for web plate height
     # Web splice plate height input and check for maximum and minimum values
-    webplatelmin= web_plate_l_min(end_dist_w, number_of_row_web, web_pitch)
+    webplatelmin=  web_plate_l_min(end_dist_min_w, number_of_row_web, pitch_dist_min_w)
+
     if web_plate_l < webplatelmin:
+        web_plate_l = webplatelmin
         design_status = False
         logger.error(": web_plate_l is less than web_plate_l_min:")
         logger.warning(": Minimum web_plate_l required is %2.2f mm" % (webplatelmin))
@@ -690,6 +815,14 @@ def coverplateboltedconnection(uiObj):
         logger.info(": Reduce the height of web splice plate")
     else:
         pass
+    # if web_plate_l < webplatelmax:
+    #     design_status = False
+    #     logger.error(": web_plate_l is greater than web_plate_l_max:")
+    #     logger.warning(": Maximun web_plate_l required is %2.2f mm" % (webplatelmax))
+    #     logger.info(": Reduce the height of web splice plate")
+    # else:
+    #     pass
+    ##########
     #####################################################################################################################
 
     ####Calculation of resultant force on bolts in web
@@ -716,7 +849,7 @@ def coverplateboltedconnection(uiObj):
         ver_force = axial_force_w / web_bolts_required  # vertical force acting on each bolt (assuming uniform axial distribution)
         shearresbolt = math.sqrt((hor_shear_force_bolts + hor_force) ** 2 + (ver_shear_force_bolts + ver_force) ** 2)
 
-    if shearresbolt > web_bolt_capacity:
+    if shearresbolt > web_bolt_capacity_red:
         design_status = False
         logger.error(": Number of bolts is not sufficient")
         logger.warning(": shear_res_bolt should be less than web_bolt_capacity of web")
@@ -946,6 +1079,7 @@ def coverplateboltedconnection(uiObj):
     print(web_bolt_shear_capacity)
     print(web_bolt_bearing_capacity)
     print(web_bolt_capacity_red)
+    print(shearresbolt)
     print(web_bolts_required)
     print(total_web_plate_bolts)
     print(web_pitch)
