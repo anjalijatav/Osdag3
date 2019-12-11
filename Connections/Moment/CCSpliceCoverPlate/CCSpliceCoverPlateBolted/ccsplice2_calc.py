@@ -685,13 +685,21 @@ def coverplateboltedconnection(uiObj):
 
     ###outside flange plate width
     opt_flange_plate_width =  flange_plate_width(edge_dist_f, number_of_column_flange, flange_gauge, flange_gauge2)
-    if flange_plate_w <= opt_flange_plate_width:
-        design_status = False
-        logger.error(": flange_plate_w is less than opt_flange_plate_width:")
-        logger.warning(": Minimum flange_plate_w required is %2.2f mm" % (opt_flange_plate_width))
-        logger.info(": Increase the width of flange splice plate")
+    # if flange_plate_w <= opt_flange_plate_width:
+    #     design_status = False
+    #     logger.error(": flange_plate_w is less than opt_flange_plate_width:")
+    #     logger.warning(": Minimum flange_plate_w required is %2.2f mm" % (opt_flange_plate_width))
+    #     logger.info(": Increase the width of flange splice plate")
+    # else:
+    #     pass
+
+    max_flange_width = flange_plate_w_max(column_b)
+    if opt_flange_plate_width > max_flange_width and flange_plate_w < opt_flange_plate_width:
+        flange_gauge = (column_b -(4 *edge_dist_f )- column_t_w)/number_of_column_flange
+        opt_flange_plate_width = flange_plate_width(edge_dist_f, number_of_column_flange, flange_gauge, flange_gauge2)
+
     else:
-        flange_plate_w = float(uiObj["FlangePlate"]["Width (mm)"])
+        pass
 
 
     max_flange_width =flange_plate_w_max(column_b)
@@ -708,13 +716,13 @@ def coverplateboltedconnection(uiObj):
 
     opt_flange_plate_l = flange_plate_l_reqd(end_dist_f, number_of_row_flange, flange_pitch)
 
-    if flange_plate_l <= flangeheightmin:
+    if flange_plate_l < flangeheightmin:
         design_status = False
         logger.error(": flange_plate_l is less than flangeheightmin:")
         logger.warning(": Minimum flange_plate_l required is %2.2f mm" % (flangeheightmin))
         logger.info(": Increase the height of flange splice plate")
 
-    elif flange_plate_l <= opt_flange_plate_l:
+    elif flange_plate_l < opt_flange_plate_l:
          design_status = False
          logger.error(": flange_plate_l is less than flangeheightmin:")
          logger.warning(": Minimum flange_plate_l required is %2.2f mm" % (opt_flange_plate_l))
@@ -827,12 +835,12 @@ def coverplateboltedconnection(uiObj):
 
     ####Calculation of resultant force on bolts in web
 
-    extreme_bolt_dist_z = number_of_column_web * web_gauge / 2 + web_gauge / 2
-    extreme_bolt_dist_y = number_of_row_web * web_pitch / 2 + web_pitch / 2
-    for i in np.arange(0, number_of_column_web / 2):
-        sigma_z = (number_of_row_web - (2 * i - 1)) * web_gauge / 2
-        sigma_y = (number_of_column_web - (2 * i - 1)) * web_pitch / 2
-        ecc = ((number_of_row_web * web_pitch) + (end_dist_w)) / 2
+    extreme_bolt_dist_z = ((number_of_column_web-1)* web_gauge) / 2
+    extreme_bolt_dist_y = ((number_of_row_web-1 )* web_pitch) / 2
+    for i in range(1, int(number_of_column_web/2)):
+        sigma_z = 2*(((number_of_column_web - ((2 * i )- 1)) * web_gauge) / 2)
+        sigma_y = 2*(((number_of_row_web - ((2 * i )- 1)) * web_pitch) / 2)
+        ecc = (((number_of_row_web-1) * web_pitch)/2 + (end_dist_w))
         r_i = math.sqrt(sigma_z ** 2 + sigma_y ** 2)
         Z_w = float((column_t_w  * (column_d - 2 * (column_f_t))**2 )/4)
         mu_wz = moment_load  * Z_w / column_Zz
