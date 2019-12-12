@@ -266,20 +266,52 @@ def web_plate_l_min(end_dist_min_w, number_of_row_web, pitch_dist_min_w):
     webplateheightmin = (float((2*end_dist_min_w + (number_of_row_web - 1) * pitch_dist_min_w) * 2))
     return round(webplateheightmin,2)
 
-
-
-    #print(hor_force, ver_force)
-
-    # if shearresbolt > web_bolt_capacity:
-    #     design_status = False
-    #     logger.error(": Number of bolts is not sufficient")
-    #     logger.warning(": shear_res_bolt should be less than web_bolt_capacity of web")
-    #     logger.info(": Increase number of bolts and spacing between bolts")
-    # else:
-    #     pass
+ def get_vres(number_of_row_web,column_d,column_t_w, column_area, column_f_t,web_bolts_required,factored_axial_force, moment_load, column_Zz, moment_load, column_Zy, web_pitch, web_gauge, number_of_column_web, shear_load, ecc):
+    #     """
     #
-  #
-           #######################################################################
+    #     :param bolts_one_line: number of bolts in one line
+    #     :param pitch: pitch
+    #     :param gauge: gauge
+    #     :param bolt_line: number of bolt lines
+    #     :param shear_load: shear load
+    #     :param ecc: eccentricity
+    #     :return: resultant load on bolt due to eccentricity of shear force
+    #     """
+    length_avail = (number_of_row_web - 1) * web_pitch
+    ymax = length_avail / 2
+    xmax = web_gauge * (number_of_column_web - 1) / 2
+    r_sq = 0
+    n = float(number_of_row_web) / 2.0 - 0.5
+    b = float((number_of_column_web - 1)) / 2
+    for x in np.arange(b, -b - 1, -1):
+        for y in np.arange(-n, n + 1, 1):
+            r_sq = r_sq + ((web_gauge * x) ** 2 + (abs(y) * web_pitch) ** 2)
+    sigma_r_sq = r_sq
+    Z_w = float((column_t_w * (column_d - 2 * (column_f_t)) ** 2) / 4)
+    mu_wz = moment_load * Z_w / column_Zz
+    mu_wy = moment_load * Z_w / column_Zy
+    hor_shear_force_bolts = ((mu_wz + (shear_load * ecc)) * ymax) / sigma_r_sq  # horizontal shear force acting on each bolt due to moment developed by eccentricity.
+    # extreme bolt distance in X direction
+    ver_shear_force_bolts = ((mu_wy + (shear_load * ecc)) * xmax) / sigma_r_sq  # vertical shear force acting on each bolt due to moment developed by eccentricity
+    # extreme bolt distance in Y direction
+    hor_force = shear_load / web_bolts_required
+    area_web = (column_d - 2 * column_f_t) * column_t_w
+    axial_force_w = int((column_d - 2 * (column_f_t)) * column_t_w * factored_axial_force) / column_area
+    # axial_force_web = (factored_axial_force * area_web) / column_area  # horizontal force acting on each bolt (assuming uniform shear distribution)
+    ver_force = axial_force_w / web_bolts_required  # vertical force acting on each bolt (assuming uniform axial distribution)
+    shearresbolt = math.sqrt((hor_shear_force_bolts + hor_force) ** 2 + (ver_shear_force_bolts + ver_force) ** 2)
+    return shearresbolt
+    print (shearresbolt)
+
+
+# vbv = shear_load / (bolts_one_line * bolt_line)
+# moment_demand = round(shear_load * ecc, 3)
+# tmh = moment_demand * ymax / sigma_r_sq
+# tmv = moment_demand * xmax / sigma_r_sq
+# vres = math.sqrt((vbv + tmv) ** 2 + tmh ** 2)
+# return vres
+
+#######################################################################
     # Start of Main Program
 
 
@@ -835,29 +867,16 @@ def coverplateboltedconnection(uiObj):
 
     ####Calculation of resultant force on bolts in web
 
-    extreme_bolt_dist_z = ((number_of_column_web-1)* web_gauge) / 2
-    extreme_bolt_dist_y = ((number_of_row_web-1 )* web_pitch) / 2
-    for i in range(1, int(number_of_column_web/2)):
-        sigma_z = 2*(((number_of_column_web - ((2 * i )- 1)) * web_gauge) / 2)
-        sigma_y = 2*(((number_of_row_web - ((2 * i )- 1)) * web_pitch) / 2)
-        ecc = (((number_of_row_web-1) * web_pitch)/2 + (end_dist_w))
-        r_i = math.sqrt(sigma_z ** 2 + sigma_y ** 2)
-        Z_w = float((column_t_w  * (column_d - 2 * (column_f_t))**2 )/4)
-        mu_wz = moment_load  * Z_w / column_Zz
-        mu_wy = moment_load  * Z_w / column_Zy
+    extreme_bolt_dist_z = ((number_of_column_web - 1) * web_gauge) / 2
+    extreme_bolt_dist_y = ((number_of_row_web - 1) * web_pitch) / 2
+    ecc = (((number_of_row_web - 1) * web_pitch) / 2 + (end_dist_w))
+    Z_w = float((column_t_w * (column_d - 2 * (column_f_t)) ** 2) / 4)
+    mu_wz = moment_load * Z_w / column_Zz
+    mu_wy = moment_load * Z_w / column_Zy
 
-        hor_shear_force_bolts = (( mu_wz + shear_load * ecc) * extreme_bolt_dist_y) / r_i  # horizontal shear force acting on each bolt due to moment developed by eccentricity.
-        # extreme bolt distance in X direction
-        ver_shear_force_bolts = ((mu_wy + shear_load * ecc) * extreme_bolt_dist_z) / r_i  # vertical shear force acting on each bolt due to moment developed by eccentricity
-        # extreme bolt distance in Y direction
-        hor_force = shear_load / web_bolts_required
-        area_web = (column_d - 2 * column_f_t) * column_t_w
-        axial_force_w = int((column_d - 2 * (column_f_t)) * column_t_w * factored_axial_force) / column_area
-        #axial_force_web = (factored_axial_force * area_web) / column_area  # horizontal force acting on each bolt (assuming uniform shear distribution)
-        ver_force = axial_force_w / web_bolts_required  # vertical force acting on each bolt (assuming uniform axial distribution)
-        shearresbolt = math.sqrt((hor_shear_force_bolts + hor_force) ** 2 + (ver_shear_force_bolts + ver_force) ** 2)
+    resultant_bolt_web = get_vres(number_of_row_web,column_d,column_t_w, column_area, column_f_t,web_bolts_required,factored_axial_force, moment_load, column_Zz, moment_load, column_Zy, web_pitch, web_gauge, number_of_column_web, shear_load, ecc)
 
-    if shearresbolt > web_bolt_capacity_red:
+    if  resultant_bolt_web > web_bolt_capacity_red:
         design_status = False
         logger.error(": Number of bolts is not sufficient")
         logger.warning(": shear_res_bolt should be less than web_bolt_capacity of web")
@@ -1087,7 +1106,7 @@ def coverplateboltedconnection(uiObj):
     print(web_bolt_shear_capacity)
     print(web_bolt_bearing_capacity)
     print(web_bolt_capacity_red)
-    print(shearresbolt)
+    # print(shearresbolt)
     print(web_bolts_required)
     print(total_web_plate_bolts)
     print(web_pitch)
