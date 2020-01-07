@@ -131,9 +131,9 @@ class DesignPreferences(QDialog):
 			self.saved_designPref["detailing"]["min_edgend_dist"] = float(1.5)
 		if self.ui.txt_detailingGap.text() == '':
 
-			self.saved_designPref["detailing"]["gap(mm)"] = float(5)
+			self.saved_designPref["detailing"]["gap"] = float(5)
 		else:
-			self.saved_designPref["detailing"]["gap(mm)"] = float(self.ui.txt_detailingGap.text())
+			self.saved_designPref["detailing"]["gap"] = float(self.ui.txt_detailingGap.text())
 
 		self.saved_designPref["detailing"]["is_env_corrosive"] = str(self.ui.combo_detailing_memebers.currentText())
 		self.saved_designPref["design"] = {}
@@ -373,7 +373,7 @@ class MainController(QMainWindow):
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
 		self.folder = folder
-		self.connection = "Column Splice"
+		self.connection = "Coverplate"
 		self.get_columndata()
 		self.designPrefDialog = DesignPreferences(self)
 		self.ui.combo_connLoc.model().item(2).setEnabled(False)

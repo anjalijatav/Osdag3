@@ -33,71 +33,80 @@ def module_setup():
     #######################################################################
     #######################################################################
     ##check for section plastic or elastic###
-# def limiting_width_thk_ratio(compression_element,column_f_t,column_d, column_b, column_fy,epsilon):
-#     epsilon = math.sqrt(250 / column_fy)
-#     r1 = avg_axial_comp_stress/ comp_stress_web
-#     r2 = avg_axial_comp_stress/ comp_stress_section
-#
-#     if compression_element =="External" or "Internal":
-#         if section = "rolled":
-#             if column_b/column_f_t < = float(9.4 * epsilon):
-#                 class_of_section = "plastic"
-#             elif column_b/column_f_t < = 10.5 * epsilon:
-#                 class_of_section = "compact"
-#             elif column_b/column_f_t < = 15.7 * epsilon:
-#                 class_of_section = "semi-compact"
-#             else:
-#                 pass
-#         elif section = "welded":
-#             if column_b / column_f_t < = 8.4 * epsilon:
-#                 class_of_section = "plastic"
-#             elif column_b / column_f_t < = 9.4 * epsilon:
-#                 class_of_section = "compact"
-#             elif column_b / column_f_t < = 13.6 * epsilon:
-#                 class_of_section = "semi-compact"
-#             else:
-#                 pass
-#         elif section = "compression due to bending":
-#             if column_b / column_f_t < = 29.3 * epsilon:
-#                 class_of_section = "plastic"
-#             elif column_b / column_f_t < = 33.5* epsilon:
-#                 class_of_section = "compact"
-#             elif column_b / column_f_t < = 42 * epsilon:
-#                 class_of_section = "semi-compact"
-#             else:
-#                 pass
-#         else:
-#             pass
-#
-#     elif compression_element = "Web of an I-H" or "box section":
-#         if section = "generally":
-#             if r1 is negative:
-#                 if column_d / column_t_w < = (84 * epsilon / (1+ r1)) and column_d / column_t_w <= (42 * epsilon) :
-#                     class_of_section = "plastic"
-#                 elif column_d / column_t_w < = (105 * epsilon /(1+ r1)) :
-#                     class_of_section = "compact"
-#                 elif column_d / column_t_w < = (126* epsilon/(1+ r1)) and column_d / column_t_w < =(42 * epsilon):
-#                     class_of_section = "semi-compact"
-#                 else:
-#                     pass
-#             if r2 is negative:
-#                 if column_d / column_t_w < = (84 * epsilon / (1+ r1)) and column_d / column_t_w < = (42 * epsilon) :
-#                     class_of_section = "plastic"
-#                 elif column_d / column_t_w < = (105 * epsilon /(1+ (r1*1.5))) and column_d / column_t_w <= (42 * epsilon) :
-#                     class_of_section = "compact"
-#                 elif column_d / column_t_w < = (126* epsilon/(1+ r1)) and column_d / column_t_w <= (42 * epsilon):
-#                     class_of_section = "semi-compact"
-#                 else:
-#                     pass
-#         elif section = "Axial compression":
-#             if column_d / column_t_w < =  (42 * epsilon):
-#                 class_of_section = "semi-compact"
-#             else:
-#                 class_of_section = "N/A"
-#         else:
-#             pass
-#     else:
-#         pass
+def limiting_width_thk_ratio(column_f_t,column_t_w,column_d, column_b, column_fy,factored_axial_force, column_area,compression_element,section):
+    epsilon = math.sqrt(250 / column_fy)
+    axial_force_w = web_force(column_d, column_f_t, column_t_w, factored_axial_force, column_area)
+    des_comp_stress_web = column_fy
+    des_comp_stress_section= column_fy
+    avg_axial_comp_stress= axial_force_w/column_d - 2*column_f_t
+    r1 = avg_axial_comp_stress/ des_comp_stress_web
+    r2 = avg_axial_comp_stress/ des_comp_stress_section
+    a = column_b/column_f_t
+    # compression_element=["External","Internal","Web of an I-H" ,"box section" ]
+    # section=["rolled","welded","compression due to bending","generally", "Axial compression" ]
+    # section = "rolled"
+    if compression_element =="External" or "Internal":
+        if section == "rolled":
+            if column_b*0.5/column_f_t <= 9.4 * epsilon:
+                class_of_section = "plastic"
+            elif column_b*0.5/column_f_t <= 10.5 * epsilon:
+                class_of_section = "compact"
+            elif column_b *0.5/column_f_t <= 15.7 * epsilon:
+                class_of_section = "semi-compact"
+            else:
+                pass
+        elif section == "welded":
+            if column_b*0.5 / column_f_t <= 8.4 * epsilon:
+                class_of_section = "plastic"
+            elif column_b*0.5 / column_f_t <= 9.4 * epsilon:
+                class_of_section = "compact"
+            elif column_b*0.5 / column_f_t <= 13.6 * epsilon:
+                class_of_section = "semi-compact"
+            else:
+                pass
+        elif section == "compression due to bending":
+            if column_b*0.5 / column_f_t <= 29.3 * epsilon:
+                class_of_section = "plastic"
+            elif column_b *0.5/ column_f_t <= 33.5* epsilon:
+                class_of_section = "compact"
+            elif column_b *0.5/ column_f_t <= 42 * epsilon:
+                class_of_section = "semi-compact"
+            else:
+                pass
+        else:
+            pass
+
+    elif compression_element == "Web of an I-H" or "box section":
+        if section == "generally":
+            if r1 < 0:
+                if column_d / column_t_w <= (84 * epsilon / (1+ r1)) and column_d / column_t_w <= (42 * epsilon) :
+                    class_of_section = "plastic"
+                elif column_d / column_t_w <= (105 * epsilon /(1+ r1)) :
+                    class_of_section = "compact"
+                elif column_d / column_t_w <= (126* epsilon/(1+ r1)) and column_d / column_t_w <=(42 * epsilon):
+                    class_of_section = "semi-compact"
+                else:
+                    pass
+            if r1 > 0:
+                if column_d / column_t_w <= (84 * epsilon / (1+ r1)) and column_d / column_t_w <= (42 * epsilon) :
+                    class_of_section = "plastic"
+                elif column_d / column_t_w <= (105 * epsilon /(1+ (r1*1.5))) and column_d / column_t_w <= (42 * epsilon) :
+                    class_of_section = "compact"
+                elif column_d / column_t_w <= (126* epsilon/(1+ r1)) and column_d / column_t_w <= (42 * epsilon):
+                    class_of_section = "semi-compact"
+                else:
+                    pass
+        elif section == "Axial compression":
+            if column_d / column_t_w <=  (42 * epsilon):
+                class_of_section = "semi-compact"
+            else:
+                class_of_section = "N/A"
+        else:
+            pass
+    else:
+        pass
+
+    return class_of_section
 
 
 
@@ -114,8 +123,8 @@ def flange_force(column_d, column_f_t, column_b, column_area, factored_axial_for
     """
 
     area_f = column_b * column_f_t
-    axial_force_f = (area_f * factored_axial_force / column_area)
-    f_f = ((moment_load * 1000) / (column_d - column_f_t)) + (axial_force_f / 100)
+    axial_force_f = ((area_f * factored_axial_force * 1000/ (100*column_area)))/1000 #  KN
+    f_f = (((moment_load * 1000000) / (column_d - column_f_t)) + (axial_force_f *1000))/1000 # KN
     #print(f_f)
     return (f_f)
 def web_force(column_d, column_f_t, column_t_w, factored_axial_force, column_area):
@@ -129,9 +138,9 @@ def web_force(column_d, column_f_t, column_t_w, factored_axial_force, column_are
     Returns:
         Force in flange in kN (float)
     """
-    axial_force_w = int((column_d - 2 *(column_f_t )) * column_t_w * factored_axial_force) / column_area
+    axial_force_w = int(((column_d - 2 *(column_f_t )) * column_t_w * factored_axial_force*10) / column_area)/1000 # KN
     return round(axial_force_w)
-def thk_flange_plate(column_d, column_f_t, bolt_diameter, column_area, axial_force, moment_load, column_b,
+def thk_flange_plate(column_d, column_f_t,number_of_column_flange, bolt_diameter, column_area, axial_force, moment_load, column_b,
                      column_fy, dia_hole):
     """
     Args:
@@ -147,11 +156,11 @@ def thk_flange_plate(column_d, column_f_t, bolt_diameter, column_area, axial_for
 
     edge_dist = 1.5 * dia_hole
     gauge = 2.5 * bolt_diameter
-    gauge_req = (column_b - (2 * edge_dist)) / gauge  # number of gauge dist required along flange width
-    n = gauge_req + 1  # number of bolts along flange width
+    # gauge_req = (column_b - (2 * edge_dist)) / gauge  # number of gauge dist required along flange width
+   # n =   # number of bolts along flange width
     gamma_m0 = 1.10  # Partial safety factor against yield stress and buckling = 1.10 (float)
     ff = float(flange_force(column_d, column_f_t, column_b, column_area, axial_force, moment_load))
-    flangeplatethickness = ff / ((column_b - n * dia_hole) * (column_fy / (gamma_m0 * 1000)))
+    flangeplatethickness = ff / ((column_b - number_of_column_flange * dia_hole) * (column_fy / (gamma_m0 * 1000)))
 
     return round(flangeplatethickness, 2)  # mm
 
@@ -166,7 +175,7 @@ def flange_plate_min_t(column_t_w):
     return float(flangeplatemint)
 
 # Thickness of inner flange splice plate [Reference: N. Subramanian (Page 428), M.L. Gambhir (Page 10.84)]
-def func_flangeinnerplatet(column_d, column_f_t, column_area, bolt_diameter, axial_force, moment_load, column_b,
+def func_flangeinnerplatet(column_d,number_of_column_flange, column_f_t, column_area, bolt_diameter, axial_force, moment_load, column_b,
                            column_fy, dia_hole):
     """
     Args:
@@ -182,11 +191,10 @@ def func_flangeinnerplatet(column_d, column_f_t, column_area, bolt_diameter, axi
 
     edge_dist = 1.5 * dia_hole
     gauge = 2.5 * bolt_diameter
-    gauge_req = (column_b - (2 * edge_dist)) / gauge  # number of gauge dist required along flange width
-    n = gauge_req + 1  # number of bolts along flange width
+    # gauge_req = (column_b - (2 * edge_dist)) / gauge  # number of gauge dist required along flange width
     gamma_m0 = 1.10  # Partial safety factor against yield stress and buckling = 1.10 (float)
     ff = float(flange_force(column_d, column_f_t, column_b, column_area, axial_force, moment_load))
-    flangeinnerplatethickness = float(ff / ((column_b - n * dia_hole) * (column_fy / (gamma_m0 * 1000))))
+    flangeinnerplatethickness = float(ff / ((column_b - number_of_column_flange * dia_hole) * (column_fy / (gamma_m0 * 1000))))
 
     return round(flangeinnerplatethickness, 2)  # mm
 ## Minimum width of flange splice plate
@@ -266,17 +274,17 @@ def web_plate_l_min(end_dist_min_w, number_of_row_web, pitch_dist_min_w):
     webplateheightmin = (float((2*end_dist_min_w + (number_of_row_web - 1) * pitch_dist_min_w) * 2))
     return round(webplateheightmin,2)
 
- def get_vres(number_of_row_web,column_d,column_t_w, column_area, column_f_t,web_bolts_required,factored_axial_force, moment_load, column_Zz, moment_load, column_Zy, web_pitch, web_gauge, number_of_column_web, shear_load, ecc):
-    #     """
-    #
-    #     :param bolts_one_line: number of bolts in one line
-    #     :param pitch: pitch
-    #     :param gauge: gauge
-    #     :param bolt_line: number of bolt lines
-    #     :param shear_load: shear load
-    #     :param ecc: eccentricity
-    #     :return: resultant load on bolt due to eccentricity of shear force
-    #     """
+def get_vres(number_of_row_web,column_d,column_t_w, column_area, column_f_t,web_bolts_required,factored_axial_force, moment_load, column_Zz, column_Zy, web_pitch, web_gauge, number_of_column_web, shear_load, ecc):
+    """
+
+    :param bolts_one_line: number of bolts in one line
+    :param pitch: pitch
+    :param gauge: gauge
+    :param bolt_line: number of bolt lines
+    :param shear_load: shear load
+    :param ecc: eccentricity
+    :return: resultant load on bolt due to eccentricity of shear force
+    """
     length_avail = (number_of_row_web - 1) * web_pitch
     ymax = length_avail / 2
     xmax = web_gauge * (number_of_column_web - 1) / 2
@@ -287,21 +295,41 @@ def web_plate_l_min(end_dist_min_w, number_of_row_web, pitch_dist_min_w):
         for y in np.arange(-n, n + 1, 1):
             r_sq = r_sq + ((web_gauge * x) ** 2 + (abs(y) * web_pitch) ** 2)
     sigma_r_sq = r_sq
-    Z_w = float((column_t_w * (column_d - 2 * (column_f_t)) ** 2) / 4)
-    mu_wz = moment_load * Z_w / column_Zz
-    mu_wy = moment_load * Z_w / column_Zy
-    hor_shear_force_bolts = ((mu_wz + (shear_load * ecc)) * ymax) / sigma_r_sq  # horizontal shear force acting on each bolt due to moment developed by eccentricity.
+    Z_w = float((column_t_w * (column_d - 2 * (column_f_t)) ** 2) / 4) #mm3
+
+    # if class_of_section == "plastic" and "compact":
+    #     Z_w = Z_p
+    # elif class_of_section == "semi-compact":
+    #     Z_w = Z_e
+    # else:
+    #     pass
+
+
+
+    mu_wz = (moment_load * Z_w / column_Zz )
+    # mu_wy = (moment_load * Z_w / column_Zz )
+    if ymax == 0:
+        hor_shear_force_bolts = 0
+    else:
+        hor_shear_force_bolts = (((mu_wz *1000+ (shear_load * ecc)) * ymax) / sigma_r_sq ) # # kN horizontal shear force acting on each bolt due to moment developed by eccentricity.
     # extreme bolt distance in X direction
-    ver_shear_force_bolts = ((mu_wy + (shear_load * ecc)) * xmax) / sigma_r_sq  # vertical shear force acting on each bolt due to moment developed by eccentricity
+
+    ver_shear_force_bolts = (((mu_wz *1000+ (shear_load  * ecc)) * xmax) / sigma_r_sq)# # kN vertical shear force acting on each bolt due to moment developed by eccentricity
     # extreme bolt distance in Y direction
-    hor_force = shear_load / web_bolts_required
+
+    hor_force = shear_load / web_bolts_required  # KN
     area_web = (column_d - 2 * column_f_t) * column_t_w
-    axial_force_w = int((column_d - 2 * (column_f_t)) * column_t_w * factored_axial_force) / column_area
+    axial_force_w = int((((column_d - 2 * (column_f_t)) * column_t_w * factored_axial_force ) / (column_area * 100)))# kN
     # axial_force_web = (factored_axial_force * area_web) / column_area  # horizontal force acting on each bolt (assuming uniform shear distribution)
-    ver_force = axial_force_w / web_bolts_required  # vertical force acting on each bolt (assuming uniform axial distribution)
+    ver_force = axial_force_w / web_bolts_required  # vertical force acting on each bolt (assuming uniform axial distribution) # kN
     shearresbolt = math.sqrt((hor_shear_force_bolts + hor_force) ** 2 + (ver_shear_force_bolts + ver_force) ** 2)
-    return shearresbolt
-    print (shearresbolt)
+    print(1, mu_wz * 1000, shear_load, ecc, xmax, sigma_r_sq)
+    print(2, hor_shear_force_bolts, hor_force, ver_shear_force_bolts, ver_force)
+    print(3,moment_load,Z_w,column_Zz)
+    print(4, shearresbolt)
+    print(5, column_d - 2 * column_f_t, column_t_w, factored_axial_force, column_area * 100)
+    return(shearresbolt)
+
 
 
 # vbv = shear_load / (bolts_one_line * bolt_line)
@@ -338,7 +366,7 @@ def coverplateboltedconnection(uiObj):
     bolt_grade = float(uiObj["Bolt"]["Grade"])
     bolt_type = (uiObj["Bolt"]["Type"])
     flange_plate_preference = uiObj['FlangePlate']['Preferences']
-    gap = float(uiObj["detailing"]["gap(mm)"])  # gap between web  plate and column flange
+    gap = float(uiObj["detailing"]["gap"])  # gap between web  plate and column flange
 
     mu_f = float(uiObj["bolt"]["slip_factor"])
     dp_bolt_hole_type = str(uiObj["bolt"]["bolt_hole_type"])
@@ -366,8 +394,8 @@ def coverplateboltedconnection(uiObj):
     web_plate_t = float(uiObj['WebPlate']['Thickness (mm)'])
     web_plate_l = str(uiObj["WebPlate"]["Height (mm)"])
     web_plate_l = float(web_plate_l)
-    web_plate_w = str(uiObj["WebPlate"]["Width (mm)"])
-    web_plate_w = float(web_plate_w)
+    web_plate_w = float(uiObj["WebPlate"]["Width (mm)"])
+    #web_plate_w = float(web_plate_w)
     web_plate_l = float(web_plate_l)
     web_plate_fu = float(column_fu)
     web_plate_fy = float(column_fy)
@@ -391,7 +419,7 @@ def coverplateboltedconnection(uiObj):
     column_r1 = float(dictcolumndata["R1"])
     column_b = float(dictcolumndata["B"])
     column_area = float(dictcolumndata["Area"])
-    column_Zz = float(dictcolumndata["Zz"])
+    column_Zz = float(dictcolumndata["Zz"])*1000
     column_Zy = float(dictcolumndata["Zy"])
     # Minimum Design Action (Cl. 10.7, IS 800:2007)
     # Axial Capacity #kN
@@ -401,10 +429,47 @@ def coverplateboltedconnection(uiObj):
 
     # Shear Capacity   # kN
 
-    A_v = column_area  #todo
-    design_shear_capacity = (web_plate_w * web_plate_t *100* column_fy) / (math.sqrt(3) * gamma_m0 * 1000)  # kN # A_v: Total cross sectional area in shear in mm^2 (float)
+   # A_v = column_area  #todo
+    design_shear_capacity = (web_plate_w * web_plate_t * column_fy) / (math.sqrt(3) * gamma_m0 * 1000)  # kN # A_v: Total cross sectional area in shear in mm^2 (float)
     if shear_load >= design_shear_capacity:
-        design_status = False
+        shear_load = design_shear_capacity
+    else:
+        pass
+    Z_p = float((column_t_w * (column_d - 2 * (column_f_t)) ** 2) / 4) #mm3
+    Z_e = float((column_t_w * (column_d - 2 * (column_f_t)) ** 2) / 6) #mm3
+
+    class_of_section = limiting_width_thk_ratio(column_f_t,column_t_w,column_d, column_b, column_fy,factored_axial_force, column_area, "External", "rolled")
+
+    if class_of_section == "plastic" and "compact":
+        Z_w = Z_p
+    elif class_of_section == "semi-compact":
+        Z_w = Z_e
+    else:
+        pass
+
+    if class_of_section == "plastic" and "compact":
+        beta_b = 1
+    elif class_of_section == "semi-compact":
+        beta_b = Z_e/Z_p
+    else:
+        # beta_b = 1
+        pass
+    print(90,design_shear_capacity)
+    if shear_load < (0.6 * design_shear_capacity):
+        design_bending_strength = beta_b * Z_p * column_fy / (gamma_m0* 1000000)
+
+        print(60, design_bending_strength)
+        if moment_load > design_bending_strength:
+            moment_load = design_bending_strength
+        else:
+            pass
+        if moment_load == 0:
+            moment_load = design_bending_strength
+        else:
+            pass
+
+    else:
+        pass
 
     #######################################################################
     # Calculation of Spacing (Min values rounded to next multiple of 5)
@@ -426,10 +491,14 @@ def coverplateboltedconnection(uiObj):
     # Maximim pitch and gauge distance for Web splice plate
     pitch_dist_max_w = IS800_2007.cl_10_2_3_1_max_spacing( plate_thicknesses =  platethickness_w )
     gauge_dist_max_w = pitch_dist_max_w
-    flange_pitch = round(pitch_dist_min_f + 10)
+    flange_pitch = round(pitch_dist_min_f + 10,2)
     flange_gauge = flange_pitch
-    web_pitch = round(pitch_dist_min_w + 10)
-    web_gauge = round(pitch_dist_min_w + 10)
+    print(11, flange_gauge)
+
+    print(20,pitch_dist_max_w)
+    print(20,pitch_dist_min_w)
+    web_pitch = round(pitch_dist_min_w + 10,2)
+    web_gauge = round(pitch_dist_min_w + 10,2)
     # if #todo
     #     pitch = (web_plate_l_opt - 2 * min_end_dist) / (bolts_required - 1)
     # min_end_distance & max_end_distance = Minimum and Maximum end distance
@@ -452,7 +521,8 @@ def coverplateboltedconnection(uiObj):
         d=bolt_diameter, bolt_hole_type=dp_bolt_hole_type, edge_type=type_edge)
     end_dist_max_w = IS800_2007.cl_10_2_4_3_max_edge_dist(
         plate_thicknesses = platethickness_w, f_y=column_fy, corrosive_influences=corrosive_influences)
-
+    print(50, end_dist_min_w )
+    print(50, end_dist_max_w)
     edge_dist_min_f = end_dist_min_f
     edge_dist_max_f= end_dist_max_w
 
@@ -467,44 +537,44 @@ def coverplateboltedconnection(uiObj):
 
 
     # Bolts arrrangement in flange plate #todo
-    number_of_column_flange = int ((column_b - column_t_w- (4* edge_dist_w)) / web_gauge)
+    number_of_column_flange = int ((column_b - column_t_w- (4* edge_dist_w)) / flange_pitch)
     if number_of_column_flange <= 2:
         number_of_column_flange = 2
-        if number_of_column_flange % 2 != 0:
-            number_of_column_flange = int(number_of_column_flange-1)
+    if number_of_column_flange % 2 != 0:
+        number_of_column_flange = int(number_of_column_flange-1)
     else:
         pass
-    # Bolts arrrangement in flange plate #todo
+    # Bolts arrrangement in Web plate #todo
     number_of_column_web = int((column_d- (2*column_f_t)- (2*gap)- (2* edge_dist_w)) / web_gauge)
     if number_of_column_web <= 2:
         number_of_column_web = 2
     else:
         pass
 
-#     # Bolts arrrangement in flange plate #todo
-    if (flange_plate_w - column_t_w - (2 * column_r1)) > ((2 * edge_dist_f) + (4 * flange_gauge) + flange_gauge2):
-        number_of_column_flange = 6
-    elif (flange_plate_w - column_t_w - (2 * column_r1)) > ((2 * edge_dist_f) + (2 * flange_gauge) + flange_gauge2):
-        number_of_column_flange = 4
-    elif (flange_plate_w - column_t_w - (2 * column_r1)) > ((2 * edge_dist_f)  + flange_gauge2):
-        number_of_column_flange = 2
-    else:
-        design_status = False
-        logger.info(": Increase the size of bolt or grade of the section")
+# #     # Bolts arrrangement in flange plate #todo
+#     if (flange_plate_w - column_t_w - (2 * column_r1)) > ((2 * edge_dist_f) + (4 * flange_gauge) + flange_gauge2):
+#         number_of_column_flange = 6
+#     elif (flange_plate_w - column_t_w - (2 * column_r1)) > ((2 * edge_dist_f) + (2 * flange_gauge) + flange_gauge2):
+#         number_of_column_flange = 4
+#     elif (flange_plate_w - column_t_w - (2 * column_r1)) > ((2 * edge_dist_f)  + flange_gauge2):
+#         number_of_column_flange = 2
+#     else:
+#         design_status = False
+#         logger.info(": Increase the size of bolt or grade of the section")
 
 
 # #    print(number_of_row_flange)
 #
-#         # Bolts arrrangement in web plate #todo
-    if web_plate_w > ((2 * edge_dist_w) + (3 * web_gauge)):
-        number_of_column_web = 4
-    elif web_plate_w > ((2 * edge_dist_w) + (2 * web_gauge)):
-        number_of_column_web = 3
-    elif web_plate_w > ((2 * edge_dist_w) + (web_gauge)):
-        number_of_column_web = 2
-    else:
-        design_status = False
-        logger.info(": Increase the size of bolt or grade of the section")
+# #         # Bolts arrrangement in web plate #todo
+#     if web_plate_w > ((2 * edge_dist_w) + (3 * web_gauge)):
+#         number_of_column_web = 4
+#     elif web_plate_w > ((2 * edge_dist_w) + (2 * web_gauge)):
+#         number_of_column_web = 3
+#     elif web_plate_w > ((2 * edge_dist_w) + (web_gauge)):
+#         number_of_column_web = 2
+#     else:
+#         design_status = False
+#         logger.info(": Increase the size of bolt or grade of the section")
 
 
 
@@ -601,9 +671,11 @@ def coverplateboltedconnection(uiObj):
 
  # Calculation of number of bolts required for web splice plate
     if shear_load != 0:
-        web_bolts_required = int(math.ceil(shear_load / web_bolt_capacity_red))
+        web_bolts_required = max(2,int(math.ceil(math.sqrt(shear_load**2+factored_axial_force**2) / web_bolt_capacity_red)))
     else:
         web_bolts_required = 2
+
+
 
     total_web_plate_bolts = web_bolts_required * 2
     web_bolt_group_capacity = total_web_plate_bolts * web_bolt_capacity_red # Calculation of bolt group capacity for web splice plate
@@ -616,7 +688,7 @@ def coverplateboltedconnection(uiObj):
     # else:
     #     number_of_column_web = 2
 
-    number_of_row_web = int(web_bolts_required / number_of_column_web)
+    number_of_row_web = int(max(1, (web_bolts_required / number_of_column_web)))
 
     # Calculation of number of bolts required for flange splice plate
 
@@ -704,7 +776,7 @@ def coverplateboltedconnection(uiObj):
         logger.info(": Increase the thickness of flange splice plate")
     else:
         pass
-    opt_thk_flange_plate = thk_flange_plate (column_d, column_f_t, bolt_diameter, column_area, factored_axial_force, moment_load, column_b,
+    opt_thk_flange_plate = thk_flange_plate (column_d, column_f_t,number_of_column_flange, bolt_diameter, column_area, axial_force, moment_load, column_b,
                      column_fy, dia_hole)
     if flange_plate_t < opt_thk_flange_plate:
         design_status = False
@@ -725,15 +797,18 @@ def coverplateboltedconnection(uiObj):
     # else:
     #     pass
 
-    max_flange_width = flange_plate_w_max(column_b)
-    if opt_flange_plate_width > max_flange_width and flange_plate_w < opt_flange_plate_width:
-        flange_gauge = (column_b -(4 *edge_dist_f )- column_t_w)/number_of_column_flange
-        opt_flange_plate_width = flange_plate_width(edge_dist_f, number_of_column_flange, flange_gauge, flange_gauge2)
+    # max_flange_width = flange_plate_w_max(column_b)
+    # if opt_flange_plate_width > max_flange_width and flange_plate_w < opt_flange_plate_width:
+    #     flange_gauge = int((column_b -(4 *edge_dist_f )- column_t_w)/number_of_column_flange)
+    #     opt_flange_plate_width = flange_plate_width(edge_dist_f, number_of_column_flange, flange_gauge, flange_gauge2)
+    #
+    # else:
+    #     pass
+    #if flange_pitch > pitch_dist_max_w and flange_pitch <  pitch_dist_min_f:
 
-    else:
-        pass
 
 
+    print(30, int((column_b -(4 *edge_dist_f )- column_t_w)/number_of_column_flange))
     max_flange_width =flange_plate_w_max(column_b)
     if flange_plate_w > max_flange_width:
         design_status = False
@@ -780,7 +855,7 @@ def coverplateboltedconnection(uiObj):
 
 
     ###inner flange plate  thickness,w,l#todo
-    opt_inner_thk_flange_plate = flange_plate_t
+    # opt_inner_thk_flange_plate = flange_plate_t
 
     #####################################################################################################################
 
@@ -833,6 +908,13 @@ def coverplateboltedconnection(uiObj):
         logger.info(": Increase the width of web splice plate")
     else:
         pass
+    if webminw > webmaxw:
+        design_status = False
+        logger.error(": Maximum Width of web splice plate is less than minimum web width required")
+        logger.warning(": Minimum required web splice plate width  is %2.2f mm" % (webminw))
+        logger.info(": Increase the size of column section")
+    else:
+        pass
 
     # Check for web plate height
     # Web splice plate height input and check for maximum and minimum values
@@ -846,8 +928,10 @@ def coverplateboltedconnection(uiObj):
         logger.info(": Increase the height of web splice plate")
     else:
         pass
+    print(100, webplatelmin)
 
     webplatelmax =  web_plate_l_max(end_dist_max_w, number_of_row_web, pitch_dist_max_w)
+    print(100, webplatelmax)
     if web_plate_l > webplatelmax:
         design_status = False
         logger.error(": web_plate_l is greater than web_plate_l_max:")
@@ -867,19 +951,16 @@ def coverplateboltedconnection(uiObj):
 
     ####Calculation of resultant force on bolts in web
 
-    extreme_bolt_dist_z = ((number_of_column_web - 1) * web_gauge) / 2
-    extreme_bolt_dist_y = ((number_of_row_web - 1) * web_pitch) / 2
     ecc = (((number_of_row_web - 1) * web_pitch) / 2 + (end_dist_w))
     Z_w = float((column_t_w * (column_d - 2 * (column_f_t)) ** 2) / 4)
-    mu_wz = moment_load * Z_w / column_Zz
-    mu_wy = moment_load * Z_w / column_Zy
 
-    resultant_bolt_web = get_vres(number_of_row_web,column_d,column_t_w, column_area, column_f_t,web_bolts_required,factored_axial_force, moment_load, column_Zz, moment_load, column_Zy, web_pitch, web_gauge, number_of_column_web, shear_load, ecc)
+
+    resultant_bolt_web = get_vres(number_of_row_web,column_d,column_t_w, column_area, column_f_t,web_bolts_required,factored_axial_force, moment_load, column_Zz, column_Zy, web_pitch, web_gauge, number_of_column_web, shear_load, ecc)
 
     if  resultant_bolt_web > web_bolt_capacity_red:
         design_status = False
         logger.error(": Number of bolts is not sufficient")
-        logger.warning(": shear_res_bolt should be less than web_bolt_capacity of web")
+        logger.warning(":  resultant_bolt_web  should be less than web_bolt_capacity of web")
         logger.info(": Increase number of bolts and spacing between bolts")
     else:
         pass
@@ -892,9 +973,10 @@ def coverplateboltedconnection(uiObj):
         gross_area_fp = flange_plate_t  * flange_plate_w
         Tdg_flange_plate =IS800_2007.tension_member_design_due_to_yielding_of_gross_section(A_g = gross_area_fp,
                                                                                             F_y = flange_plate_fy)
+        # Tdg_flange_plate = round(Tdg_flange_plate/1000,2)
         Tdn_flange_plate = IS800_2007.tension_member_design_due_to_rupture_of_critical_section(A_n = net_eff_area_fp ,
                                                                                             F_u = flange_plate_fu)
-
+        # Tdn_flange_plate = round(Tdn_flange_plate/1000,2)
         #  Block shear strength for flange
         Avg = 2 * (end_dist_f + (number_of_row_flange - 1) * flange_pitch) * column_f_t
         Avn = 2 * (end_dist_f + (number_of_row_flange - 1) * flange_pitch - (number_of_row_flange - 0.5) * dia_hole) * column_f_t
@@ -903,7 +985,7 @@ def coverplateboltedconnection(uiObj):
                     number_of_column_flange - 1) * dia_hole) * column_f_t
         Tdb_flange_shear = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                     f_u=flange_plate_fu, f_y=flange_plate_fy)
-
+        # Tdb_flange_shear = round(Tdb_flange_shear/1000,2)
         if Tdb_flange_shear < axial_force:
             design_status = False
         else:
@@ -918,13 +1000,14 @@ def coverplateboltedconnection(uiObj):
 
         Tdb_flange_plate = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                     f_u=flange_plate_fu, f_y=flange_plate_fy)
+        # Tdb_flange_plate = round(Tdb_flange_plate/1000,2)
         if Tdb_flange_plate < factored_axial_force:
             design_status = False
         else:
             pass
 
-        Td_flange_plate = min(Tdg_flange_plate ,Tdn_flange_plate ,Tdb_flange_plate, Tdb_flange_shear)
-
+        Td_flange_plate = min(Tdg_flange_plate ,Tdn_flange_plate,Tdb_flange_plate, Tdb_flange_shear)
+        # Td_flange_plate = round(Td_flange_plate/1000,2)
         ####Capacity of flange cover plate for bolted Outside + Inside #
 
     elif flange_plate_preference == "Outside + Inside" :
@@ -935,12 +1018,16 @@ def coverplateboltedconnection(uiObj):
 
         Tdg_flange_plate = IS800_2007.tension_member_design_due_to_yielding_of_gross_section(A_g=gross_area_fp,
                                                                                              F_y=flange_plate_fy)
+        # Tdg_flange_plate= round(Tdg_flange_plate/1000,2)
         Tdn_flange_plate = IS800_2007.tension_member_design_due_to_rupture_of_critical_section(A_n=net_eff_area_fp,
                                                                                             F_u=flange_plate_fu)
+        # Tdn_flange_plate = round(Tdn_flange_plate/1000,2)
         Tdg_flange_plate_i = IS800_2007.tension_member_design_due_to_yielding_of_gross_section(A_g=gross_area_ifp,
                                                                                              F_y=flange_plate_fy)
+        # Tdg_flange_plate_i = round(Tdg_flange_plate_i/1000,2)
         Tdn_flange_plate_i = IS800_2007.tension_member_design_due_to_rupture_of_critical_section(A_n=net_eff_area_ifp,
                                                                                             F_u=flange_plate_fu)
+        # Tdn_flange_plate_i =round(Tdn_flange_plate_i/1000,2)
         #  Block shear strength for flange under shear
         Avg = 2 * (end_dist_f + (number_of_row_flange - 1) * flange_pitch) * column_f_t
         Avn = 2 * (end_dist_f + (number_of_row_flange - 1) * flange_pitch - (number_of_row_flange - 0.5) * dia_hole) * column_f_t
@@ -949,6 +1036,8 @@ def coverplateboltedconnection(uiObj):
                 number_of_column_flange - 1) * dia_hole) * column_f_t
         Tdb_flange_shear = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                     f_u=flange_plate_fu, f_y=flange_plate_fy)
+
+        # Tdb_flange_shear = round(Tdb_flange_shear/1000,2)
         if Tdb_flange_shear < factored_axial_force:
             design_status = False
         else:
@@ -961,6 +1050,7 @@ def coverplateboltedconnection(uiObj):
         Atn = (((number_of_column_flange - 1) * flange_gauge) - (number_of_column_flange - 1) * dia_hole) * flange_plate_t
         Tdb_flange_plate_outside = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                     f_u=flange_plate_fu, f_y=flange_plate_fy)
+        # Tdb_flange_plate_outside = round(Tdb_flange_plate_outside/1000,2)
         if Tdb_flange_plate_outside < factored_axial_force:
             design_status = False
         else:
@@ -973,6 +1063,7 @@ def coverplateboltedconnection(uiObj):
                     number_of_column_flange - 0.5) * dia_hole) * flange_plate_t
         Tdb_flange_plate_inside_shear = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                     f_u=flange_plate_fu, f_y=flange_plate_fy)
+        # Tdb_flange_plate_inside_shear = round(Tdb_flange_plate_inside_shear/1000,2)
         if Tdb_flange_plate_inside_shear < factored_axial_force:
             design_status = False
         else:
@@ -986,6 +1077,7 @@ def coverplateboltedconnection(uiObj):
         Tdb_flange_plate_inside_axial = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                                  f_u=flange_plate_fu,
                                                                                  f_y=flange_plate_fy)
+        # Tdb_flange_plate_inside_axial = round(Tdb_flange_plate_inside_axial/1000,2)
         if Tdb_flange_plate_inside_axial < factored_axial_force:
             design_status = False
         else:
@@ -1013,8 +1105,10 @@ def coverplateboltedconnection(uiObj):
         gross_area_wp = web_plate_t * web_plate_w
         Tdg_web_plate = IS800_2007.tension_member_design_due_to_yielding_of_gross_section(A_g=gross_area_wp,
                                                                                              F_y=web_plate_fy)
+        # Tdg_web_plate = round(Tdg_web_plate/1000,2)
         Tdn_web_plate = IS800_2007.tension_member_design_due_to_rupture_of_critical_section(A_n=net_eff_area_wp,
                                                                                                F_u=web_plate_fu)
+        # Tdn_web_plate= round(Tdn_web_plate/1000,2)
         Avg = 2 * (end_dist_w + (number_of_row_web - 1) * web_pitch) * column_t_w
         Avn = 2 * (end_dist_w + (number_of_row_web - 1) * web_pitch - (number_of_column_web - 0.5) * dia_hole) * column_t_w
         Atg = (column_d - column_f_t - ((number_of_column_web - 1) * web_gauge)) * column_t_w
@@ -1022,7 +1116,7 @@ def coverplateboltedconnection(uiObj):
                     number_of_column_web - 0.5) * dia_hole) * column_t_w
         Tdb_web_axial = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                     f_u=web_plate_fu, f_y=web_plate_fy)
-
+        # Tdb_web_axial= round(Tdb_web_axial/1000, 2)
         Avg = (edge_dist_w + (number_of_column_web - 1) * web_gauge) * web_plate_t
         Avn = (edge_dist_w + (number_of_column_web - 1) * web_gauge - (
                     number_of_column_web - 0.5) * dia_hole) * web_plate_t
@@ -1030,6 +1124,7 @@ def coverplateboltedconnection(uiObj):
         Atn = ((number_of_row_web - 1) * web_pitch + (number_of_row_web - 1) * dia_hole + end_dist_w) * web_plate_t
         Tdb_web_shear = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                  f_u=web_plate_fu, f_y=web_plate_fy)
+        # Tdb_web_shear =round(Tdb_web_shear/1000,2)
         Td_web_plate = min(Tdg_web_plate, Tdn_web_plate, Tdb_web_axial, Tdb_web_shear )
 
     elif flange_plate_preference == "Outside + Inside":
@@ -1039,14 +1134,16 @@ def coverplateboltedconnection(uiObj):
         gross_area_iwp = web_plate_t * web_plate_w
         Tdg_web_plate = IS800_2007.tension_member_design_due_to_yielding_of_gross_section(A_g=gross_area_wp,
                                                                                           F_y=web_plate_fy)
+        # Tdg_web_plate=round(Tdg_web_plate/1000,2)
         Tdn_web_plate = IS800_2007.tension_member_design_due_to_rupture_of_critical_section(A_n=net_eff_area_wp,
                                                                                             F_u=web_plate_fu)
-
+        # Tdn_web_plate=round(Tdn_web_plate/1000,2)
         Tdg_web_plate_i = IS800_2007.tension_member_design_due_to_yielding_of_gross_section(A_g=gross_area_iwp,
                                                                                           F_y=web_plate_fy)
+        # Tdg_web_plate_i= round(Tdg_web_plate_i/1000,2)
         Tdn_web_plate_i = IS800_2007.tension_member_design_due_to_rupture_of_critical_section(A_n=net_eff_area_iwp,
                                                                                             F_u=web_plate_fu)
-
+        # Tdn_web_plate_i = round(Tdn_web_plate_i/1000,2)
         #web shear when flange plate is provided outside and inside
         Avg = 2 * (end_dist_w + (number_of_row_web - 1) * web_pitch) * column_t_w
         Avn = 2 * (end_dist_w + (number_of_row_web - 1) * web_pitch - (
@@ -1056,7 +1153,7 @@ def coverplateboltedconnection(uiObj):
                 number_of_column_web - 0.5) * dia_hole) * column_t_w
         Tdb_web_axial = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                  f_u=web_plate_fu, f_y=web_plate_fy)
-
+        # Tdb_web_axial=round(Tdb_web_axial/1000,2)
         Avg = (edge_dist_w + (number_of_column_web - 1) * web_gauge) * web_plate_t
         Avn = (edge_dist_w + (number_of_column_web - 1) * web_gauge - (
                 number_of_column_web - 0.5) * dia_hole) * web_plate_t
@@ -1064,7 +1161,7 @@ def coverplateboltedconnection(uiObj):
         Atn = ((number_of_row_web - 1) * web_pitch + (number_of_row_web - 1) * dia_hole + end_dist_f) * web_plate_t
         Tdb_web_shear = IS800_2007.cl_6_4_1_block_shear_strength(A_vg=Avg, A_vn=Avn, A_tg=Atg, A_tn=Atn,
                                                                  f_u=web_plate_fu, f_y=web_plate_fy)
-
+        # Tdb_web_shear =round(Tdb_web_shear/1000,2)
         Td_web_plate = min(Tdg_web_plate, Tdn_web_plate,Tdg_web_plate_i,Tdn_web_plate_i, Tdb_web_axial, Tdb_web_shear)
     else:
         pass
@@ -1138,6 +1235,13 @@ def coverplateboltedconnection(uiObj):
     outputObj["FlangeBolt"]["FlangePlateDemand"] = flange_bolt_group_capacity##### capacity of flange group bolt
     outputObj["FlangeBolt"]["FlangeCapacity"] = Td_flange_plate
     #outputObj["FlangeBolt"]["edge_dist_gauge"] = edge_dist  # For 3D model
+
+
+    # Dimension of inner flange plate
+    outputObj["FlangeBolt"]["InnerFlangePlateHeight"] = flange_plate_l
+    outputObj["FlangeBolt"]["InnerFlangePlateWidth"] = flange_plate_w # There will be 4 inner plates, this width is width of each plate
+    outputObj["FlangeBolt"]["InnerFlangePlateThickness"] = flange_plate_t
+    outputObj["FlangeBolt"]["flangeplatethick"] = flange_plate_t
 
 
     if design_status == True:
