@@ -20,6 +20,8 @@ from cad.colWebBeamWebConnectivity import ColWebBeamWeb as FinColWebBeamWeb
 from cad.nutBoltPlacement import NutBoltArray as finNutBoltArray
 from design_type.connection.fin_plate_connection import FinPlateConnection
 from design_type.connection.beam_cover_plate import BeamCoverPlate
+from design_type.connection.column_cover_plate import ColumnCoverPlate
+
 from utilities import osdag_display_shape
 from OCC.Core.BRepAlgoAPI import BRepAlgoAPI_Fuse
 import copy
@@ -27,6 +29,7 @@ from cad.BBCad.nutBoltPlacement_AF import NutBoltArray_AF
 from cad.BBCad.nutBoltPlacement_BF import NutBoltArray_BF
 from cad.BBCad.nutBoltPlacement_Web import NutBoltArray_Web
 from  cad.BBCad.BBCoverPlateBoltedCAD import BBCoverPlateBoltedCAD
+from  cad.CCCad.BBCoverPlateBoltedCAD import CCCoverPlateBoltedCAD
 
 from cad.nutBoltPlacement import NutBoltArray
 from design_type.connection import cleat_angle_connection
@@ -694,6 +697,87 @@ class CommonDesignLogic(object):
 
         return bbCoverPlateBolted
 
+    def createCCCoverPlateBoltedCAD(self):
+        '''
+        :return: The calculated values/parameters to create 3D CAD model of individual components.
+        '''
+        C= ColumnCoverPlate()
+        # beam_data = self.fetchBeamPara()  # Fetches the beam dimensions
+
+        beam_tw = float(C.section.web_thickness)
+        beam_T = float(C.section.flange_thickness)
+        beam_d = float(C.section.depth)
+        beam_B = float(C.section.flange_width)
+        beam_R1 = float(C.section.root_radius)
+        beam_R2 = float(C.section.toe_radius)
+        beam_alpha = float(C.section.flange_slope)
+        beam_length = 800.0
+
+        beam_Left = ISection(B=beam_B, T=beam_T, D=beam_d, t=beam_tw,
+                             R1=beam_R1, R2=beam_R2, alpha=beam_alpha,
+                             length=beam_length, notchObj=None)  # Call to ISection in Component repository
+        beam_Right = copy.copy(beam_Left)  # Since both the beams are same
+        # outputobj = self.outputs  # Output dictionary from calculation file
+        # alist = self.designParameters()  # An object to save all input values entered by user
+
+        plateAbvFlange = Plate(L=C.flange_plate.length,
+                               W=C.flange_plate.height,
+                               T=float(C.flange_plate.thickness_provided))  # Call to Plate in Component repository
+        plateBelwFlange = copy.copy(plateAbvFlange)  # Since both the flange plates are identical
+
+        innerplateAbvFlangeFront = Plate(L=C.flange_plate.length,
+                                         W=C.flange_plate.height,
+                                         T=float(C.flange_plate.thickness_provided))
+        innerplateAbvFlangeBack = copy.copy(innerplateAbvFlangeFront)
+        innerplateBelwFlangeFront = copy.copy(innerplateAbvFlangeBack)
+        innerplateBelwFlangeBack = copy.copy(innerplateBelwFlangeFront)
+
+        WebPlateLeft = Plate(L=C.web_plate.length,
+                             W=C.web_plate.height,
+                             T=float(C.web_plate.thickness_provided))  # Call to Plate in Component repository
+        WebPlateRight = copy.copy(WebPlateLeft)  # Since both the Web plates are identical
+
+        bolt_d = float(C.flange_bolt.bolt_diameter_provided)  # Bolt diameter (shank part), entered by user
+        bolt_r = bolt_d / 2  # Bolt radius (Shank part)
+        bolt_T = self.boltHeadThick_Calculation(bolt_d)  # Bolt head thickness
+        bolt_R = self.boltHeadDia_Calculation(bolt_d) / 2  # Bolt head diameter (Hexagon)
+        bolt_Ht = self.boltLength_Calculation(bolt_d)  # Bolt head height
+
+        bolt = Bolt(R=bolt_R, T=bolt_T, H=bolt_Ht, r=bolt_r)  # Call to create Bolt from Component directory
+        nut_T = self.nutThick_Calculation(bolt_d)  # Nut thickness, usually nut thickness = nut height
+        nut_Ht = nut_T
+        nut = Nut(R=bolt_R, T=nut_T, H=nut_Ht, innerR1=bolt_r)  # Call to create Nut from Component directory
+
+        numOfBoltsF = 2 * int(C.flange_plate.bolts_required)  # Number of flange bolts for both beams
+        nutSpaceF = float(C.flange_plate.thickness_provided) + beam_T  # Space between bolt head and nut for flange bolts
+
+        numOfBoltsW = 2 * int(C.web_plate.bolts_required)  # Number of web bolts for both beams
+        nutSpaceW = 2 * float(
+            C.web_plate.thickness_provided) + beam_tw  # Space between bolt head and nut for web bolts
+
+        # Bolt placement for Above Flange bolts, call to nutBoltPlacement_AF.py
+        bolting_AF = NutBoltArray_AF(ColumnCoverPlate(), nut, bolt, numOfBoltsF, nutSpaceF)
+
+        # Bolt placement for Below Flange bolts, call to nutBoltPlacement_BF.py
+        bolting_BF = NutBoltArray_BF(ColumnCoverPlate(), nut, bolt, numOfBoltsF, nutSpaceF)
+
+        # Bolt placement for Web Plate bolts, call to nutBoltPlacement_Web.py
+        bolting_Web = NutBoltArray_Web(ColumnCoverPlate(), nut, bolt, numOfBoltsW, nutSpaceW)
+
+        # bbCoverPlateBolted is an object which is passed BBCoverPlateBoltedCAD.py file, which initialized the parameters of each CAD component
+        ccCoverPlateBolted = CCCoverPlateBoltedCAD(beam_Left, beam_Right, plateAbvFlange, plateBelwFlange,
+                                                   innerplateAbvFlangeFront,
+                                                   innerplateAbvFlangeBack, innerplateBelwFlangeFront,
+                                                   innerplateBelwFlangeBack,
+                                                   WebPlateLeft, WebPlateRight, bolting_AF, bolting_BF, bolting_Web,
+                                                   ColumnCoverPlate())
+
+        # bbCoverPlateBolted.create_3DModel() will create the CAD model of each component, debugging this line will give moe clarity
+        ccCoverPlateBolted.create_3DModel()
+
+        return ccCoverPlateBolted
+
+
     def display_3DModel(self, component,bgcolor):
 
         self.component = component
@@ -898,10 +982,12 @@ class CommonDesignLogic(object):
         elif self.mainmodule == "Moment Connection":
 
             if flag is True:
-
-                self.CPBoltedObj = self.createBBCoverPlateBoltedCAD()
-
-                self.display_3DModel("Model", "gradient_bg")
+                if self.connection == 'Beam Coverplate Connection':
+                    self.CPBoltedObj = self.createBBCoverPlateBoltedCAD()
+                    self.display_3DModel("Model", "gradient_bg")
+                elif self.connection == 'Column Coverplate Connection':
+                    self.CPBoltedObj = self.createCCCoverPlateBoltedCAD()
+                    self.display_3DModel("Model", "gradient_bg")
             else:
                 self.display.EraseAll()
 

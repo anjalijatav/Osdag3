@@ -57,7 +57,6 @@ pDir      |      |       | End distance  |
         self.bolt = bolt
         self.nut = nut
         self.gap = nut_space
-
         self.bolts = []
         self.nuts = []
         self.initialiseNutBolts()

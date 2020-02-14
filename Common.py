@@ -89,6 +89,7 @@ def connectdb(table_name,call_type="dropdown"):
          """
 
     # @author: Amir
+    print(PATH_TO_DATABASE)
     conn = sqlite3.connect(PATH_TO_DATABASE)
     lst = []
     if table_name == "Angles":
