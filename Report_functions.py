@@ -33,11 +33,11 @@ def min_pitch(d):
     min_pitch_eqn.append(NoEscape(r'=&2.5*' + d + r'&=' + min_pitch + r'\end{aligned}'))
     return min_pitch_eqn
 
-def max_pitch(t):
+def max_pitch(t):   ##todo priti
 
     max_pitch_1 = 32*min(t)
     max_pitch_2 = 300
-    max_pitch = max(max_pitch_1,max_pitch_2)
+    max_pitch = min(max_pitch_1,max_pitch_2)
     t = str(min(t))
     max_pitch = str(max_pitch)
 
@@ -180,7 +180,7 @@ def parameter_req_bolt_force(bolts_one_line,gauge,ymax,xmax,bolt_line,pitch,leng
     parameter_req_bolt_force_eqn.append(NoEscape(r' & =' + ymax + r'\\'))
 
     parameter_req_bolt_force_eqn.append(NoEscape(r'x_{max} &= p * (n_c - 1) / 2 \\'))
-    parameter_req_bolt_force_eqn.append(NoEscape(r' &= '+pitch+' * ('+bolt_line+ r'- 1) / 2 \\'))
+    parameter_req_bolt_force_eqn.append(NoEscape(r' &= '+pitch+' * ('+bolt_line+' - 1) / 2 \\'))
     parameter_req_bolt_force_eqn.append(NoEscape(r' & =' + xmax + r'\end{aligned}'))
 
     return parameter_req_bolt_force_eqn
@@ -289,7 +289,7 @@ def forces_in_flange(Au, B,T,A,D,Mu,Mw,Mf,Af,ff):
     forcesinflange_eqn.append(NoEscape(r'&=' + Mf + r'\\'))
     forcesinflange_eqn.append(NoEscape(r' F_f& =flange~force  \\'))
     forcesinflange_eqn.append(NoEscape(r'& = \frac{M_f *1000}{D-T} + A_f \\'))
-    forcesinflange_eqn.append(NoEscape(r'&= \frac{' + Mf + '}{' + D + '-' + T + '} +' + Af + r' \\'))
+    forcesinflange_eqn.append(NoEscape(r'&= \frac{' + Mf +'}{' + D + '-' + T + '} +' + Af + r' \\'))
     forcesinflange_eqn.append(NoEscape(r'&=' + ff + r'\end{aligned}'))
     return forcesinflange_eqn
 
@@ -738,11 +738,11 @@ def shear_capacity(h, t,f_y, gamma_m0,shear_capacity): # same as #todo anjali
     return shear_capacity_eqn
 #
 #
-def min_shear_capacity(shear_capacity,min_sc): #todo anjali
+def min_shear_capacity(shear_capacity,min_sc): #todo anjali    ##todo priti
     min_sc = str(min_sc)
     shear_capacity = str(shear_capacity)
     min_sc_eqn = Math(inline=True)
-    min_sc_eqn.append(NoEscape(r'\begin{aligned} Sc_{min} &= 0.6 * A_c\\'))
+    min_sc_eqn.append(NoEscape(r'\begin{aligned} Vc_{min} &= 0.6 * S_c\\'))
     min_sc_eqn.append(NoEscape(r'&= 0.6 *' + shear_capacity +r'\\'))
     min_sc_eqn.append(NoEscape(r'&=' + min_sc + r'\end{aligned}'))
     return min_sc_eqn
@@ -771,13 +771,13 @@ def plastic_moment_capacty(beta_b, Z_p, f_y, gamma_m0 ,Pmc):  # same as #todo an
     Pmc_eqn.append(NoEscape(r'&=' + Pmc + r'\end{aligned}'))
     return Pmc_eqn
 
-def moment_d_deformation_criteria(fy,Z_e,Mdc):
+def moment_d_deformation_criteria(fy,Z_e,Mdc):  # todo priti#
     fy = str(fy)
     Z_e = str(Z_e)
     Mdc =str(Mdc)
     Mdc_eqn= Math(inline=True)
-    Mdc_eqn.append(NoEscape(r'\begin{aligned} Mdc &= \frac{1.5 *Z_e *fy}{1.1}\\'))
-    Mdc_eqn.append(NoEscape(r'&= \frac{1.5 *'+Z_e + '*' +fy +r'}{1.1}\\'))
+    Mdc_eqn.append(NoEscape(r'\begin{aligned} Mdc &= \frac{1.5 *Z_e *fy}{1.1 * 1000000}\\'))
+    Mdc_eqn.append(NoEscape(r'&= \frac{1.5 *'+Z_e + '*' +fy +r'}{1.1 * 1000000}\\'))
     Mdc_eqn.append(NoEscape(r'&= ' + Mdc+ r'\end{aligned}'))
     return  Mdc_eqn
 
