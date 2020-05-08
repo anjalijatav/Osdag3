@@ -1745,12 +1745,12 @@ class ColumnCoverPlateWeld(MomentConnection):
              KEY_DISP_DP_WELD_FAB: self.flange_weld.fabrication,
              KEY_DISP_DP_WELD_MATERIAL_G_O: self.flange_weld.fu}
 
-
         self.report_check = []
         #####Outer plate#####
         flange_weld_conn_plates_fu = [self.section.fu, self.flange_plate.fu]
         self.flange_weld_connecting_plates = [self.section.flange_thickness, self.flange_plate.thickness_provided]
-        self.flange_weld_size_min = IS800_2007.cl_10_5_2_3_min_weld_size(self.section.flange_thickness,self.flange_plate.thickness_provided)
+        self.flange_weld_size_min = IS800_2007.cl_10_5_2_3_min_weld_size(self.section.flange_thickness,
+                                                                         self.flange_plate.thickness_provided)
         gamma_mw = IS800_2007.cl_5_4_1_Table_5['gamma_mw'][self.flange_weld.fabrication]
         self.Kt = IS800_2007.cl_10_5_3_2_fillet_weld_effective_throat_thickness_constant()
 
@@ -1864,7 +1864,7 @@ class ColumnCoverPlateWeld(MomentConnection):
         self.report_check.append(t1)
 
         t2 = (KEY_FLANGE_DISP_WELD_STRENGTH,
-              flange_weld_stress(F_f=round(self.flange_force / 1000, 2), F_rl=self.l_req_flangelength,
+              flange_weld_stress(F_f=round(self.flange_force / 1000, 2), l_eff=self.l_req_flangelength,
                                  F_ws=round(self.flange_weld.stress, 2)),
 
               weld_strength_prov(conn_plates_weld_fu=flange_weld_conn_plates_fu, gamma_mw=gamma_mw,
@@ -2039,8 +2039,9 @@ class ColumnCoverPlateWeld(MomentConnection):
                                                                                       2)), '')
             self.report_check.append(t1)
             t1 = (
-            KEY_DISP_BLOCKSHEARCAP_WEB, '', blockshear_prov(Tdb=round(self.section.block_shear_capacity_web / 1000, 2)),
-            '')
+                KEY_DISP_BLOCKSHEARCAP_WEB, '',
+                blockshear_prov(Tdb=round(self.section.block_shear_capacity_web / 1000, 2)),
+                '')
 
             self.report_check.append(t1)
             t1 = (KEY_DISP_WEB_TEN_CAPACITY, round(self.axial_force_w / 1000, 2),
@@ -2085,7 +2086,8 @@ class ColumnCoverPlateWeld(MomentConnection):
             self.report_check.append(t1)
         else:
             t1 = (
-            'SubSection', 'Flange Plate Capacity Checks in axial-Outside/Inside ', '|p{4cm}|p{6cm}|p{5.5cm}|p{1.5cm}|')
+                'SubSection', 'Flange Plate Capacity Checks in axial-Outside/Inside ',
+                '|p{4cm}|p{6cm}|p{5.5cm}|p{1.5cm}|')
             self.report_check.append(t1)
             gamma_m0 = IS800_2007.cl_5_4_1_Table_5["gamma_m0"]['yielding']
             total_height = self.flange_plate.height + (2 * self.flange_plate.Innerheight)
@@ -2173,6 +2175,8 @@ class ColumnCoverPlateWeld(MomentConnection):
                   get_pass_fail(round(self.fact_shear_load / 1000, 2),
                                 round(self.web_plate.shear_capacity_web_plate / 1000, 2), relation="lesser"))
             self.report_check.append(t1)
+
+
 
         Disp_3D_image = "/ResourceFiles/images/3d.png"
 
