@@ -2560,7 +2560,7 @@ class BeamCoverPlate(MomentConnection):
 
         self.report_check.append(t1)
 
-        t6 = (KEY_DISP_BLOCKSHEARCAP_FLANGE, '', blockshear_prov(Tdb=self.section.block_shear_capacity), '')
+        t6 = (KEY_DISP_BLOCKSHEARCAP_FLANGE, '', blockshear_prov(Tdb=round(self.section.block_shear_capacity / 1000,2)), '')
         self.report_check.append(t6)
 
 
