@@ -177,7 +177,7 @@ def parameter_req_bolt_force(bolts_one_line,gauge,ymax,xmax,bolt_line,pitch,leng
 
     parameter_req_bolt_force_eqn.append(NoEscape(r' y_{max} &= l_n / 2\\'))
     parameter_req_bolt_force_eqn.append(NoEscape(r' &= '+length_avail+ r' / 2 \\'))
-    parameter_req_bolt_force_eqn.append(NoEscape(r' & =' + ymax +
+    parameter_req_bolt_force_eqn.append(NoEscape(r' & =' + ymax + r'\\'))
 
 
     parameter_req_bolt_force_eqn.append(NoEscape(r'x_{max} &= p * (\frac{n_c}{2} - 1) / 2 \\'))
@@ -197,7 +197,7 @@ def moment_demand_req_bolt_force(shear_load, web_moment,moment_demand,ecc):
     loads_req_bolt_force_eqn = Math(inline=True)
 
     loads_req_bolt_force_eqn.append(NoEscape(r'\begin{aligned}  M_d~~ &= (V_u * ecc + M_w)\\'))
-    loads_req_bolt_force_eqn.append(NoEscape(r' &= \frac{('+shear_load+' * 10^3'+ecc+' + '+web_moment+r'*10^6)}{10^6}\\'))
+    loads_req_bolt_force_eqn.append(NoEscape(r' &= \frac{('+shear_load+' * 10^3'+'*'+ecc+' + '+web_moment+r'*10^6)}{10^6}\\'))
     loads_req_bolt_force_eqn.append(NoEscape(r' & =' + moment_demand + r'\end{aligned}'))
     return loads_req_bolt_force_eqn
 
@@ -290,13 +290,11 @@ def forces_in_flange(Au, B,T,A,D,Mu,Mw,Mf,Af,ff):
     forcesinflange_eqn.append(NoEscape(r'&=' + Mf + r'\\'))
     forcesinflange_eqn.append(NoEscape(r' F_f& =flange~force  \\'))
     forcesinflange_eqn.append(NoEscape(r'& = \frac{M_f *1000}{D-T} + A_f \\'))
-<<<<<<< HEAD
     forcesinflange_eqn.append(NoEscape(r'&= \frac{' + Mf +'*1000}{' + D + '-' + T + '} +' + Af + r' \\'))
-=======
 
     forcesinflange_eqn.append(NoEscape(r'&= \frac{' + Mf + '* 1000}{' + D + '-' + T + '} +' + Af + r' \\'))
 
->>>>>>> e574e16a720f8687479eca589bd76881a9d51f66
+
     forcesinflange_eqn.append(NoEscape(r'&=' + ff + r'\end{aligned}'))
     return forcesinflange_eqn
 
@@ -455,8 +453,6 @@ def shear_rupture_prov(h, t, n_r, d_o, fu,v_dn,multiple =1):
 #     return shear_rup_eqn
 
 
-
-<<<<<<< HEAD
 def tension_yield_prov(l,t, f_y, gamma, T_dg):
     l = str(l)
     t = str(t)
@@ -468,8 +464,7 @@ def tension_yield_prov(l,t, f_y, gamma, T_dg):
     tension_yield_eqn.append(NoEscape(r'&=\frac{'+l+'*'+t+'*'+f_y+'}{1000*'+gamma+r'}\\'))
     tension_yield_eqn.append(NoEscape(r'&=' + T_dg + '\end{aligned}'))
     return tension_yield_eqn
-=======
->>>>>>> e574e16a720f8687479eca589bd76881a9d51f66
+
 
 def height_of_flange_cover_plate(B,sp,b_fp): #weld
     B = str(B)
@@ -542,8 +537,8 @@ def tension_yield_prov(l,t, f_y, gamma, T_dg):
     gamma = str(gamma)
     T_dg = str(T_dg)
     tension_yield_eqn = Math(inline=True)
-    tension_yield_eqn.append(NoEscape(r'\begin{aligned} T_{dg} &= \frac{l*t*f_y}{\gamma_{mo}}\\'))
-    tension_yield_eqn.append(NoEscape(r'&=\frac{'+l+'*'+t+'*'+f_y+'}{'+gamma+r'}\\'))
+    tension_yield_eqn.append(NoEscape(r'\begin{aligned} T_{dg} &= \frac{l*t*f_y}{1000*\gamma_{mo}}\\'))
+    tension_yield_eqn.append(NoEscape(r'&=\frac{'+l+'*'+t+'*'+f_y+'}{1000*'+gamma+r'}\\'))
     tension_yield_eqn.append(NoEscape(r'&=' + T_dg + '\end{aligned}'))
     return tension_yield_eqn
 
