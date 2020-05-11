@@ -2742,7 +2742,7 @@ class BeamCoverPlate(MomentConnection):
                                                          self.web_plate.bolt_line/2, self.web_bolt.dia_hole,
                                                          self.web_plate.fu,
 
-                                                         round(self.web_plate.shear_rupture_capacity / 1000, 2),gamma_m0), '')
+                                                         round(self.web_plate.shear_rupture_capacity / 1000, 2),gamma_m1), '')
 
 
 
