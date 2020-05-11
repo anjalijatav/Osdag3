@@ -85,8 +85,8 @@ def bolt_shear_prov(f_ub,n_n,a_nb,gamma_mb,bolt_shear_capacity):
     gamma_mb= str(gamma_mb)
     bolt_shear_capacity=str(bolt_shear_capacity)
     bolt_shear_eqn = Math(inline=True)
-    bolt_shear_eqn.append(NoEscape(r'\begin{aligned}V_{dsb} &= \frac{f_{ub} ~n_n~ A_{nb}}{\sqrt{3} ~\gamma_{mb}}\\'))
-    bolt_shear_eqn.append(NoEscape(r'&= \frac{'+f_ub+'*'+n_n+'*'+a_nb+'}{\sqrt{3}~*~'+ gamma_mb+r'}\\'))
+    bolt_shear_eqn.append(NoEscape(r'\begin{aligned}V_{dsb} &= \frac{f_{ub} ~n_n~ A_{nb}}{1000*\sqrt{3} ~\gamma_{mb}}\\'))
+    bolt_shear_eqn.append(NoEscape(r'&= \frac{'+f_ub+'*'+n_n+'*'+a_nb+'}{1000*\sqrt{3}~*~'+ gamma_mb+r'}\\'))
     bolt_shear_eqn.append(NoEscape(r'&= '+bolt_shear_capacity+r'\end{aligned}'))
     return bolt_shear_eqn
 
@@ -106,8 +106,8 @@ def bolt_bearing_prov(k_b,d,conn_plates_t_fu_fy,gamma_mb,bolt_bearing_capacity):
     gamma_mb=str(gamma_mb)
     bolt_bearing_capacity = str(bolt_bearing_capacity)
     bolt_bearing_eqn = Math(inline=True)
-    bolt_bearing_eqn.append(NoEscape(r'\begin{aligned}V_{dpb} &= \frac{2.5~ k_b~ d~ t~ f_u}{\gamma_{mb}}\\'))
-    bolt_bearing_eqn.append(NoEscape(r'&= \frac{2.5~*'+ k_b+'*'+ d+'*'+t+'*'+f_u+'}{'+gamma_mb+r'}\\'))
+    bolt_bearing_eqn.append(NoEscape(r'\begin{aligned}V_{dpb} &= \frac{2.5~ k_b~ d~ t~ f_u}{1000*\gamma_{mb}}\\'))
+    bolt_bearing_eqn.append(NoEscape(r'&= \frac{2.5~*'+ k_b+'*'+ d+'*'+t+'*'+f_u+'}{1000*'+gamma_mb+r'}\\'))
     bolt_bearing_eqn.append(NoEscape(r'&='+bolt_bearing_capacity+r'\end{aligned}'))
 
     return bolt_bearing_eqn
@@ -180,7 +180,7 @@ def parameter_req_bolt_force(bolts_one_line,gauge,ymax,xmax,bolt_line,pitch,leng
     parameter_req_bolt_force_eqn.append(NoEscape(r' & =' + ymax + r'\\'))
 
     parameter_req_bolt_force_eqn.append(NoEscape(r'x_{max} &= p * (n_c - 1) / 2 \\'))
-    parameter_req_bolt_force_eqn.append(NoEscape(r' &= '+pitch+' * ('+bolt_line+' - 1) / 2 \\'))
+    parameter_req_bolt_force_eqn.append(NoEscape(r' &=  1/2*('+bolt_line+' - 1) *'+pitch+ r' \\'))
     parameter_req_bolt_force_eqn.append(NoEscape(r' & =' + xmax + r'\end{aligned}'))
 
     return parameter_req_bolt_force_eqn
@@ -287,7 +287,7 @@ def forces_in_flange(Au, B,T,A,D,Mu,Mw,Mf,Af,ff):
     forcesinflange_eqn.append(NoEscape(r'&=' + Mf + r'\\'))
     forcesinflange_eqn.append(NoEscape(r' F_f& =flange~force  \\'))
     forcesinflange_eqn.append(NoEscape(r'& = \frac{M_f *1000}{D-T} + A_f \\'))
-    forcesinflange_eqn.append(NoEscape(r'&= \frac{' + Mf +'}{' + D + '-' + T + '} +' + Af + r' \\'))
+    forcesinflange_eqn.append(NoEscape(r'&= \frac{' + Mf +'*1000}{' + D + '-' + T + '} +' + Af + r' \\'))
     forcesinflange_eqn.append(NoEscape(r'&=' + ff + r'\end{aligned}'))
     return forcesinflange_eqn
 
@@ -371,16 +371,16 @@ def min_plate_thk_req(t_w):
     min_plate_thk_eqn.append(NoEscape(r'\begin{aligned} t_w='+t_w+'\end{aligned}'))
     return min_plate_thk_eqn
 
-def shear_yield_prov(h,t, f_y, gamma, V_dg):
+def shear_yield_prov(h,t, f_y, gamma, V_dy):
     h = str(h)
     t = str(t)
     f_y = str(f_y)
     gamma = str(gamma)
-    V_dg = str(V_dg)
+    V_dy = str(V_dy)
     shear_yield_eqn = Math(inline=True)
-    shear_yield_eqn.append(NoEscape(r'\begin{aligned} V_{dg} &= \frac{A_v*f_y}{\sqrt{3}*\gamma_{mo}}\\'))
-    shear_yield_eqn.append(NoEscape(r'&=\frac{'+h+'*'+t+'*'+f_y+'}{\sqrt{3}*'+gamma+r'}\\'))
-    shear_yield_eqn.append(NoEscape(r'&=' + V_dg + '\end{aligned}'))
+    shear_yield_eqn.append(NoEscape(r'\begin{aligned} V_{dy} &= \frac{A_v*f_y}{1000*\sqrt{3}*\gamma_{mo}}\\'))
+    shear_yield_eqn.append(NoEscape(r'&=\frac{'+h+'*'+t+'*'+f_y+'}{1000*\sqrt{3}*'+gamma+r'}\\'))
+    shear_yield_eqn.append(NoEscape(r'&=' + V_dy + '\end{aligned}'))
     return shear_yield_eqn
 
 def shear_rupture_prov(h, t, n_r, d_o, fu,v_dn,multiple =1):
@@ -439,8 +439,8 @@ def tension_yield_prov(l,t, f_y, gamma, T_dg):
     gamma = str(gamma)
     T_dg = str(T_dg)
     tension_yield_eqn = Math(inline=True)
-    tension_yield_eqn.append(NoEscape(r'\begin{aligned} T_{dg} &= \frac{l*t_p*f_y}{\gamma_{mo}}\\'))
-    tension_yield_eqn.append(NoEscape(r'&=\frac{'+l+'*'+t+'*'+f_y+'}{'+gamma+r'}\\'))
+    tension_yield_eqn.append(NoEscape(r'\begin{aligned} T_{dg} &= \frac{l*t_p*f_y}{1000*\gamma_{mo}}\\'))
+    tension_yield_eqn.append(NoEscape(r'&=\frac{'+l+'*'+t+'*'+f_y+'}{1000*'+gamma+r'}\\'))
     tension_yield_eqn.append(NoEscape(r'&=' + T_dg + '\end{aligned}'))
     return tension_yield_eqn
 
@@ -519,8 +519,8 @@ def tension_rupture_bolted_prov(w_p, t_p, n_c, d_o, fu,gamma_m1,T_dn):
     T_dn = str(T_dn)
     gamma_m1 = str(gamma_m1)
     Tensile_rup_eqnb = Math(inline=True)
-    Tensile_rup_eqnb.append(NoEscape(r'\begin{aligned} T_{dn} &= \frac{0.9*A_{n}*f_u}{\gamma_{m1}}\\'))
-    Tensile_rup_eqnb.append(NoEscape(r'&=\frac{0.9*('+w_p+'-'+n_c+'*'+d_o+')*'+t_p+'*'+f_u+r'}{'+gamma_m1+r'}\\'))
+    Tensile_rup_eqnb.append(NoEscape(r'\begin{aligned} T_{dn} &= \frac{0.9*A_{n}*f_u}{1000*\gamma_{m1}}\\'))
+    Tensile_rup_eqnb.append(NoEscape(r'&=\frac{0.9*('+w_p+'-'+n_c+'*'+d_o+')*'+t_p+'*'+f_u+r'}{1000*'+gamma_m1+r'}\\'))
     Tensile_rup_eqnb.append(NoEscape(r'&=' + T_dn + '\end{aligned}'))
     return Tensile_rup_eqnb
 
@@ -808,17 +808,18 @@ def prov_moment_load(moment_input,min_mc,app_moment_load):
     app_moment_load_eqn.append(NoEscape(r'&=' + app_moment_load + r'\end{aligned}'))
     return  app_moment_load_eqn
 
-def shear_rupture_prov_beam(h, t, n_r, d_o, fu,v_dn):
+def shear_rupture_prov_beam(h, t, n_r, d_o, fu,v_dn,gamma_m0):
     h = str(h)
     t = str(t)
     n_r = str(n_r)
     d_o = str(d_o)
     f_u = str(fu)
     v_dn = str(v_dn)
+    gamma_m0= str(gamma_m0)
     # multiple = str(multiple)
     shear_rup_eqn = Math(inline=True)
-    shear_rup_eqn.append(NoEscape(r'\begin{aligned} V_{dn} &= \frac{0.9*A_{vn}*f_u}{\sqrt{3}*\gamma_{mo}}\\'))
-    shear_rup_eqn.append(NoEscape(r'&= 0.9 *('+h+'-('+n_r+'*'+d_o+'))*'+t+'*'+f_u+r'\\'))
+    shear_rup_eqn.append(NoEscape(r'\begin{aligned} V_{dn} &= \frac{0.9*A_{vn}*f_u}{1000*\sqrt{3}*\gamma_{mo}}\\'))
+    shear_rup_eqn.append(NoEscape(r'&= \frac{0.9 *('+h+'-('+n_r+'*'+d_o+'))*'+t+'*'+f_u+ r'}{' + gamma_m0 + r' *1000*\sqrt{3}}\\'))
     shear_rup_eqn.append(NoEscape(r'&=' + v_dn + '\end{aligned}'))
     return shear_rup_eqn
 def shear_Rupture_prov_weld(h, t,  fu,v_dn,gamma_mo):  #weld
@@ -922,8 +923,8 @@ def blockshear_prov(Tdb,A_vg = None, A_vn = None, A_tg = None, A_tn = None, f_u 
     gamma_m0 = str(gamma_m0)
 
     member_block_eqn = Math(inline=True)
-    member_block_eqn.append(NoEscape(r'\begin{aligned}T_{db1} &= \frac{A_{vg} f_{y}}{\sqrt{3} \gamma_{m0}} + \frac{0.9 A_{tn} f_{u}}{\gamma_{m1}}\\'))
-    member_block_eqn.append(NoEscape(r'T_{db2} &= \frac{0.9*A_{vn} f_{u}}{\sqrt{3} \gamma_{m1}} + \frac{A_{tg} f_{y}}{\gamma_{m0}}\\'))
+    member_block_eqn.append(NoEscape(r'\begin{aligned}T_{db1} &= \frac{A_{vg} f_{y}}{1000*\sqrt{3} \gamma_{m0}} + \frac{0.9 A_{tn} f_{u}}{1000*\gamma_{m1}}\\'))
+    member_block_eqn.append(NoEscape(r'T_{db2} &= \frac{0.9*A_{vn} f_{u}}{1000*\sqrt{3} \gamma_{m1}} + \frac{A_{tg} f_{y}}{1000*\gamma_{m0}}\\'))
     member_block_eqn.append(NoEscape(r'T_{db} &= min(T_{db1}, T_{db2})= ' + Tdb + r'\end{aligned}'))
     # member_block_eqn.append(NoEscape(r'&= \frac{' + A_vg + '*' + f_y + '}{" 1.732*' + gamma_m0 + 'r'} + &+ +'\frac{"0.9*" + A_vn + '*' + f_u + '}{'+1.732+'*' + gamma_m0 + r'} '\\'))
 
