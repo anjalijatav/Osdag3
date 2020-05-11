@@ -2087,7 +2087,7 @@ class BeamCoverPlate(MomentConnection):
         #####Outer plate#####
         flange_connecting_plates = [self.flange_plate.thickness_provided, self.section.flange_thickness]
 
-        flange_bolt_shear_capacity_kn = round(self.flange_bolt.bolt_shear_capacity / 1000, 2)
+        flange_bolt_shear_capacity_kn = round(self.flange_bolt.bolt_shear_capacity /1000, 2)
         # flange_bolt_bearing_capacity_kn = round(self.flange_bolt.bolt_bearing_capacity / 1000, 2)
         flange_bolt_capacity_kn = round(self.flange_bolt.bolt_capacity / 1000, 2)
         flange_kb_disp = round(self.flange_bolt.kb, 2)
@@ -2125,7 +2125,7 @@ class BeamCoverPlate(MomentConnection):
 
         t1 = (KEY_OUT_DISP_SHEAR_CAPACITY, '', shear_capacity(h=h, t=self.section.web_thickness,
                                                               f_y=self.section.fy, gamma_m0=gamma_m0,
-                                                              shear_capacity=self.shear_capacity1 / 1000), '')
+                                                              shear_capacity=round(self.shear_capacity1 / 1000,2)), '')
         self.report_check.append(t1)
         t1 = (KEY_OUT_DISP_PLASTIC_MOMENT_CAPACITY, '', plastic_moment_capacty(beta_b=self.beta_b,
                                                                                Z_p=self.Z_p, f_y=self.section.fy,
@@ -2209,11 +2209,11 @@ class BeamCoverPlate(MomentConnection):
 
         if self.preference == "Outside":
             if self.flange_bolt.bolt_type == TYP_BEARING:
-                flange_bolt_bearing_capacity_kn = round(self.flange_bolt.bolt_bearing_capacity / 1000, 2)
+                flange_bolt_bearing_capacity_kn = round(self.flange_bolt.bolt_bearing_capacity /1000, 2 )
                 t1 = (KEY_OUT_DISP_FLANGE_BOLT_SHEAR, '', bolt_shear_prov(self.flange_bolt.bolt_fu, 1,
                                                                           self.flange_bolt.bolt_net_area,
                                                                           self.flange_bolt.gamma_mb,
-                                                                          flange_bolt_shear_capacity_kn), '')
+                                                                          flange_bolt_shear_capacity_kn ), '')
                 self.report_check.append(t1)
                 t2 = (KEY_OUT_DISP_FLANGE_BOLT_BEARING, '', bolt_bearing_prov(flange_kb_disp,
                                                                               self.bolt.bolt_diameter_provided,
@@ -2421,7 +2421,7 @@ class BeamCoverPlate(MomentConnection):
 
         t10 = (KEY_OUT_REQ_MOMENT_DEMAND_BOLT,'', moment_demand_req_bolt_force(
                                                            shear_load = round(self.fact_shear_load/1000,2),
-                                                           web_moment = round(self.moment_web/1000000,2),ecc =self.web_plate.ecc,
+                                                           web_moment = round(self.moment_web/1000000,2),ecc =self.web_plate.ecc/1000,
                                                            moment_demand = round(self.web_plate.moment_demand/1000000,2)),'' )
         self.report_check.append(t10)
 
@@ -2433,7 +2433,7 @@ class BeamCoverPlate(MomentConnection):
                                                   axial_load=round(self.axial_force_w / 1000, 2),
                                                   moment_demand=round(self.web_plate.moment_demand / 1000000, 2),
                                                   r=round(self.web_plate.sigma_r_sq/1000,2),
-                                                  vbv=round(self.web_plate.vbv/1000,2), tmv=round(self.web_plate.tmv/1000,2),
+                                                  vbv=round(self.web_plate.vbv/1000, 2), tmv=round(self.web_plate.tmv/1000,2),
                                                   tmh=round(self.web_plate.tmh/1000,2), abh= round(self.web_plate.abh/1000,2),
                                                   vres=round(self.web_plate.bolt_force / 1000, 2)), '')
         self.report_check.append(t10)
@@ -2695,9 +2695,10 @@ class BeamCoverPlate(MomentConnection):
                                                                      self.web_plate.thickness_provided,
                                                                      self.web_plate.fy,
                                                                      gamma_m0,
-                                                                     round(
-                                                                         self.web_plate.tension_yielding_capacity / 1000,
-                                                                         2)), '')
+                                                                     round(self.web_plate.shear_yielding_capacity / 1000, 2)),'')
+
+
+
         self.report_check.append(t1)
         gamma_m1 = IS800_2007.cl_5_4_1_Table_5["gamma_m1"]['ultimate_stress']
 
@@ -2738,7 +2739,7 @@ class BeamCoverPlate(MomentConnection):
         t1 = (KEY_DISP_SHEAR_RUP, '', shear_rupture_prov_beam(self.web_plate.height , self.web_plate.thickness_provided,
                                                          self.web_plate.bolt_line/2, self.web_bolt.dia_hole,
                                                          self.web_plate.fu,
-                                                         round(self.web_plate.shear_rupture_capacity / 1000, 2)), '')
+                                                         round(self.web_plate.shear_rupture_capacity / 1000, 2),gamma_m0), '')
         self.report_check.append(t1)
 
         t1 = (KEY_DISP_PLATE_BLK_SHEAR_SHEAR, '',blockshear_prov(Tdb=round(self.web_plate.block_shear_capacity_shear / 1000, 2)), '')
