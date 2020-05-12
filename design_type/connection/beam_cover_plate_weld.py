@@ -1020,6 +1020,10 @@ class BeamCoverPlateWeld(MomentConnection):
         print(self.web_plate)
         print("flangegap", self.flange_plate.gap)
         print("webgap", self.web_plate.gap)
+        print("A",self.load.axial_force)
+        print("min_ac", self.min_axial_load / 1000)
+        print("axial_capacity",self.axial_capacity / 1000)
+        print("app_axial_load",self.factored_axial_load / 1000)
         # print(self.web_plate.thickness_provided)
         # print(self.flange_plate.thickness_provided)
         print("Inside PLate")
@@ -1539,16 +1543,21 @@ class BeamCoverPlateWeld(MomentConnection):
 
         t1 = ('SubSection', 'Load Consideration', '|p{4cm}|p{3.5cm}|p{6.5cm}|p{1.5cm}|')
         self.report_check.append(t1)
-        t1 = (KEY_DISP_APPLIED_AXIAL_FORCE, display_prov(round(self.axial_capacity / 1000, 2), "Ac"),
-
+        t1 = (KEY_DISP_APPLIED_AXIAL_FORCE,
+              min_max_axial_capacity(axial_capacity = round(self.axial_capacity / 1000, 2),
+                                                                   min_ac=round(self.min_axial_load / 1000, 2)),
               prov_axial_load(axial_input=self.load.axial_force,
-                              min_ac=round(self.min_axial_load / 1000, 2),axial_capacity=round(self.axial_capacity / 1000, 2),
+                              min_ac=round(self.min_axial_load / 1000, 2),
                               app_axial_load=round(self.factored_axial_load / 1000, 2)),
-              get_pass_fail(round(self.axial_capacity / 1000, 2),
-                            self.factored_axial_load / 1000, relation='geq'))
+              get_pass_fail2(round(self.min_axial_load / 1000, 2),
+                           round(self.factored_axial_load / 1000, 2),
+                           round(self.axial_capacity / 1000, 2)))
         self.report_check.append(t1)
-        t1 = (KEY_DISP_APPLIED_SHEAR_LOAD, min_shear_capacity(shear_capacity=round(self.shear_capacity1 / 1000, 2),
-                                                              min_sc=round(self.shear_load1 / 1000, 2)),
+
+        t1 = (KEY_DISP_APPLIED_SHEAR_LOAD, min_max_shear_capacity(shear_capacity = round(self.shear_capacity1 / 1000, 2)
+                                                                  ,min_sc =round(self.shear_load1 / 1000, 2)),
+              # min_shear_capacity(shear_capacity=round(self.shear_capacity1 / 1000, 2),
+              #                                                 min_sc=round(self.shear_load1 / 1000, 2)),
               prov_shear_load(shear_input=self.load.shear_force,
                               min_sc=round(self.shear_load1 / 1000, 2),
                               app_shear_load=round(self.fact_shear_load / 1000, 2)),
@@ -1557,8 +1566,9 @@ class BeamCoverPlateWeld(MomentConnection):
         self.report_check.append(t1)
 
         t1 = (KEY_DISP_APPLIED_MOMENT_LOAD,
-              min_moment_capacity(moment_capacity=round(self.section.moment_capacity / 1000000, 2),
-                                  min_mc=round(self.load_moment_min / 1000000, 2)),
+              min_max_moment_capacity(moment_capacity = round(self.section.moment_capacity / 1000000, 2)
+                                      ,min_mc =round(self.load_moment_min / 1000000, 2)),
+
               prov_moment_load(moment_input=self.load.moment,
                                min_mc=round(self.load_moment_min / 1000000, 2),
                                app_moment_load=round(self.load_moment / 1000000, 2)),
@@ -1787,14 +1797,14 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                          self.section.flange_thickness,
                                                                          self.section.fy, gamma_m0,
                                                                          round(self.section.tension_yielding_capacity / 1000,
-                                                                             2)), '')
+                                                                             2),1), '')
             self.report_check.append(t1)
             gamma_m1 = IS800_2007.cl_5_4_1_Table_5["gamma_m1"]['ultimate_stress']
             t1 = (KEY_DISP_TENSIONRUPTURECAP_FLANGE, '', tension_rupture_welded_prov(w_p=self.section.flange_width,
                                                                                  t_p=self.section.flange_thickness,
                                                                                  fu=self.section.fu, gamma_m1=gamma_m1,
                                                                                  T_dn=round(self.section.tension_rupture_capacity / 1000,
-                                                                                     2)), '')
+                                                                                     2),multiple =1), '')
 
             self.report_check.append(t1)
             t1 = (KEY_DISP_FLANGE_TEN_CAPACITY, display_prov(round(self.flange_force / 1000, 2), "f_f") ,
@@ -1812,7 +1822,7 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                       self.section.web_thickness,
                                                                       self.section.fy, gamma_m0,
                                                                       round(self.section.tension_yielding_capacity_web / 1000,
-                                                                          2)), '')
+                                                                          2),1), '')
             self.report_check.append(t1)
             gamma_m1 = IS800_2007.cl_5_4_1_Table_5["gamma_m1"]['ultimate_stress']
 
@@ -1820,7 +1830,7 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                               t_p=self.section.web_thickness,
                                                                               fu=self.section.fu, gamma_m1=gamma_m1,
                                                                               T_dn=round(self.section.tension_rupture_capacity_web / 1000,
-                                                                                  2)), '')
+                                                                                  2),multiple =1), '')
             self.report_check.append(t1)
             t1 = (KEY_DISP_BLOCKSHEARCAP_WEB, '',blockshear_prov(Tdb = round(self.section.block_shear_capacity_web / 1000, 2)), '')
 
@@ -1844,7 +1854,7 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                          self.flange_plate.thickness_provided,
                                                                          self.flange_plate.fy, gamma_m0,
                                                                          round(self.flange_plate.tension_yielding_capacity / 1000,
-                                                                             2)), '')
+                                                                             2),1), '')
            self.report_check.append(t1)
            gamma_m1 = IS800_2007.cl_5_4_1_Table_5["gamma_m1"]['ultimate_stress']
 
@@ -1853,7 +1863,7 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                                     fu=self.flange_plate.fu,
                                                                                     gamma_m1=gamma_m1,
                                                                                     T_dn=round(self.flange_plate.tension_rupture_capacity / 1000,
-                                                                                        2)), '')
+                                                                                        2),multiple =1), '')
            self.report_check.append(t1)
            t1 = (KEY_DISP_FLANGE_PLATE_TEN_CAP, display_prov(round(self.flange_force / 1000, 2), "f_f") ,
               tensile_capacity_prov(round(self.flange_plate.tension_yielding_capacity / 1000, 2),
@@ -1872,7 +1882,7 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                      self.flange_plate.thickness_provided,
                                                                      self.flange_plate.fy, gamma_m0,
                                                                      round(self.flange_plate.tension_yielding_capacity / 1000,
-                                                                         2)), '')
+                                                                         2),1), '')
            self.report_check.append(t1)
 
            gamma_m1 = IS800_2007.cl_5_4_1_Table_5["gamma_m1"]['ultimate_stress']
@@ -1883,7 +1893,7 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                                 gamma_m1=gamma_m1,
                                                                                 T_dn=round(
                                                                                     self.flange_plate.tension_rupture_capacity / 1000,
-                                                                                    2)), '')
+                                                                                    2),multiple =1), '')
            self.report_check.append(t1)
 
            t1 = (KEY_DISP_FLANGE_PLATE_TEN_CAP, display_prov(round(self.flange_force / 1000, 2), "f_f") ,
@@ -1904,7 +1914,7 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                         self.web_plate.fy,
                                                                         gamma_m0,
                                                                         round(self.web_plate.tension_yielding_capacity / 1000,
-                                                                            2)), '')
+                                                                            2) , 2), '')
            self.report_check.append(t1)
            gamma_m1 = IS800_2007.cl_5_4_1_Table_5["gamma_m1"]['ultimate_stress']
 
@@ -1913,7 +1923,7 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                                    self.web_plate.fu,
                                                                                    gamma_m1,
                                                                                    round(self.web_plate.tension_rupture_capacity / 1000,
-                                                                                       2)), '')
+                                                                                       2),2), '')
 
            self.report_check.append(t1)
            t1 = (KEY_DISP_TEN_CAP_WEB_PLATE, display_prov( round(self.axial_force_w / 1000, 2),"A_w"),
@@ -1930,12 +1940,12 @@ class BeamCoverPlateWeld(MomentConnection):
 
            t1 = (KEY_DISP_SHEAR_YLD, '', shear_yield_prov(self.web_plate.height, self.web_plate.thickness_provided,
                                                           self.web_plate.fy, gamma_m0,
-                                                          round(self.web_plate.shear_yielding_capacity / 1000, 2)), '')
+                                                          round(self.web_plate.shear_yielding_capacity / 1000, 2),2), '')
            self.report_check.append(t1)
 
            t1 = (KEY_DISP_SHEAR_RUP, '', shear_Rupture_prov_weld(self.web_plate.height, self.web_plate.thickness_provided,
                                                                  self.web_plate.fu,
-                                                                 round(self.web_plate.shear_rupture_capacity / 1000, 2),gamma_m0),'')
+                                                                 round(self.web_plate.shear_rupture_capacity / 1000, 2),gamma_m1, 2),'')
 
            self.report_check.append(t1)
 
