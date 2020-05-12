@@ -23,6 +23,7 @@ from pylatex import Document, PageStyle, Head, MiniPage, Foot, LargeText, \
     MediumText, LineBreak, simple_page_number
 from pylatex.utils import bold
 
+
 def min_pitch(d):
     min_pitch = 2.5*d
     d = str(d)
