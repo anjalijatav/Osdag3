@@ -1862,8 +1862,8 @@ class BeamCoverPlateWeld(MomentConnection):
                                                                                     t_p=self.flange_plate.thickness_provided,
                                                                                     fu=self.flange_plate.fu,
                                                                                     gamma_m1=gamma_m1,
-                                                                                    T_dn=round(self.flange_plate.tension_rupture_capacity / 1000,
-                                                                                        2),multiple =1), '')
+                                                                                    T_dn=round(self.flange_plate.tension_rupture_capacity / 1000, 2),
+                                                                                        multiple =1), '')
            self.report_check.append(t1)
            t1 = (KEY_DISP_FLANGE_PLATE_TEN_CAP, display_prov(round(self.flange_force / 1000, 2), "f_f") ,
               tensile_capacity_prov(round(self.flange_plate.tension_yielding_capacity / 1000, 2),
@@ -1957,7 +1957,6 @@ class BeamCoverPlateWeld(MomentConnection):
                         round(self.web_plate.shear_capacity_web_plate / 1000, 2), relation="lesser"))
            self.report_check.append(t1)
 
-
         Disp_3D_image = "/ResourceFiles/images/3d.png"
 
         # config = configparser.ConfigParser()
@@ -1976,8 +1975,6 @@ class BeamCoverPlateWeld(MomentConnection):
 
 
         CreateLatex.save_latex(CreateLatex(), self.report_input, self.report_check, popup_summary, fname_no_ext, rel_path, Disp_3D_image)
-
-
     ##############outside#######
     # if self.flange_weld.strength > self.flange_weld.stress:
     #     if self.available_long_flange_length > self.flange_plate.height:

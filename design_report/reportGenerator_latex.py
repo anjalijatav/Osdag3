@@ -42,7 +42,7 @@ class CreateLatex(Document):
         jobnumber = str(reportsummary['JobNumber'])
         client = str(reportsummary['Client'])
 
-        does_design_exist = reportsummary['does_design_exist']
+        does_design_exist  = reportsummary['does_design_exist']
         # Add document header
 
         header = PageStyle("header")

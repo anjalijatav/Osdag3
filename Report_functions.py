@@ -570,6 +570,7 @@ def tension_rupture_welded_prov(w_p, t_p, fu,gamma_m1,T_dn,multiple =1):
     t_p = str(t_p)
     f_u = str(fu)
     T_dn = str(T_dn)
+    gamma_m1 = str(gamma_m1)
     multiple = str(multiple)
     T_dn = str(T_dn)
     Tensile_rup_eqnw = Math(inline=True)
