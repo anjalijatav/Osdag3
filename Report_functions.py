@@ -299,7 +299,7 @@ def forces_in_flange(Au, B,T,A,D,Mu,Mw,Mf,Af,ff):
 
 def min_plate_ht_req(beam_depth,min_plate_ht):
     beam_depth = str(beam_depth)
-    min_plate_ht = str(min_plate_ht)
+    min_plate_ht = str(round(min_plate_ht,2))
     min_plate_ht_eqn = Math(inline=True)
     min_plate_ht_eqn.append(NoEscape(r'\begin{aligned}0.6 * d_b&= 0.6 * '+ beam_depth + r'='+min_plate_ht+r'\end{aligned}'))
     return min_plate_ht_eqn
@@ -655,7 +655,7 @@ def IR_req(IR):
 
 def min_weld_size_req(conn_plates_weld,min_weld_size):
     t1 = str(conn_plates_weld[0])
-    t2 = str(conn_plates_weld[0])
+    t2 = str(conn_plates_weld[1])
     tmax = str(max(conn_plates_weld))
     weld_min = str(min_weld_size)
 
@@ -1246,6 +1246,72 @@ def eff_len_prov_out_in(l_eff, b_fp,b_ifp, t_w, l_w):
     eff_len_prov_out_in_eqn.append(NoEscape(r'& = ' + l_eff + r'\end{aligned}'))
 
     return eff_len_prov_out_in_eqn
+
+
+def eff_len_req(F_f, l_eff_req, F_wd):
+    F_f = str(F_f)
+    l_eff_req = str(l_eff_req)
+    F_wd = str(F_wd)
+    flange_weld_stress_eqn = Math(inline=True)
+    flange_weld_stress_eqn.append(NoEscape(r'\begin{aligned} l_{eff}_{req} &= \frac{F_f*10^3}{F_{wd}}\\'))
+    flange_weld_stress_eqn.append(NoEscape(r' &= \frac{' + F_f + '*10^3}{' + F_wd + r'}\\'))
+    flange_weld_stress_eqn.append(NoEscape(r'&= ' + l_eff_req + r'\end{aligned}'))
+
+    return flange_weld_stress_eqn
+
+def plate_area_req(crs_area, flange_web_area):
+    crs_area = str(crs_area)
+    flange_web_area = str(flange_web_area)
+
+    plate_crs_sec_area_eqn =Math(inline=True)
+    plate_crs_sec_area_eqn.append(NoEscape(r'\begin{aligned} &pt.area >= \\&connected~member~area * 1.05\\'))
+    # plate_crs_sec_area_eqn.append(NoEscape(r'& = '+crs_area+ r' * 1.05 \\'))
+    plate_crs_sec_area_eqn.append(NoEscape(r' &= ' + flange_web_area  + r'\end{aligned}'))
+    return plate_crs_sec_area_eqn
+
+def flange_plate_area_prov(B,pref,y,outerwidth,fp_area,t,r_1,innerwidth =None):
+    outerwidth = str(outerwidth)
+    B = str(B)
+    fp_area = str(fp_area)
+    t = str(t)
+    r_1 = str(r_1)
+    innerwidth = str(innerwidth)
+    y = str(y)
+    flangeplate_crs_sec_area_eqn = Math(inline=True)
+    if pref == "Outside":
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'\begin{aligned} outer.B &= B - (2 * 20)\\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'&= '+B+r' - (2 * 20)\\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'&= ' + outerwidth + r' \\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r' pt.area &= '+y+' * '+outerwidth+r'\\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'&= '+fp_area+r'\end{aligned}'))
+    else:
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'\begin{aligned} outer.B&= B-(2*20)\\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'&='+B+ r'-(2*20)\\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'&= ' + outerwidth + r' \\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'inner.B &= \frac{B-t-(2*r_1)-(4 * 20)}{2}\\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'&=\frac{'+B+'-'+t+'-(2*'+r_1+r')-(4 * 20)}{2}\\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'&= ' + innerwidth + r' \\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r' pt.area &=('+outerwidth+'+(2*'+innerwidth+'))*'+y+r'\\'))
+        flangeplate_crs_sec_area_eqn.append(NoEscape(r'&= ' + fp_area + r'\end{aligned}'))
+
+    return flangeplate_crs_sec_area_eqn
+
+
+def web_plate_area_prov(D, y, webwidth, wp_area, T, r_1):
+    D = str(D)
+    T = str(T)
+    r_1 = str(r_1)
+    webwidth = str(webwidth)
+    wp_area =str(wp_area)
+    y =str(y)
+
+    web_plate_area_prov = Math(inline=True)
+    web_plate_area_prov.append(NoEscape(r'\begin{aligned} web~b &= D-(2*T)-(2*r_1)-(2*20)\\'))
+    web_plate_area_prov.append(NoEscape(r'&='+D+'-(2*'+T+')-(2*'+r_1+r')-(2*20)\\'))
+    web_plate_area_prov.append(NoEscape(r'&= ' + webwidth + r' \\'))
+    web_plate_area_prov.append(NoEscape(r' pt.area &= ' + y + '*2* ' + webwidth + r'\\'))
+    web_plate_area_prov.append(NoEscape(r'&= ' + wp_area + r'\end{aligned}'))
+    return web_plate_area_prov
 
 # def eff_len_prov(l):
 #     l =str(l)
