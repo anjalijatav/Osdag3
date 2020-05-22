@@ -311,8 +311,14 @@ class Section(Material):
 
         # self.shear_yielding_capacity = 0.0
         # self.shear_rupture_capacity = 0.0
+
+        self.tension_capacity_flange = 0.0
         self.shear_capacity_flange = 0.0
+        self.tension_capacity_web = 0.0
         self.shear_capacity_web = 0.0
+        self.tension_yielding_capacity_web=0.0
+        self.tension_rupture_capacity_web=0.0
+        self.block_shear_capacity_web=0.0
 
         self.block_shear_capacity_axial = 0.0
         self.block_shear_capacity_shear = 0.0
@@ -1095,10 +1101,17 @@ class Plate(Material):
         :param bolt_dia: diameter of bolt
         :return: reduced bolt capacity if long joint condition is met
         """
+
         if end_dist == 0.0:
             length_avail = max(((bolts_one_line - 1) * gauge),((bolts_line - 1) * pitch))
             if length_avail > 15 * bolt_dia:
                 beta_lj = 1.075 - length_avail / (200 * bolt_dia)
+                if beta_lj > 1:
+                    beta_lj = 1
+                elif beta_lj < 0.75:
+                    beta_lj = 0.75
+                else:
+                    beta_lj = beta_lj
                 bolt_capacity_red = beta_lj * bolt_capacity
             else:
                 bolt_capacity_red = bolt_capacity
@@ -1106,6 +1119,12 @@ class Plate(Material):
             length_avail =  2 * ((bolts_line * pitch) + end_dist) + gap
             if length_avail > 15 * bolt_dia:
                 beta_lj = 1.075 - length_avail / (200 * bolt_dia)
+                if beta_lj > 1:
+                    beta_lj = 1
+                elif beta_lj < 0.75:
+                    beta_lj = 0.75
+                else:
+                    beta_lj = beta_lj
                 bolt_capacity_red = beta_lj * bolt_capacity
             else:
                 bolt_capacity_red = bolt_capacity
@@ -1136,6 +1155,7 @@ class Plate(Material):
 
         # initialising values to start the loop
         length =0.0
+        count =0.0
         resultant_force = math.sqrt(shear_load ** 2 + axial_load ** 2)
         print(resultant_force, "daa")
         print(bolt_capacity, "222")
@@ -1146,7 +1166,7 @@ class Plate(Material):
                                                 , min_edge_dist, min_gauge, min_bolts_one_line,min_bolt_line)
 
         print("boltdetails0", bolt_line, bolts_one_line, web_plate_h)
-
+        count = 0
 
         if bolts_one_line < min_bolts_one_line:
             self.design_status = False
@@ -1199,6 +1219,7 @@ class Plate(Material):
                     print("boltdetails2", bolt_line, bolts_one_line, web_plate_h)
                 # If height cannot be increased number of bolts is increased by 1 and loop is repeated
                 else:
+                    bolts_required = bolt_line * bolts_one_line
                     bolts_required += 1
                     print(5, web_plate_h_max, web_plate_h_min, bolts_required,
                                                             min_edge_dist, min_gauge)
@@ -1237,20 +1258,36 @@ class Plate(Material):
                     moment_demand = 0.0
                     vres = resultant_force / (bolt_line * bolts_one_line)
 
-            if joint == None:
 
-                bolt_capacity_red = self.get_bolt_red(bolts_one_line,
-                                              gauge, bolt_line, pitch, bolt_capacity,
-                                              bolt_dia)
-            else:
-                bolt_capacity_red = self.get_bolt_red(bolts_one_line,
-                                                      gauge, bolt_line, pitch, bolt_capacity,
-                                                      bolt_dia,end_dist,gap)
+                if joint == None:
+
+                    bolt_capacity_red = self.get_bolt_red(bolts_one_line,
+                                                  gauge, bolt_line, pitch, bolt_capacity,
+                                                  bolt_dia)
+                else:
+                    bolt_capacity_red = self.get_bolt_red(bolts_one_line,
+                                                          gauge, bolt_line, pitch, bolt_capacity,
+                                                          bolt_dia,end_dist,gap)
+                convergence = bolt_capacity_red - vres
+
+                if convergence < 0:
+                    if count == 0:
+                        initial_convergence = convergence
+                        count = count + 1
+                    else:
+                        if initial_convergence <= convergence:
+
+                            initial_convergence = convergence
+                        else:
+                            break
+                else:
+                    pass
 
             # bolt_capacity_red = self.get_bolt_red(bolts_one_line,
             #                                           gauge, bolt_line, pitch, bolt_capacity,
             #                                           bolt_dia)
             print("vres, vred", vres, bolt_capacity_red)
+
 
 
 
