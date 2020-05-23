@@ -2433,7 +2433,10 @@ class Tension_bolted(Main):
                   self.plate.edge_dist_provided,
                   get_pass_fail(self.bolt.max_edge_dist, self.plate.edge_dist_provided, relation="greater"))
             self.report_check.append(t4)
-            t10 = (KEY_OUT_LONG_JOINT, long_joint_bolted_req(),long_joint_bolted_prov(self.plate.bolt_line,self.plate.bolts_one_line,self.plate.pitch_provided,self.plate.gauge_provided,self.bolt.bolt_diameter_provided,bolt_capacity_kn,bolt_capacity_red_kn), "")
+            t10 = (KEY_OUT_LONG_JOINT, long_joint_bolted_req(),
+                   long_joint_bolted_prov(self.plate.bolt_line,self.plate.bolts_one_line,self.plate.pitch_provided,
+                                          self.plate.gauge_provided,self.bolt.bolt_diameter_provided,bolt_capacity_kn,
+                                          bolt_capacity_red_kn), "")
             self.report_check.append(t10)
 
 

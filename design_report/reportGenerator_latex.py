@@ -26,6 +26,7 @@ from pylatex import Document, PageStyle, Head, MiniPage, Foot, LargeText, \
 
 from pylatex.utils import bold
 
+
 class CreateLatex(Document):
 
     def __init__(self):
