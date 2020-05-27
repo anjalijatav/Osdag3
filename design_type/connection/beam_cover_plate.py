@@ -214,117 +214,63 @@ class BeamCoverPlate(MomentConnection):
             logger.addHandler(handler)
 
 
-    def input_values(self, existingvalues={}):
+    def input_values(self):
+
 
         options_list = []
 
-        if KEY_SECSIZE in existingvalues:
-            existingvalue_key_secsize = existingvalues[KEY_SECSIZE]
-        else:
-            existingvalue_key_secsize = ''
-
-        if KEY_MATERIAL in existingvalues:
-            existingvalue_key_mtrl = existingvalues[KEY_MATERIAL]
-        else:
-            existingvalue_key_mtrl = ''
-
-        if KEY_MOMENT in existingvalues:
-            existingvalues_key_moment = existingvalues[KEY_MOMENT]
-        else:
-            existingvalues_key_moment = ''
-
-        if KEY_SHEAR in existingvalues:
-            existingvalue_key_versh = existingvalues[KEY_SHEAR]
-        else:
-            existingvalue_key_versh = ''
-
-        if KEY_AXIAL in existingvalues:
-            existingvalue_key_axial = existingvalues[KEY_AXIAL]
-        else:
-            existingvalue_key_axial = ''
-
-        if KEY_D in existingvalues:
-            existingvalue_key_d = existingvalues[KEY_D]
-        else:
-            existingvalue_key_d = ''
-
-        if KEY_TYP in existingvalues:
-            existingvalue_key_typ = existingvalues[KEY_TYP]
-        else:
-            existingvalue_key_typ = ''
-
-        if KEY_GRD in existingvalues:
-            existingvalue_key_grd = existingvalues[KEY_GRD]
-        else:
-            existingvalue_key_grd = ''
-
-        if KEY_FLANGEPLATE_PREFERENCES in existingvalues:
-            existingvalue_key_fplate_pref = existingvalues[KEY_PLATETHK]
-        else:
-            existingvalue_key_fplate_pref = ''
-
-        if KEY_FLANGEPLATE_THICKNESS in existingvalues:
-            existingvalue_key_fplate_thk = existingvalues[KEY_PLATETHK]
-        else:
-            existingvalue_key_fplate_thk = ''
-
-        if KEY_WEBPLATE_THICKNESS in existingvalues:
-            existingvalue_key_wplate_thk = existingvalues[KEY_PLATETHK]
-        else:
-            existingvalue_key_wplate_thk = ''
-
-        t16 = (KEY_MODULE, KEY_DISP_BEAMCOVERPLATE, TYPE_MODULE, None, None, True, 'No Validator')
+        t16 = (KEY_MODULE, KEY_DISP_BEAMCOVERPLATE, TYPE_MODULE, None, True, 'No Validator')
         options_list.append(t16)
 
-        t1 = (None, DISP_TITLE_CM, TYPE_TITLE, None, None, True, 'No Validator')
+        t1 = (None, DISP_TITLE_CM, TYPE_TITLE, None, True, 'No Validator')
         options_list.append(t1)
 
-        t4 = (KEY_SECSIZE, KEY_DISP_SECSIZE, TYPE_COMBOBOX, existingvalue_key_secsize, connectdb("Beams"), True, 'No Validator')
+        t4 = (KEY_SECSIZE, KEY_DISP_SECSIZE, TYPE_COMBOBOX, connectdb("Beams"), True, 'No Validator')
         options_list.append(t4)
 
-        t15 = (KEY_IMAGE, None, TYPE_IMAGE, None, None, True, 'No Validator')
+        t15 = (KEY_IMAGE, None, TYPE_IMAGE, None, True, 'No Validator')
         options_list.append(t15)
 
-        t5 = (KEY_MATERIAL, KEY_DISP_MATERIAL, TYPE_COMBOBOX, existingvalue_key_mtrl, VALUES_MATERIAL, True, 'No Validator')
+        t5 = (KEY_MATERIAL, KEY_DISP_MATERIAL, TYPE_COMBOBOX, VALUES_MATERIAL, True, 'No Validator')
         options_list.append(t5)
 
-        t6 = (None, DISP_TITLE_FSL, TYPE_TITLE, None, None, True, 'No Validator')
+        t6 = (None, DISP_TITLE_FSL, TYPE_TITLE, None, True, 'No Validator')
         options_list.append(t6)
 
-        t17 = (KEY_MOMENT, KEY_DISP_MOMENT, TYPE_TEXTBOX,existingvalues_key_moment, None, True, 'No Validator')
+        t17 = (KEY_MOMENT, KEY_DISP_MOMENT, TYPE_TEXTBOX, None, True, 'No Validator')
         options_list.append(t17)
 
-        t7 = (KEY_SHEAR, KEY_DISP_SHEAR, TYPE_TEXTBOX, existingvalue_key_versh, None, True, 'No Validator')
+        t7 = (KEY_SHEAR, KEY_DISP_SHEAR, TYPE_TEXTBOX, None, True, 'No Validator')
         options_list.append(t7)
 
-        t8 = (KEY_AXIAL, KEY_DISP_AXIAL, TYPE_TEXTBOX, existingvalue_key_axial, None, True, 'No Validator')
+        t8 = (KEY_AXIAL, KEY_DISP_AXIAL, TYPE_TEXTBOX, None, True, 'No Validator')
         options_list.append(t8)
 
-        t9 = (None, DISP_TITLE_BOLT, TYPE_TITLE, None, None, True, 'No Validator')
+        t9 = (None, DISP_TITLE_BOLT, TYPE_TITLE, None, True, 'No Validator')
         options_list.append(t9)
 
-        t10 = (KEY_D, KEY_DISP_D, TYPE_COMBOBOX_CUSTOMIZED, existingvalue_key_d, VALUES_D, True, 'No Validator')
+        t10 = (KEY_D, KEY_DISP_D, TYPE_COMBOBOX_CUSTOMIZED, VALUES_D, True, 'No Validator')
         options_list.append(t10)
 
-        t11 = (KEY_TYP, KEY_DISP_TYP, TYPE_COMBOBOX, existingvalue_key_typ, VALUES_TYP, True, 'No Validator')
+        t11 = (KEY_TYP, KEY_DISP_TYP, TYPE_COMBOBOX, VALUES_TYP, True, 'No Validator')
         options_list.append(t11)
 
-        t12 = (KEY_GRD, KEY_DISP_GRD, TYPE_COMBOBOX_CUSTOMIZED, existingvalue_key_grd, VALUES_GRD, True, 'No Validator')
+        t12 = (KEY_GRD, KEY_DISP_GRD, TYPE_COMBOBOX_CUSTOMIZED, VALUES_GRD, True, 'No Validator')
         options_list.append(t12)
 
-        t18 = (None, DISP_TITLE_FLANGESPLICEPLATE, TYPE_TITLE, None, None, True, 'No Validator')
+        t18 = (None, DISP_TITLE_FLANGESPLICEPLATE, TYPE_TITLE, None, True, 'No Validator')
         options_list.append(t18)
 
-        t19 = (KEY_FLANGEPLATE_PREFERENCES, KEY_DISP_FLANGESPLATE_PREFERENCES, TYPE_COMBOBOX, existingvalue_key_fplate_pref, VALUES_FLANGEPLATE_PREFERENCES, True, 'No Validator')
+        t19 = (KEY_FLANGEPLATE_PREFERENCES, KEY_DISP_FLANGESPLATE_PREFERENCES, TYPE_COMBOBOX, VALUES_FLANGEPLATE_PREFERENCES, True, 'No Validator')
         options_list.append(t19)
 
-        t20 = (KEY_FLANGEPLATE_THICKNESS, KEY_DISP_FLANGESPLATE_THICKNESS, TYPE_COMBOBOX_CUSTOMIZED, existingvalue_key_fplate_thk, VALUES_FLANGEPLATE_THICKNESS, True, 'No Validator')
+        t20 = (KEY_FLANGEPLATE_THICKNESS, KEY_DISP_FLANGESPLATE_THICKNESS, TYPE_COMBOBOX_CUSTOMIZED, VALUES_FLANGEPLATE_THICKNESS, True, 'No Validator')
         options_list.append(t20)
 
-        t21 = (None, DISP_TITLE_WEBSPLICEPLATE, TYPE_TITLE, None, None, True, 'No Validator')
+        t21 = (None, DISP_TITLE_WEBSPLICEPLATE, TYPE_TITLE, None, True, 'No Validator')
         options_list.append(t21)
 
-        t22 = (KEY_WEBPLATE_THICKNESS, KEY_DISP_WEBPLATE_THICKNESS, TYPE_COMBOBOX_CUSTOMIZED, existingvalue_key_wplate_thk, VALUES_WEBPLATE_THICKNESS, True, 'No Validator')
+        t22 = (KEY_WEBPLATE_THICKNESS, KEY_DISP_WEBPLATE_THICKNESS, TYPE_COMBOBOX_CUSTOMIZED, VALUES_WEBPLATE_THICKNESS, True, 'No Validator')
         options_list.append(t22)
 
         return options_list
@@ -685,7 +631,7 @@ class BeamCoverPlate(MomentConnection):
                 if design_dictionary[option[0]] == '':
                     missing_fields_list.append(option[1])
             elif option[2] == TYPE_COMBOBOX and option[0] != KEY_CONN:
-                val = option[4]
+                val = option[3]
                 if design_dictionary[option[0]] == val[0]:
                     missing_fields_list.append(option[1])
 
@@ -794,6 +740,7 @@ class BeamCoverPlate(MomentConnection):
         self.member_capacity_status = False
         self.initial_pt_thk_status = False
         self.initial_pt_thk_status_web = False
+        self.webheight_status = False
         self.select_bolt_dia_status = False
         self.get_plate_details_status = False
         self.flange_check_axial_status = False
@@ -1076,49 +1023,39 @@ class BeamCoverPlate(MomentConnection):
                                                                                         r_1=self.section.root_radius,
                                                                                         D=self.section.depth,
                                                                                         preference=self.preference)
-                    if self.preference =="Outside":
-                        if self.outerwidth < 50:
-                            # logger.error(" : Outer Height of flange plate should be greater 50 mm.")
-                            # logger.info(" : Select the wider section.")
-                            self.initial_pt_thk_status = False
-                            self.design_status = False
-                        else:
-                            if self.flange_plate.thickness_provided != 0:
+                    if self.flange_plate.thickness_provided != 0:
+                        if self.preference =="Outside":
+                            if self.outerwidth < 50:
+                                logger.error(" : Outer Height of flange plate should be greater than 50 mm.")
+                                logger.info(" : Select the wider section.")
+                                self.initial_pt_thk_status = False
+
+                            else:
                                 if self.flange_plate_crs_sec_area < (self.flange_crs_sec_area  * 1.05):
-                                    # logger.error(" : Area of flange plate should be greater than 1.05 times area of flange.")
-                                    # logger.info(" : Increase the thickness of the plate.")
+                                    logger.error(" : Area of flange plate is less than area of flange.")
+                                    logger.warning(" : Area of flange plate should be greater than 1.05 times area of flange{}.".format(self.Ap))
+                                    logger.info(" : Increase the thickness of the plate.")
                                     self.initial_pt_thk_status = False
                                 else:
                                     self.initial_pt_thk_status = True
                                     pass
-                            else:
-                                logger.error(" : Provided flange plate thickness is not sufficient.")
-                                # logger.error(" : Area of flange plate should be greater than 1.05 times area of flange.")
-                                # logger.info(" : Increase the thickness of the plate.")
-                                self.initial_pt_thk_status = False
-                                self.design_status = False
-
-                    else:
-                        if self.outerwidth < 50 or self.innerwidth < 50:
-                            # logger.error(" : Height of flange plate should be greater than 50 mm.")
-                            # logger.info(" : Select the wider section.")
-                            self.initial_pt_thk_status = False
-                            self.design_status =False
-
                         else:
-                            if self.flange_plate.thickness_provided != 0:
+                            if self.outerwidth < 50 or self.innerwidth < 50:
+                                logger.error(" : Height of flange plates should be greater than 50 mm.")
+                                logger.info(" : Select the wider section.")
+                                self.initial_pt_thk_status = False
+                            else:
                                 if self.flange_plate_crs_sec_area < (self.flange_crs_sec_area * 1.05):
-                                    # logger.error(" : Area of flange plates should be greater than 1.05 times area of flange.")
-                                    # logger.info(" : Increase the thickness of the flange plate.")
+                                    logger.error(" : Area of flange plates is less than area of flange.")
+                                    logger.warning(" : Area of flange plates should be greater than 1.05 times area of flange{}.".format(self.Ap))
+                                    logger.info(" : Increase the thickness of the flange plates.")
                                     self.initial_pt_thk_status = False
                                 else:
-                                    self.initial_pt_thk_status =True
-                            else:
-                                # logger.error(" : Provided flange plate thickness is not sufficient.")
-                                # logger.error(" : Area of flange plate should be greater than 1.05 times area of flange.")
-                                # logger.info(" : Increase the thickness of the plate.")
-                                self.initial_pt_thk_status = False
-                                self.design_status = False
+                                    self.initial_pt_thk_status = True
+                                    pass
+                    else:
+                        self.initial_pt_thk_status = False
+                        logger.error(" : Provided flange plate thickness is not sufficient.")
 
                 self.initial_pt_thk_status_web = False
                 if  len(self.web_plate_thickness_possible) == 0:
@@ -1139,20 +1076,40 @@ class BeamCoverPlate(MomentConnection):
                                                                                      t_w=self.section.web_thickness,
                                                                                      r_1=self.section.root_radius, D=self.section.depth,
                                                                                      preference=None,fp_thk =self.flange_plate.thickness_provided )
-
                     if self.web_plate.thickness_provided != 0:
-                        if self.web_plate_crs_sec_area < (self.web_crs_area * 1.05):
-                            # logger.error(" : Area of web plate should be greater than 1.05 times area of web.")
-                            # logger.info(" : Increase the thickness of the web plate.")
-                            self.initial_pt_thk_status_web = False
+                        if self.preference == "Outside":
+                            if self.webplatewidth < self.min_web_plate_height:
+                                self.webheight_status = False
+                                logger.error(" : Web plate is not possible")
+                                logger.warning(" : Web plate height {} is less than min depth of the plate {}".format(self.webplatewidth,elf.min_web_plate_height))
+                                logger.warning("Try another section")
+                            else:
+                                self.webheight_status = True
+                                if self.web_plate_crs_sec_area < (self.web_crs_area * 1.05):
+                                    logger.error(" : Area of web plates should be greater than 1.05 times area of web.".format(self.Wp))
+                                    logger.info(" : Increase the thickness of the web plate.")
+                                    self.initial_pt_thk_status_web = False
+                                else:
+                                    self.initial_pt_thk_status_web = True
+                                    pass
                         else:
-                            self.initial_pt_thk_status_web = True
+                            if self.webplatewidth < self.min_web_plate_height:
+                                self.webheight_status = False
+                                logger.error(" : Inner plate is not possible")
+                                logger.warning("Decrease the thickness of the inner flange plate or try wider section")
+
+                            else:
+                                self.webheight_status = True
+                                if self.web_plate_crs_sec_area < (self.web_crs_area * 1.05):
+                                    logger.error(" : Area of web plates should be greater than 1.05 times area of web.".format( self.Wp))
+                                    logger.info(" : Increase the thickness of the web plate.")
+                                    self.initial_pt_thk_status_web = False
+                                else:
+                                    self.initial_pt_thk_status_web = True
+                                    pass
                     else:
-                        # logger.error(" : Provided web plate thickness is not sufficient.")
-                        # logger.error(" : Area of web plate should be greater than 1.05 times area of web.")
-                        # logger.info(" : Increase the thickness of the plate.")
                         self.initial_pt_thk_status_web = False
-                        self.design_status = False
+                        logger.error(" : Provided flange plate thickness is not sufficient.")
 
 
                 if len(self.flange_plate_thickness_possible) == 0:
@@ -1183,15 +1140,15 @@ class BeamCoverPlate(MomentConnection):
                     else:
                         self.max_thick_w = self.web_plate.thickness_provided
 
-                    if self.initial_pt_thk_status == True and self.initial_pt_thk_status_web == True:
-                        self.design_status = True
-                        self.select_bolt_dia(self)
-                    else:
-                        self.initial_pt_thk_status = False and self.initial_pt_thk_status_web == False
-                        self.design_status = False
-                        # logger.warning(" : Plate is not possible")
-                        logger.error(" : Design is not safe. \n ")
-                        logger.debug(" : =========End Of design===========")
+                if self.initial_pt_thk_status == True and self.initial_pt_thk_status_web == True and self.webheight_status == True:
+                    self.design_status = True
+                    self.select_bolt_dia(self)
+                else:
+                    self.initial_pt_thk_status = False and self.initial_pt_thk_status_web == False and  self.webheight_status == False
+                    self.design_status = False
+                    # logger.warning(" : Plate is not possible")
+                    logger.error(" : Design is not safe. \n ")
+                    logger.debug(" : =========End Of design===========")
 
             else:
                 self.initial_pt_thk_status = False
@@ -2330,8 +2287,6 @@ class BeamCoverPlate(MomentConnection):
                     self.outerwidth = width
                     if self.outerwidth < 50:
                         thickness = 0
-                        logger.error(" : Outer Height of flange plate should be greater 50 mm.")
-                        logger.info(" : Select the wider section.")
                         self.initial_pt_thk_status = False
                         self.design_status = False
                     else:
@@ -2345,18 +2300,14 @@ class BeamCoverPlate(MomentConnection):
                         break
                     else:
                         thickness = y
-                        logger.error(" : Area of flange plate is less than area of flange.")
-                        logger.warning(" : Area of flange plate should be greater than 1.05 times area of flange{}.".format(
-                                self.Ap))
-                        logger.info(" : Increase the thickness of the plate.")
+
                         self.design_status = False
 
                 elif preference == "Outside + Inside":
                     self.outerwidth = width
                     self.innerwidth = (width - t_w - (2 * r_1)) / 2
                     if self.innerwidth < 50:
-                        logger.warning(" : Height of flange plates should be greater than 50 mm.")
-                        logger.info(" : Select the wider section.")
+
                         self.initial_pt_thk_status = False
                         self.design_status =False
                         # self.design_status = False
@@ -2371,10 +2322,7 @@ class BeamCoverPlate(MomentConnection):
                             break
                         else:
                             thickness = y
-                            logger.error(" : Area of flange plates is less than area of flange.")
-                            logger.warning(" : Area of flange plates should be greater than 1.05 times area of flange{}.".format(
-                                    self.Ap))
-                            logger.info(" : Increase the thickness of the plate.")
+
                             self.design_status = False
 
 
@@ -2393,10 +2341,7 @@ class BeamCoverPlate(MomentConnection):
                 if self.preference =="Outside":
                     self.webplatewidth = round(D - (2 * tk) - (2 * self.section.root_radius) ,2)
                     if self.webplatewidth < self.min_web_plate_height:
-                        logger.error(" : Web plate is not possible")
-                        logger.warning(" : Web plate height {} is less than min depth of the plate {}".format(self.webplatewidth,
-                                                                                                      self.min_web_plate_height))
-                        logger.warning("Try another section")
+
                         thickness = 0
                     else:
                         self.webheight_status = True
@@ -2407,21 +2352,13 @@ class BeamCoverPlate(MomentConnection):
                             break
                         else:
                             thickness = y
-                            logger.error(" : Area of web plates is less than area of web.")
-                            logger.warning(" : Area of web plates should be greater than 1.05 times area of web{}.".format(
-                                    self.Wp))
-                            logger.info(" : Increase the thickness of the plate.")
 
                             self.design_status = False
 
                 else:
                     self.webplatewidth = round(D - (2 * tk) - (2 * self.webclearance),2)
                     if self.webplatewidth < self.min_web_plate_height:
-                        logger.error(" : Inner plate is not possible")
-                        logger.warning(" : Web plate height {} mm is less than min depth of the plate {} mm".format(self.webplatewidth,
-                                                                                                              self.min_web_plate_height))
-                        logger.warning(" : Change the preference to outside plate")
-                        thickness = 0
+                        thickness = y
                         self.design_status = False
                     else:
                         self.webheight_status = True
@@ -2434,11 +2371,6 @@ class BeamCoverPlate(MomentConnection):
                             break
                         else:
                             thickness = y
-                            logger.error(" : Area of web plates is less than area of web.")
-                            logger.warning(" : Area of web plates should be greater than 1.05 times area of web{}.".format(
-                                    self.Wp))
-                            logger.info(" : Increase the thickness of the plate.")
-
                             self.design_status = False
 
         return thickness
