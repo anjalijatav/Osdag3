@@ -32,7 +32,8 @@ def min_pitch(d):
     return min_pitch_eqn
 
 def max_pitch(t):
-
+    t1 = str(t[0])
+    t2 = str(t[0])
     max_pitch_1 = 32*min(t)
     max_pitch_2 = 300
     max_pitch = min(max_pitch_1,max_pitch_2)
@@ -42,7 +43,9 @@ def max_pitch(t):
 
     max_pitch_eqn = Math(inline=True)
     max_pitch_eqn.append(NoEscape(r'\begin{aligned}p/g_{max} &=\min(32~t,~300~mm)&\\'))
-    max_pitch_eqn.append(NoEscape(r'&=\min(32 *~' + t+ r',~ 300 ~mm)\\&='+max_pitch+r'\end{aligned}'))
+    max_pitch_eqn.append(NoEscape(r'&=\min(32 *~' + t+ r',~ 300 ~mm)\\&='+max_pitch+r'\\'))
+    max_pitch_eqn.append(NoEscape(r'where,&\\'))
+    max_pitch_eqn.append(NoEscape(r'& t &= min('+t1+','+t2+r')\end{aligned}'))
     return max_pitch_eqn
 
 def min_edge_end(d_0,edge_type):
@@ -62,6 +65,7 @@ def min_edge_end(d_0,edge_type):
     min_end_edge_eqn.append(NoEscape(r'&='+factor + r'*' + d_0+r'='+min_edge_dist+r' \end{aligned}'))
     return min_end_edge_eqn
 
+#TODO: consider using max_edge_end_new instead of this function in all modules
 def max_edge_end(f_y,t):
 
     epsilon = round(math.sqrt(250/f_y),2)
@@ -74,6 +78,44 @@ def max_edge_end(f_y,t):
     max_end_edge_eqn.append(NoEscape(r'\begin{aligned}e/e`_{max} &= 12~ t~ \varepsilon&\\'))
     max_end_edge_eqn.append(NoEscape(r'\varepsilon &= \sqrt{\frac{250}{f_y}}\\'))
     max_end_edge_eqn.append(NoEscape(r'e/e`_{max}&=12 ~*'+ t + r'*\sqrt{\frac{250}{'+f_y+r'}}\\ &='+max_edge_dist+r'\\ \end{aligned}'))
+    return max_end_edge_eqn
+
+def max_edge_end_new(t_fu_fy,corrosive_influences):
+    t_epsilon_considered = t_fu_fy[0][0] * math.sqrt(250 / float(t_fu_fy[0][2]))
+    t_considered = t_fu_fy[0][0]
+    t_min = t_considered
+    for i in t_fu_fy:
+        t = i[0]
+        f_y = i[2]
+        epsilon = math.sqrt(250 / f_y)
+        if t * epsilon <= t_epsilon_considered:
+            t_epsilon_considered = t * epsilon
+            t_considered = t
+        if t < t_min:
+            t_min = t
+
+    if corrosive_influences is True:
+        max_edge_dist =  40.0 + 4 * t_min
+    else:
+        max_edge_dist = 12 * t_epsilon_considered
+
+    max_edge_dist = str(max_edge_dist)
+    t1=str(t_fu_fy[0][0])
+    t2=str(t_fu_fy[1][0])
+    fy1 = str(t_fu_fy[0][2])
+    fy2 = str(t_fu_fy[1][2])
+    max_end_edge_eqn = Math(inline=True)
+    if corrosive_influences is False:
+        max_end_edge_eqn.append(NoEscape(r'\begin{aligned}e/e`_{max} &= 12~ t~ \varepsilon&\\'))
+        max_end_edge_eqn.append(NoEscape(r'\varepsilon &= \sqrt{\frac{250}{f_y}}\\'))
+        max_end_edge_eqn.append(NoEscape(r'e1 &= 12 ~*' + t1 + r'*\sqrt{\frac{250}{' + fy1 + r'}}\\'))
+        max_end_edge_eqn.append(NoEscape(r'e2 &= 12 ~*' + t2 + r'*\sqrt{\frac{250}{' + fy2 + r'}}\\'))
+        max_end_edge_eqn.append(NoEscape(r'e/e`_{max}&=min(e1,e2)\\'))
+        max_end_edge_eqn.append(NoEscape(r' &=' + max_edge_dist + r'\\ \end{aligned}'))
+    else:
+        max_end_edge_eqn.append(NoEscape(r'e/e`_{max}&=40 + 4*t \\'))
+        max_end_edge_eqn.append(NoEscape(r'Where, t&= min(' + t1 +', '+t2+r')\\'))
+        max_end_edge_eqn.append(NoEscape(r'e/e`_{max}&='+max_edge_dist+r' \end{aligned}'))
     return max_end_edge_eqn
 
 def bolt_shear_prov(f_ub,n_n,a_nb,gamma_mb,bolt_shear_capacity):
@@ -154,7 +196,7 @@ def get_trial_bolts(V_u, A_u,bolt_capacity,multiple=1):
     trial_bolts_eqn.append(NoEscape(r'&='+trial_bolts+ r'\end{aligned}'))
     return trial_bolts_eqn
 
-def parameter_req_bolt_force(bolts_one_line,gauge,ymax,xmax,bolt_line,pitch,length_avail):
+def parameter_req_bolt_force(bolts_one_line,gauge,ymax,xmax,bolt_line,pitch,length_avail, conn=None):
     """
        bolts_one_line =n_r
        bolt_line = n_c
@@ -169,16 +211,25 @@ def parameter_req_bolt_force(bolts_one_line,gauge,ymax,xmax,bolt_line,pitch,leng
 
     parameter_req_bolt_force_eqn = Math(inline=True)
     parameter_req_bolt_force_eqn.append(NoEscape(r'\begin{aligned} l_n~~~ &= length~available \\'))
-    parameter_req_bolt_force_eqn.append(NoEscape(r' l_n~~~ &= (n_r - 1) * g\\'))
-    parameter_req_bolt_force_eqn.append(NoEscape(r' &= ('+bolts_one_line+' - 1) *'+ gauge+ r'\\'))
+    if conn == 'fin':
+        parameter_req_bolt_force_eqn.append(NoEscape(r' l_n~~~ &= p * (n_r - 1)\\'))
+    else:
+        parameter_req_bolt_force_eqn.append(NoEscape(r' l_n~~~ &= g * (n_r - 1)\\'))
+    parameter_req_bolt_force_eqn.append(NoEscape(r' &= '+gauge+r' * (' + bolts_one_line + r' - 1)\\'))
     parameter_req_bolt_force_eqn.append(NoEscape(r' & ='+length_avail+ r'\\'))
 
     parameter_req_bolt_force_eqn.append(NoEscape(r' y_{max} &= l_n / 2\\'))
     parameter_req_bolt_force_eqn.append(NoEscape(r' &= '+length_avail+ r' / 2 \\'))
     parameter_req_bolt_force_eqn.append(NoEscape(r' & =' + ymax + r'\\'))
 
-    parameter_req_bolt_force_eqn.append(NoEscape(r'x_{max} &= p * (\frac{n_c}{2} - 1) / 2 \\'))
-    parameter_req_bolt_force_eqn.append(NoEscape(r' &= '+pitch+r' * (\frac{'+bolt_line+ r'}{2} + - 1) / 2 \\'))
+
+    if conn == 'fin':
+        parameter_req_bolt_force_eqn.append(NoEscape(r'x_{max} &= g * (n_c - 1)/2 \\'))
+        parameter_req_bolt_force_eqn.append(NoEscape(r' &= '+pitch+r' * (\frac{'+bolt_line+ r'}{2} + - 1) / 2 \\'))
+    else:
+        parameter_req_bolt_force_eqn.append(NoEscape(r'x_{max} &= p * (\frac{n_c}{2} - 1) / 2 \\'))
+        parameter_req_bolt_force_eqn.append(NoEscape(r' &= ' + pitch + r' * (\frac{' + bolt_line + r'}{2} + - 1) / 2 \\'))
+
     parameter_req_bolt_force_eqn.append(NoEscape(r' & =' + xmax + r'\end{aligned}'))
 
     return parameter_req_bolt_force_eqn
@@ -538,7 +589,7 @@ def tension_yield_prov(l,t, f_y, gamma, T_dg,multiple =1):
     tension_yield_eqn.append(NoEscape(r'&=' + T_dg + '\end{aligned}'))
     return tension_yield_eqn
 
-def tension_rupture_bolted_prov(w_p, t_p, n_c, d_o, fu,gamma_m1,T_dn):
+def tension_rupture_bolted_prov(w_p, t_p, n_c, d_o, fu,gamma_m1,T_dn,multiple=1):
 
     w_p = str(w_p)
     t_p = str(t_p)
@@ -547,9 +598,10 @@ def tension_rupture_bolted_prov(w_p, t_p, n_c, d_o, fu,gamma_m1,T_dn):
     f_u = str(fu)
     T_dn = str(T_dn)
     gamma_m1 = str(gamma_m1)
+    multiple = str(multiple)
     Tensile_rup_eqnb = Math(inline=True)
     Tensile_rup_eqnb.append(NoEscape(r'\begin{aligned} T_{dn} &= \frac{0.9*A_{n}*f_u}{\gamma_{m1}}\\'))
-    Tensile_rup_eqnb.append(NoEscape(r'&=\frac{0.9*('+w_p+'-'+n_c+'*'+d_o+')*'+t_p+'*'+f_u+r'}{'+gamma_m1+r'}\\'))
+    Tensile_rup_eqnb.append(NoEscape(r'&=\frac{'+multiple+'*0.9* ('+ w_p + '-' + n_c +'*'+ d_o + ')*' + t_p + '*' + f_u + r'}{' + gamma_m1 + r'}\\'))
     Tensile_rup_eqnb.append(NoEscape(r'&=' + T_dn + '\end{aligned}'))
     return Tensile_rup_eqnb
 
@@ -564,7 +616,7 @@ def tension_rupture_welded_prov(w_p, t_p, fu,gamma_m1,T_dn,multiple =1):
     Tensile_rup_eqnw = Math(inline=True)
     Tensile_rup_eqnw.append(NoEscape(r'\begin{aligned} T_{dn} &= \frac{0.9*A_{n}*f_u}{\gamma_{m1}}\\'))
     # Tensile_rup_eqnw.append(NoEscape(r'&=\frac{0.9*'+w_p+'*'+t_p+'*'+f_u+'}{'+gamma_m1+r'}\\'))
-    Tensile_rup_eqnw.append(NoEscape(r'&=\frac{0.9*' + multiple + '*' + w_p + '*' + t_p + '*' + f_u + '}{' + gamma_m1 + r'}\\'))
+    Tensile_rup_eqnw.append(NoEscape(r'&=\frac{' + multiple + '*0.9*' + w_p + '*' + t_p + '*' + f_u + '}{' + gamma_m1 + r'}\\'))
     Tensile_rup_eqnw.append(NoEscape(r'&=' + T_dn +'\end{aligned}'))
     return Tensile_rup_eqnw
 def tensile_capacity_prov(T_dg, T_dn, T_db =0.0):
@@ -898,7 +950,7 @@ def prov_moment_load(moment_input,min_mc,app_moment_load):
     app_moment_load_eqn.append(NoEscape(r'&=' + app_moment_load + r'\end{aligned}'))
     return  app_moment_load_eqn
 
-def shear_rupture_prov_beam(h, t, n_r, d_o, fu,v_dn,gamma_m1):
+def shear_rupture_prov_beam(h, t, n_r, d_o, fu,v_dn,gamma_m1,multiple=1):
     h = str(h)
     t = str(t)
     n_r = str(n_r)
@@ -906,10 +958,10 @@ def shear_rupture_prov_beam(h, t, n_r, d_o, fu,v_dn,gamma_m1):
     f_u = str(fu)
     v_dn = str(v_dn)
     gamma_m1 = str(gamma_m1)
-    # multiple = str(multiple)
+    multiple = str(multiple)
     shear_rup_eqn = Math(inline=True)
     shear_rup_eqn.append(NoEscape(r'\begin{aligned} V_{dn} &= \frac{0.9*A_{vn}*f_u}{\sqrt{3}*\gamma_{m1}}\\'))
-    shear_rup_eqn.append(NoEscape(r'&= \frac{0.9 *('+h+'-('+n_r+'*'+d_o+'))*'+t+'*'+f_u+ '}{\sqrt{3}*'+gamma_m1+ r'}\\'))
+    shear_rup_eqn.append(NoEscape(r'&= \frac{'+ multiple+'*0.9 *('+h+'-('+n_r+'*'+d_o+'))*'+t+'*'+f_u+ '}{\sqrt{3}*'+gamma_m1+ r'}\\'))
     shear_rup_eqn.append(NoEscape(r'&=' + v_dn + '\end{aligned}'))
     return shear_rup_eqn
 def shear_Rupture_prov_weld(h, t,  fu,v_dn,gamma_m1,multiple =1):  #weld
@@ -922,7 +974,7 @@ def shear_Rupture_prov_weld(h, t,  fu,v_dn,gamma_m1,multiple =1):  #weld
 
     shear_rup_eqn = Math(inline=True)
     shear_rup_eqn.append(NoEscape(r'\begin{aligned} V_{dn} &= \frac{0.9*A_{vn}*f_u}{\sqrt{3}*\gamma_{m1}}\\'))
-    shear_rup_eqn.append(NoEscape(r'&=\frac{0.9*'+ multiple+'*'+h+'*'+t+'*'+f_u+'}{\sqrt{3}*' +gamma_m1+ r'}\\'))
+    shear_rup_eqn.append(NoEscape(r'&=\frac{'+ multiple+'*0.9*'+h+'*'+t+'*'+f_u+'}{\sqrt{3}*' +gamma_m1+ r'}\\'))
     shear_rup_eqn.append(NoEscape(r'&=' + v_dn + '\end{aligned}'))
     return shear_rup_eqn
 def shear_capacity_prov(V_dy, V_dn, V_db=0.0):
