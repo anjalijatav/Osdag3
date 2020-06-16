@@ -26,7 +26,7 @@ class MomentConnection(Connection, IS800_2007):
                 input_dictionary[KEY_MATERIAL] == 'Select Material':
             designation = ''
             material_grade = ''
-            source = ''
+            source = 'Custom'
             fu = ''
             fy = ''
             depth = ''
@@ -95,7 +95,7 @@ class MomentConnection(Connection, IS800_2007):
         t2 = (None, KEY_DISP_MECH_PROP, TYPE_TITLE, None, None)
         section.append(t2)
 
-        material = connectdb("Material")
+        material = connectdb("Material", call_type="popup")
         t34 = (KEY_SEC_MATERIAL, KEY_DISP_MATERIAL, TYPE_COMBOBOX, material, material_grade)
         section.append(t34)
 
@@ -198,7 +198,7 @@ class MomentConnection(Connection, IS800_2007):
         t32 = ('Label_23', KEY_DISP_THERMAL_EXP, TYPE_TEXTBOX, None, t_e)
         section.append(t32)
 
-        t33 = (KEY_IMAGE, None, TYPE_IMAGE, None, None, None)
+        t33 = (KEY_IMAGE, None, TYPE_IMAGE, None, None, VALUES_IMG_BEAM)
         section.append(t33)
 
         return section
@@ -280,7 +280,13 @@ class MomentConnection(Connection, IS800_2007):
 
 
     def input_value_changed(self):
-        pass
+
+        lst = []
+
+        t8 = ([KEY_MATERIAL], KEY_MATERIAL, TYPE_CUSTOM_MATERIAL, self.new_material)
+        lst.append(t8)
+
+        return lst
 
     def web_force(column_d, column_f_t, column_t_w, factored_axial_force, column_area):
         pass

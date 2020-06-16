@@ -170,11 +170,15 @@ class Ui_Dialog1(object):
     def save_inputSummary(self,main):
         input_summary = self.getPopUpInputs()  # getting all inputs entered by user in PopUp dialog box.
         file_type = "PDF (*.pdf)"
-        filename = QFileDialog.getSaveFileName(QFileDialog(), "Save File As", os.path.join(str(' '), "untitled.pdf"), file_type)
-        fname_no_ext = filename[0].split(".")[0]
+        filename, _ = QFileDialog.getSaveFileName(QFileDialog(), "Save File As", os.path.join(str(' '), "untitled.pdf"), file_type)
+        fname_no_ext = filename.split(".")[0]
         input_summary['filename'] = fname_no_ext
         input_summary['does_design_exist'] = self.design_exist
         main.save_design(main,input_summary)
+        if os.path.isfile(str(filename)) and not os.path.isfile(fname_no_ext+'.log'):
+            QMessageBox.information(QMessageBox(), 'Information', 'Design report saved!')
+        else:
+            QMessageBox.critical(QMessageBox(), 'Error', 'Please make sure no pdf is open with same name. If error persists send us the log file created in location you are trying to save.')
 
 
     def call_designreport(self, main,fileName, report_summary, folder):

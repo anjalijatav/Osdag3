@@ -45,7 +45,9 @@ from .ui_design_preferences import Ui_Dialog
 
 from gui.ui_summary_popup import Ui_Dialog1
 from design_report.reportGenerator import save_html
-from .ui_design_preferences import DesignPreferences
+from .ui_OsdagSectionModeller import Ui_OsdagSectionModeller
+#from .ui_design_preferences import DesignPreferences
+from .UI_DESIGN_PREFERENCE import DesignPreferences
 from design_type.connection.shear_connection import ShearConnection
 from cad.common_logic import CommonDesignLogic
 from OCC.Core.STEPControl import STEPControl_Writer, STEPControl_AsIs
@@ -69,12 +71,81 @@ from design_type.connection.column_cover_plate_weld import ColumnCoverPlateWeld
 from design_type.connection.base_plate_connection import BasePlateConnection
 from design_type.tension_member.tension_bolted import Tension_bolted
 from design_type.tension_member.tension_welded import Tension_welded
-
+import logging
 from cad.cad3dconnection import cadconnection
 
-
-class Ui_ModuleWindow(QMainWindow):
+class Ui_ModuleWindow(QtWidgets.QMainWindow):
+    resized = QtCore.pyqtSignal()
     closed = pyqtSignal()
+    def  __init__(self, main,folder,parent=None):
+        super(Ui_ModuleWindow, self).__init__(parent=parent)
+        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        width = resolution.width()
+        height = resolution.height()
+        self.resize(width*(0.75),height*(0.7))
+        self.ui = Window()
+
+        self.ui.setupUi(self,main,folder)
+        #self.showMaximized()
+        #self.showNormal()
+
+        self.resized.connect(self.resize_dockComponents)
+
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+        centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
+
+    def resizeEvent(self, event):
+        self.resized.emit()
+        return super(Ui_ModuleWindow, self).resizeEvent(event)
+
+    def resize_dockComponents(self):
+
+        posi = (3/4)*(self.height())
+
+        # Input Dock
+        width = self.ui.inputDock.width()
+        self.ui.inputDock.resize(width,self.height())
+        self.ui.in_widget.resize(width,posi)
+
+        self.ui.btn_Reset.move((width/2)-110,posi+8)
+        self.ui.btn_Design.move((width/2)+17,posi+8)
+        #self.ui.btn_Design.move(,posi+10)
+
+        # Output Dock
+        width = self.ui.outputDock.width()
+        self.ui.outputDock.resize(width,self.height())
+        self.ui.out_widget.resize(width,posi)
+        self.ui.btn_CreateDesign.move((width/2)-(186/2),posi+8)
+        self.ui.save_outputDock.move((width/2)-(186/2),posi+52)
+
+    def closeEvent(self, event):
+        '''
+        Closing module window.
+        '''
+        reply = QMessageBox.question(self, 'Message',
+                                     "Are you sure you want to quit?", QMessageBox.Yes, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            logger = logging.getLogger('osdag')  #  Remove all the previous handlers
+            for handler in logger.handlers[:]:
+                logger.removeHandler(handler)
+            self.closed.emit()
+            event.accept()
+        else:
+            event.ignore()
+
+class Window(QMainWindow):
+    #closed = pyqtSignal()
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+        centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
 
     def open_customized_popup(self, op, KEYEXISTING_CUSTOMIZED):
         """
@@ -93,8 +164,13 @@ class Ui_ModuleWindow(QMainWindow):
         return self.ui.get_right_elements()
 
     def open_summary_popup(self, main):
+
+        if not main.design_button_status:
+            QMessageBox.warning(self, 'Warning', 'No design created!')
+            return
+
         self.new_window = QtWidgets.QDialog()
-        self.new_ui = Ui_Dialog1(self.design_exist)
+        self.new_ui = Ui_Dialog1(main.design_button_status)
         self.new_ui.setupUi(self.new_window, main)
         self.new_ui.btn_browse.clicked.connect(lambda: self.getLogoFilePath(self.new_window, self.new_ui.lbl_browse))
         self.new_ui.btn_saveProfile.clicked.connect(lambda: self.saveUserProfile(self.new_window))
@@ -106,22 +182,19 @@ class Ui_ModuleWindow(QMainWindow):
 
     def getLogoFilePath(self, window, lblwidget):
 
-        self.new_ui.lbl_browse.clear()
         filename, _ = QFileDialog.getOpenFileName(window, "Open Image", os.path.join(str(' '), ''), "InputFiles(*.png *.svg *.jpg)")
 
         # filename, _ = QFileDialog.getOpenFileName(
         #     self, 'Open File', " ../../",
         #     'Images (*.png *.svg *.jpg)',
         #     None, QFileDialog.DontUseNativeDialog)
-        flag = True
         if filename == '':
-            flag = False
-            return flag
+            return False
         else:
-            base = os.path.basename(str(filename))
-            lblwidget.setText(base)
-            base_type = base[-4:]
-            self.desired_location(filename, base_type)
+            # base = os.path.basename(str(filename))
+            lblwidget.setText(str(filename))
+            # base_type = base[-4:]
+            # self.desired_location(filename, base_type)
 
         return str(filename)
 
@@ -134,13 +207,11 @@ class Ui_ModuleWindow(QMainWindow):
 
     def saveUserProfile(self, window):
 
-        flag = True
         inputData = self.getPopUpInputs()
         filename, _ = QFileDialog.getSaveFileName(window, 'Save Files',
                                                   os.path.join(str(self.folder), "Profile"), '*.txt')
         if filename == '':
-            flag = False
-            return flag
+            return False
         else:
             infile = open(filename, 'w')
             yaml.dump(inputData, infile)
@@ -154,11 +225,11 @@ class Ui_ModuleWindow(QMainWindow):
         input_summary["ProfileSummary"]["Group/TeamName"] = str(self.new_ui.lineEdit_groupName.text())
         input_summary["ProfileSummary"]["Designer"] = str(self.new_ui.lineEdit_designer.text())
 
-        input_summary["ProjectTitle"] = str(self.new_ui.lineEdit_projectTitle.text())
-        input_summary["Subtitle"] = str(self.new_ui.lineEdit_subtitle.text())
-        input_summary["JobNumber"] = str(self.new_ui.lineEdit_jobNumber.text())
-        input_summary["AdditionalComments"] = str(self.new_ui.txt_additionalComments.toPlainText())
-        input_summary["Client"] = str(self.new_ui.lineEdit_client.text())
+        # input_summary["ProjectTitle"] = str(self.new_ui.lineEdit_projectTitle.text())
+        # input_summary["Subtitle"] = str(self.new_ui.lineEdit_subtitle.text())
+        # input_summary["JobNumber"] = str(self.new_ui.lineEdit_jobNumber.text())
+        # input_summary["AdditionalComments"] = str(self.new_ui.txt_additionalComments.toPlainText())
+        # input_summary["Client"] = str(self.new_ui.lineEdit_client.text())
 
         return input_summary
 
@@ -169,7 +240,7 @@ class Ui_ModuleWindow(QMainWindow):
                                                   '*.txt')
         if os.path.isfile(filename):
             outfile = open(filename, 'r')
-            reportsummary = yaml.load(outfile)
+            reportsummary = yaml.safe_load(outfile)
             self.new_ui.lineEdit_companyName.setText(reportsummary["ProfileSummary"]['CompanyName'])
             self.new_ui.lbl_browse.setText(reportsummary["ProfileSummary"]['CompanyLogo'])
             self.new_ui.lineEdit_groupName.setText(reportsummary["ProfileSummary"]['Group/TeamName'])
@@ -178,11 +249,20 @@ class Ui_ModuleWindow(QMainWindow):
         else:
             pass
 
+    def zoom_model(self, zoom_type="in"):
+        if zoom_type == "in":
+            self.display.ZoomFactor(3)
+        elif zoom_type == "out":
+            self.display.ZoomFactor(1/3)
+        else:
+            self.display.ZoomFactor(0)
+
+
     def get_validator(self, validator):
         if validator == 'Int Validator':
             return QIntValidator()
         elif validator == 'Double Validator':
-            return QDoubleValidator
+            return QDoubleValidator()
         else:
             return None
 
@@ -193,8 +273,9 @@ class Ui_ModuleWindow(QMainWindow):
         self.design_pref_inputs = {}
         self.folder = folder
         main.design_status = False
+        main.design_button_status = False
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1328, 769)
+
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/newPrefix/images/finwindow.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -292,8 +373,8 @@ class Ui_ModuleWindow(QMainWindow):
         self.frame_2.setMinimumSize(QtCore.QSize(0, 100))
         self.frame_2.setFrameShape(QtWidgets.QFrame.Box)
         self.frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame_2.setLineWidth(1)
-        self.frame_2.setMidLineWidth(1)
+        #self.frame_2.setLineWidth(1)
+        #self.frame_2.setMidLineWidth(1)
         self.frame_2.setObjectName("frame_2")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.frame_2)
         self.verticalLayout.setContentsMargins(1, 1, 1, 1)
@@ -343,6 +424,9 @@ class Ui_ModuleWindow(QMainWindow):
         self.menuGraphics = QtWidgets.QMenu(self.menubar)
 
         self.menuGraphics.setObjectName("menuGraphics")
+        self.menuDB = QtWidgets.QMenu(self.menubar)
+
+        self.menuDB.setObjectName("menuDB")
         MainWindow.setMenuBar(self.menubar)
 
         ####################################################################
@@ -362,7 +446,7 @@ class Ui_ModuleWindow(QMainWindow):
         #self.inputDock.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         font = QtGui.QFont()
         font.setFamily("Arial")
-        font.setPointSize(11)
+        font.setPointSize(10)
         font.setBold(True)
         font.setItalic(False)
         font.setWeight(75)
@@ -387,16 +471,19 @@ class Ui_ModuleWindow(QMainWindow):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Link, brush)
 
-        in_widget = QtWidgets.QWidget(self.dockWidgetContents)
-        #sin_widget.setGeometry(QtCore.QRect(0, 0, 325, 600))
-        in_layout1 = QtWidgets.QVBoxLayout(in_widget)
-        in_scroll = QScrollArea(in_widget)
+        self.in_widget = QtWidgets.QWidget(self.dockWidgetContents)
+        #sself.in_widget.setGeometry(QtCore.QRect(0, 0, 325, 600))
+        in_layout1 = QtWidgets.QVBoxLayout(self.in_widget)
+        in_scroll = QScrollArea(self.in_widget)
         in_layout1.addWidget(in_scroll)
         in_scroll.setWidgetResizable(True)
         in_scrollcontent = QtWidgets.QWidget(in_scroll)
         in_layout2 = QtWidgets.QGridLayout(in_scrollcontent)
         in_scrollcontent.setLayout(in_layout2)
-        in_scroll.horizontalScrollBar().hide()
+        #in_scroll.horizontalScrollBar().hide()
+        in_scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        in_scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+
 
         """
         This routine takes the returned list from input_values function of corresponding module
@@ -422,7 +509,7 @@ class Ui_ModuleWindow(QMainWindow):
                 #l.setGeometry(QtCore.QRect(6, 10 + i, 120, 25))
 
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 l.setFont(font)
@@ -431,14 +518,14 @@ class Ui_ModuleWindow(QMainWindow):
                 #l.setFixedSize(l.size())
                 in_layout2.addWidget(l, j, 1, 1, 1)
                 metrices = QtGui.QFontMetrics(font)
-                maxi_width_left = max(maxi_width_left, metrices.boundingRect(lable).width())
+                maxi_width_left = max(maxi_width_left, metrices.boundingRect(lable).width() + 8)
 
 
             if type == TYPE_COMBOBOX or type == TYPE_COMBOBOX_CUSTOMIZED:
                 combo = QtWidgets.QComboBox(self.dockWidgetContents)
                 #combo.setGeometry(QtCore.QRect(150, 10 + i, 150, 27))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 combo.setFont(font)
@@ -450,23 +537,22 @@ class Ui_ModuleWindow(QMainWindow):
                 metrices = QtGui.QFontMetrics(font)
                 item_width = 10
 
-
                 for item in option[3]:
 
                     combo.addItem(item)
                     item_width = max(item_width, metrices.boundingRect(item).width())
                 in_layout2.addWidget(combo, j, 2, 1, 1)
 
-                if lable == 'Material *':
-
-                    maxi_width_right = max(maxi_width_right, combo.sizeHint().width())
+                if lable == 'Material':
+                    combo.setCurrentIndex(1)
+                    maxi_width_right = max(maxi_width_right, item_width)
                 else:
-                    combo.view().setMinimumWidth(item_width + 10)
+                    combo.view().setMinimumWidth(item_width + 25)
 
             if type == TYPE_TEXTBOX:
                 r = QtWidgets.QLineEdit(self.dockWidgetContents)
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 r.setFont(font)
@@ -482,6 +568,13 @@ class Ui_ModuleWindow(QMainWindow):
                     r.setValidator(self.get_validator(option[5]))
                 #r.setFixedSize(r.size())
 
+                # if option[0] in [KEY_MOMENT_MAJOR, KEY_MOMENT_MINOR, KEY_AXIAL_TENSION_BP] and module == KEY_DISP_BASE_PLATE:
+                #     r.setGeometry(QtCore.QRect(160, 10 + i, 150, 27))
+                #     r.setDisabled(True)
+                # else:
+                #     r.setGeometry(QtCore.QRect(150, 10 + i, 150, 27))
+                # r.setFixedSize(r.size())
+
                 in_layout2.addWidget(r, j, 2, 1, 1)
                 #maxi_width_right = max(maxi_width_right, 120)
 
@@ -496,7 +589,7 @@ class Ui_ModuleWindow(QMainWindow):
                 l = QtWidgets.QLineEdit(self.dockWidgetContents)
                 l.setGeometry(QtCore.QRect(150, 10 + i, 150, 27))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(True)
                 font.setWeight(50)
                 l.setFont(font)
@@ -530,6 +623,14 @@ class Ui_ModuleWindow(QMainWindow):
                 imc.setFixedSize(imc.size())
                 in_layout2.addWidget(imc, j, 2, 1, 1)
 
+# <<<<<<< HEAD
+# =======
+#             if option[0] in [KEY_AXIAL, KEY_AXIAL_BP, KEY_SHEAR]:
+#                 key = self.dockWidgetContents.findChild(QtWidgets.QWidget, option[0])
+#                 onlyInt = QIntValidator()
+#                 key.setValidator(onlyInt)
+#
+# >>>>>>> 436f627ed59112463791456e6d1eceb9749f6d4c
             if type == TYPE_TITLE:
                 q = QtWidgets.QLabel(self.dockWidgetContents)
                 #q.setGeometry(QtCore.QRect(3, 10 + i, 201, 25))
@@ -550,12 +651,12 @@ class Ui_ModuleWindow(QMainWindow):
         in_scroll.setWidget(in_scrollcontent)
 
         maxi_width = maxi_width_left + maxi_width_right
-
+        print(maxi_width)
         in_scrollcontent.setMinimumSize(maxi_width,in_scrollcontent.sizeHint().height())
         maxi_width += 82
         maxi_width = max(maxi_width, 350)    # In case there is no widget
-        self.inputDock.setFixedSize(maxi_width, 710)
-        in_widget.setFixedSize( maxi_width, 650)
+        self.inputDock.setFixedWidth(maxi_width)
+        self.in_widget.setFixedWidth( maxi_width)
         for option in option_list:
             key = self.dockWidgetContents.findChild(QtWidgets.QWidget, option[0])
 
@@ -583,6 +684,7 @@ class Ui_ModuleWindow(QMainWindow):
         Since, we don't know how may customized popups can be used in a module we have provided,
          "triggered.connect" for up to 10 customized popups
         """
+
         new_list = main.customized_input(main)
         updated_list = main.input_value_changed(main)
         data = {}
@@ -632,7 +734,7 @@ class Ui_ModuleWindow(QMainWindow):
                     self.on_change_connect(key_changed, updated_list, data)
 
         self.btn_Reset = QtWidgets.QPushButton(self.dockWidgetContents)
-        self.btn_Reset.setGeometry(QtCore.QRect((maxi_width/2)-110, 650, 100, 35))
+        self.btn_Reset.setGeometry(QtCore.QRect((maxi_width/2)-110, 650, 100, 30))
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
@@ -642,7 +744,7 @@ class Ui_ModuleWindow(QMainWindow):
         self.btn_Reset.setObjectName("btn_Reset")
 
         self.btn_Design = QtWidgets.QPushButton(self.dockWidgetContents)
-        self.btn_Design.setGeometry(QtCore.QRect((maxi_width/2)+10, 650, 100, 35))
+        self.btn_Design.setGeometry(QtCore.QRect((maxi_width/2)+10, 650, 100, 30))
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
@@ -674,7 +776,7 @@ class Ui_ModuleWindow(QMainWindow):
         #self.outputDock.setMaximumSize(QtCore.QSize(maxi_width+220, 710))
         font = QtGui.QFont()
         font.setFamily("Arial")
-        font.setPointSize(11)
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
         self.outputDock.setFont(font)
@@ -683,16 +785,17 @@ class Ui_ModuleWindow(QMainWindow):
         self.dockWidgetContents_out = QtWidgets.QWidget()
         self.dockWidgetContents_out.setObjectName("dockWidgetContents_out")
 
-        out_widget = QtWidgets.QWidget(self.dockWidgetContents_out)
-        #out_widget.setGeometry(QtCore.QRect(0, 0, 400, 600))
-        out_layout1 = QtWidgets.QVBoxLayout(out_widget)
-        out_scroll = QScrollArea(out_widget)
+        self.out_widget = QtWidgets.QWidget(self.dockWidgetContents_out)
+        #self.out_widget.setGeometry(QtCore.QRect(0, 0, 400, 600))
+        out_layout1 = QtWidgets.QVBoxLayout(self.out_widget)
+        out_scroll = QScrollArea(self.out_widget)
         out_layout1.addWidget(out_scroll)
         out_scroll.setWidgetResizable(True)
+        out_scroll.horizontalScrollBar().hide()
         out_scrollcontent = QtWidgets.QWidget(out_scroll)
         out_layout2 = QtWidgets.QGridLayout(out_scrollcontent)
         out_scrollcontent.setLayout(out_layout2)
-        out_scroll.horizontalScrollBar().hide()
+        #out_scroll.horizontalScrollBar().hide()
         _translate = QtCore.QCoreApplication.translate
 
         """
@@ -711,43 +814,48 @@ class Ui_ModuleWindow(QMainWindow):
                 l = QtWidgets.QLabel(self.dockWidgetContents_out)
                 #l.setGeometry(QtCore.QRect(6, 10 + i, maxi_width , 25))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 l.setFont(font)
                 l.setObjectName(option[0] + "_label")
-                #l.setFixedSize(l.size())
+                l.resize(l.sizeHint().width(), l.sizeHint().height())
                 l.setText(_translate("MainWindow", "<html><head/><body><p>" + lable + "</p></body></html>"))
                 out_layout2.addWidget(l, j, 1, 1, 1)
                 l.setVisible(True if option[4] else False)
                 metrices = QtGui.QFontMetrics(font)
-                maxi_width_left = max(metrices.boundingRect(lable).width(), maxi_width_left)
+                maxi_width_left = max(metrices.boundingRect(lable).width() + 8, maxi_width_left)
+                #l.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum))
                 # if option[0] == KEY_OUT_ANCHOR_BOLT_TENSION and module == KEY_DISP_BASE_PLATE:
                 #     l.setVisible(False)
 
             if output_type == TYPE_TEXTBOX:
                 r = QtWidgets.QLineEdit(self.dockWidgetContents_out)
+
                 #r.setGeometry(QtCore.QRect(100, 10 + i, 150, 27))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 r.setFont(font)
                 r.setObjectName(option[0])
                 r.setReadOnly(True)
+
                 #r.setFixedSize(r.size())
                 out_layout2.addWidget(r, j, 2, 1, 1)
                 r.setVisible(True if option[4] else False)
-                maxi_width_right = max(maxi_width_right, 110)    # predefined minimum width of 110 for textboxes
+                maxi_width_right = max(maxi_width_right, 100)    # predefined minimum width of 110 for textboxes
+                #r.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum))
                 # if option[0] == KEY_OUT_ANCHOR_BOLT_TENSION and module == KEY_DISP_BASE_PLATE:
                 #     r.setVisible(False)
 
             if output_type == TYPE_OUT_BUTTON:
                 v = option[3]
                 b = QtWidgets.QPushButton(self.dockWidgetContents_out)
+
                 #b.setGeometry(QtCore.QRect(150, 10 + i, 150, 27))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 b.setFont(font)
@@ -756,6 +864,7 @@ class Ui_ModuleWindow(QMainWindow):
                 b.resize(b.sizeHint().width(), b.sizeHint().height())
                 b.setText(v[0])
                 b.setDisabled(True)
+                #b.setFixedSize(b.size())
                 button_list.append(option)
                 out_layout2.addWidget(b, j, 2, 1, 1)
                 maxi_width_right = max(maxi_width_right, b.sizeHint().width())
@@ -763,16 +872,18 @@ class Ui_ModuleWindow(QMainWindow):
 
             if output_type == TYPE_TITLE:
                 q = QtWidgets.QLabel(self.dockWidgetContents_out)
+
                 #q.setGeometry(QtCore.QRect(3, 10 + i, 201, 25))
                 font = QtGui.QFont()
                 font.setPointSize(10)
                 font.setWeight(65)
                 q.setFont(font)
                 q.setObjectName("_title")
+                # q.setVisible(True if option[4] else False)
                 #q.setFixedSize(q.size())
                 q.setText(_translate("MainWindow",
                                      "<html><head/><body><p><span style=\" font-weight:600;\">" + lable + "</span></p></body></html>"))
-                q.setFixedSize(q.sizeHint().width(), q.sizeHint().height())
+                q.resize(q.sizeHint().width(), q.sizeHint().height())
                 out_layout2.addWidget(q, j, 1, 2, 2)
                 j = j + 1
             i = i + 30
@@ -781,12 +892,15 @@ class Ui_ModuleWindow(QMainWindow):
         out_scroll.setWidget(out_scrollcontent)
         maxi_width = maxi_width_left + maxi_width_right
 
-        maxi_width += 80    # +80 coz of whitespaces
+        maxi_width += 80    # +73 coz of whitespaces
         maxi_width = max(maxi_width, 350) # in case no widget
+        out_scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        out_scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
 
-
-        self.outputDock.setFixedSize(maxi_width, 710)
-        out_widget.setFixedSize(maxi_width, 650)
+        self.outputDock.setFixedWidth(maxi_width)
+        self.out_widget.setFixedWidth(maxi_width)
+        self.outputDock.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum))
+        self.out_widget.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum))
         # common_button = QtWidgets.QPushButton()
         # d = {
         #     'Button_1': common_button,
@@ -825,7 +939,10 @@ class Ui_ModuleWindow(QMainWindow):
         self.outputDock.setWidget(self.dockWidgetContents_out)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.outputDock)
         self.btn_CreateDesign = QtWidgets.QPushButton(self.dockWidgetContents_out)
-        self.btn_CreateDesign.setGeometry(QtCore.QRect(((maxi_width)/2) - 100, 650, 200, 35))
+        self.save_outputDock = QtWidgets.QPushButton(self.dockWidgetContents_out)
+
+        self.btn_CreateDesign.setFixedSize(185, 35)
+        self.save_outputDock.setFixedSize(185, 35)
         self.btn_CreateDesign.setAutoDefault(True)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -833,6 +950,10 @@ class Ui_ModuleWindow(QMainWindow):
         font.setWeight(65)
         self.btn_CreateDesign.setFont(font)
         self.btn_CreateDesign.setObjectName("btn_CreateDesign")
+        self.save_outputDock.setFont(font)
+        self.save_outputDock.setObjectName("save_outputDock")
+        self.save_outputDock.setText("Save Output")
+        self.save_outputDock.clicked.connect(self.save_output_to_txt(main))
         # self.btn_CreateDesign.clicked.connect(self.createDesignReport(main))
 
         ##################################
@@ -927,6 +1048,24 @@ class Ui_ModuleWindow(QMainWindow):
         font.setFamily("DejaVu Sans")
         self.actionRotate_3D_model.setFont(font)
         self.actionRotate_3D_model.setObjectName("actionRotate_3D_model")
+        self.submenuDownload_db = QtWidgets.QMenu(MainWindow)
+        self.submenuDownload_db.setFont(font)
+        self.submenuDownload_db.setObjectName("submenuDownload_db")
+        self.actionDownload_column = QtWidgets.QAction(MainWindow)
+        self.actionDownload_column.setFont(font)
+        self.actionDownload_column.setObjectName("actionDownload_column")
+        self.actionDownload_beam = QtWidgets.QAction(MainWindow)
+        self.actionDownload_beam.setFont(font)
+        self.actionDownload_beam.setObjectName("actionDownload_beam")
+        self.actionDownload_channel = QtWidgets.QAction(MainWindow)
+        self.actionDownload_channel.setFont(font)
+        self.actionDownload_channel.setObjectName("actionDownload_channel")
+        self.actionDownload_angle = QtWidgets.QAction(MainWindow)
+        self.actionDownload_angle.setFont(font)
+        self.actionDownload_angle.setObjectName("actionDownload_angle")
+        self.actionReset_db = QtWidgets.QAction(MainWindow)
+        self.actionReset_db.setFont(font)
+        self.actionReset_db.setObjectName("actionReset_db")
         self.actionView_2D_on_XY = QtWidgets.QAction(MainWindow)
         self.actionView_2D_on_XY.setObjectName("actionView_2D_on_XY")
         self.actionView_2D_on_YZ = QtWidgets.QAction(MainWindow)
@@ -1036,8 +1175,11 @@ class Ui_ModuleWindow(QMainWindow):
         self.actionDesign_Preferences.triggered.connect(lambda: self.common_function_for_save_and_design(main, data, "Design_Pref"))
         self.actionDesign_Preferences.triggered.connect(lambda: self.combined_design_prefer(data,main))
         self.actionDesign_Preferences.triggered.connect(self.design_preferences)
-        self.designPrefDialog = DesignPreferences(self, main, input_dictionary=self.input_dock_inputs)
+        self.designPrefDialog = DesignPreferences(main, self, input_dictionary=self.input_dock_inputs)
 
+        self.actionOsdagSectionModeller=QtWidgets.QAction(MainWindow)
+        self.actionOsdagSectionModeller.setObjectName("actionDesign_Preferences")
+        self.actionOsdagSectionModeller.triggered.connect(self.osdag_section_modeller)
         # self.designPrefDialog.rejected.connect(lambda: self.design_preferences('rejected'))
         self.actionfinPlate_quit = QtWidgets.QAction(MainWindow)
         self.actionfinPlate_quit.setObjectName("actionfinPlate_quit")
@@ -1057,10 +1199,11 @@ class Ui_ModuleWindow(QMainWindow):
         self.menuFile.addAction(self.actionSave_Side_View)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionfinPlate_quit)
-        self.menuEdit.addAction(self.actionCut)
-        self.menuEdit.addAction(self.actionCopy)
-        self.menuEdit.addAction(self.actionPaste)
+        # self.menuEdit.addAction(self.actionCut)
+        # self.menuEdit.addAction(self.actionCopy)
+        # self.menuEdit.addAction(self.actionPaste)
         self.menuEdit.addAction(self.actionDesign_Preferences)
+        self.menuEdit.addAction(self.actionOsdagSectionModeller)
         self.menuView.addAction(self.actionEnlarge_font_size)
         self.menuView.addSeparator()
         self.menuHelp.addAction(self.actionSample_Tutorials)
@@ -1082,10 +1225,18 @@ class Ui_ModuleWindow(QMainWindow):
             self.menuGraphics.addAction(action)
         self.menuGraphics.addSeparator()
         self.menuGraphics.addAction(self.actionChange_background)
+        self.menuDB.addMenu(self.submenuDownload_db)
+        self.submenuDownload_db.addAction(self.actionDownload_column)
+        self.submenuDownload_db.addAction(self.actionDownload_beam)
+        self.submenuDownload_db.addAction(self.actionDownload_angle)
+        self.submenuDownload_db.addAction(self.actionDownload_channel)
+        self.menuDB.addSeparator()
+        self.menuDB.addAction(self.actionReset_db)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuGraphics.menuAction())
+        self.menubar.addAction(self.menuDB.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi()
@@ -1095,15 +1246,49 @@ class Ui_ModuleWindow(QMainWindow):
         self.btn_Design.clicked.connect(lambda: self.common_function_for_save_and_design(main, data, "Design"))
         self.action_load_input.triggered.connect(lambda: self.loadDesign_inputs(option_list, data, new_list, main))
         self.btn_Reset.clicked.connect(lambda: self.reset_fn(option_list, out_list, new_list, data))
-        self.actionChange_background.triggered.connect(lambda: main.showColorDialog(self))
+        self.actionChange_background.triggered.connect(self.showColorDialog)
         self.actionSave_3D_model.triggered.connect(lambda: self.save3DcadImages(main))
         self.btn_CreateDesign.clicked.connect(lambda:self.open_summary_popup(main))
         self.actionSave_current_image.triggered.connect(lambda: self.save_cadImages(main))
+        self.actionCreate_design_report.triggered.connect(lambda:self.open_summary_popup(main))
+        self.actionZoom_out.triggered.connect(lambda: self.zoom_model(zoom_type="out"))
+        self.actionZoom_in.triggered.connect(lambda: self.zoom_model(zoom_type="in"))
+        self.actionDownload_column.triggered.connect(lambda: self.designPrefDialog.ui.download_Database(table="Columns"))
+        self.actionDownload_beam.triggered.connect(lambda: self.designPrefDialog.ui.download_Database(table="Beams"))
+        self.actionDownload_channel.triggered.connect(lambda: self.designPrefDialog.ui.download_Database(table="Channels"))
+        self.actionDownload_angle.triggered.connect(lambda: self.designPrefDialog.ui.download_Database(table="Angles"))
+        self.actionReset_db.triggered.connect(self.database_reset)
+
 
         from osdagMainSettings import backend_name
         self.display, _ = self.init_display(backend_str=backend_name())
         self.connectivity = None
         self.fuse_model = None
+
+    def save_output_to_txt(self, main):
+        def save_fun():
+            status = main.design_status
+            out_list = main.output_values(main, status)
+            to_Save = {}
+            flag = 0
+            for option in out_list:
+                if option[0] is not None and option[2] == TYPE_TEXTBOX:
+                    to_Save[option[0]] = str(option[3])
+                    if str(option[3]):
+                        flag = 1
+            if not flag:
+                QMessageBox.information(self, "Information",
+                                        "Nothing to Save.")
+            else:
+                fileName, _ = QFileDialog.getSaveFileName(self,
+                                                          "Save Output", os.path.join(self.folder, "untitled.txt"),
+                                                          "Input Files(*.txt)")
+                if fileName:
+                    with open(fileName, 'w') as outfile:
+                        yaml.dump(to_Save, outfile, default_flow_style=False)
+                    QMessageBox.information(self, "Information",
+                                            "Saved successfully.")
+        return save_fun
 
     def popup(self,key, for_custom_list,updated_list,data):
 
@@ -1169,6 +1354,8 @@ class Ui_ModuleWindow(QMainWindow):
 
             if typ in [TYPE_OUT_DOCK, TYPE_OUT_LABEL]:
                 k2 = self.dockWidgetContents_out.findChild(QtWidgets.QWidget, k2_key)
+            elif typ == TYPE_WARNING:
+                k2 = str(k2_key)
             else:
                 k2 = self.dockWidgetContents.findChild(QtWidgets.QWidget, k2_key)
 
@@ -1187,7 +1374,6 @@ class Ui_ModuleWindow(QMainWindow):
                     k2.setCurrentIndex(0)
                 if k2_key in RED_LIST:
                     red_list_set = set(red_list_function())
-                    red_list_set = set(red_list_function())
                     current_list_set = set(val)
                     current_red_list = list(current_list_set.intersection(red_list_set))
                     for value in current_red_list:
@@ -1196,6 +1382,10 @@ class Ui_ModuleWindow(QMainWindow):
             elif typ == TYPE_COMBOBOX_CUSTOMIZED:
                 k2.setCurrentIndex(0)
                 data[k2_key + "_customized"] = val
+            elif typ == TYPE_CUSTOM_MATERIAL:
+                if val:
+                    self.new_material_dialog()
+
             elif typ == TYPE_LABEL:
                 k2.setText(val)
             elif typ == TYPE_NOTE:
@@ -1208,6 +1398,9 @@ class Ui_ModuleWindow(QMainWindow):
                     k2.setEnabled(True)
                 else:
                     k2.setDisabled(True)
+            elif typ == TYPE_WARNING:
+                if val:
+                    QMessageBox.warning(self, "Application", k2)
             elif typ in [TYPE_OUT_DOCK, TYPE_OUT_LABEL]:
                 if val:
                     k2.setVisible(False)
@@ -1295,7 +1488,7 @@ class Ui_ModuleWindow(QMainWindow):
 
                 input_dock_key = self.dockWidgetContents.findChild(QtWidgets.QWidget, input_dock_key_name)
                 result = list(filter(lambda get_tab:
-                                     self.designPrefDialog.findChild(QtWidgets.QWidget, get_tab[0]).objectName() !=
+                                     self.designPrefDialog.ui.findChild(QtWidgets.QWidget, get_tab[0]).objectName() !=
                                      f(input_dock_key.currentText()), remove_tabs))
 
             if result is not None:
@@ -1307,7 +1500,7 @@ class Ui_ModuleWindow(QMainWindow):
                 tab_name = des_pref[0]
                 input_type = des_pref[1]
                 input_list = des_pref[2]
-                tab = self.designPrefDialog.findChild(QtWidgets.QWidget, tab_name)
+                tab = self.designPrefDialog.ui.findChild(QtWidgets.QWidget, tab_name)
                 for key_name in input_list:
                     key = tab.findChild(QtWidgets.QWidget, key_name)
                     if input_type == TYPE_TEXTBOX:
@@ -1393,7 +1586,7 @@ class Ui_ModuleWindow(QMainWindow):
         try:
             in_file = str(fileName)
             with open(in_file, 'r') as fileObject:
-                uiObj = yaml.load(fileObject)
+                uiObj = yaml.safe_load(fileObject)
             module = uiObj[KEY_MODULE]
 
             # module_class = self.return_class(module)
@@ -1432,7 +1625,8 @@ class Ui_ModuleWindow(QMainWindow):
                     if index >= 0:
                         key.setCurrentIndex(index)
             elif op[2] == TYPE_TEXTBOX:
-                key.setText(uiObj[key_str])
+                if key_str in uiObj.keys():
+                    key.setText(uiObj[key_str])
             elif op[2] == TYPE_COMBOBOX_CUSTOMIZED:
                 if key_str in uiObj.keys():
                     for n in new:
@@ -1465,7 +1659,7 @@ class Ui_ModuleWindow(QMainWindow):
         elif trigger_type == "Design_Pref":
 
             if self.prev_inputs != self.input_dock_inputs:
-                self.designPrefDialog = DesignPreferences(self, main, input_dictionary=self.input_dock_inputs)
+                self.designPrefDialog = DesignPreferences(main, self, input_dictionary=self.input_dock_inputs)
 
                 if 'Select Section' in self.input_dock_inputs.values():
                     self.designPrefDialog.flag = False
@@ -1474,31 +1668,35 @@ class Ui_ModuleWindow(QMainWindow):
 
         else:
             main.design_button_status = True
+            self.textEdit.clear()
+            with open("logging_text.log", 'w') as log_file:
+                pass
             error = main.func_for_validation(main, self.design_inputs)
             status = main.design_status
             print(status)
 
             if error is not None:
                 self.show_error_msg(error)
-
+                return
             out_list = main.output_values(main, status)
             for option in out_list:
                 if option[2] == TYPE_TEXTBOX:
                     txt = self.dockWidgetContents_out.findChild(QtWidgets.QWidget, option[0])
                     txt.setText(str(option[3]))
-
+                    if status:
+                        txt.setVisible(True if option[3] else False)
+                        txt_label = self.dockWidgetContents_out.findChild(QtWidgets.QWidget, option[0]+"_label")
+                        txt_label.setVisible(True if option[3] else False)
 
                 elif option[2] == TYPE_OUT_BUTTON:
                     self.dockWidgetContents_out.findChild(QtWidgets.QWidget, option[0]).setEnabled(True)
 
 
-            self.design_exist = False
-
             if status is True and main.module in [KEY_DISP_FINPLATE, KEY_DISP_BEAMCOVERPLATE,
                                                   KEY_DISP_BEAMCOVERPLATEWELD, KEY_DISP_CLEATANGLE,
                                                   KEY_DISP_ENDPLATE, KEY_DISP_BASE_PLATE, KEY_DISP_SEATED_ANGLE,
                                                   KEY_DISP_TENSION_BOLTED, KEY_DISP_TENSION_WELDED,
-                                                  KEY_DISP_COLUMNCOVERPLATEWELD]:
+                                                  KEY_DISP_COLUMNCOVERPLATEWELD, KEY_DISP_COLUMNENDPLATE]:
                 self.commLogicObj = CommonDesignLogic(self.display, self.folder, main.module, main.mainmodule)
                 status = main.design_status
                 module_class = self.return_class(main.module)
@@ -1509,9 +1707,9 @@ class Ui_ModuleWindow(QMainWindow):
                     action.setEnabled(True)
                 fName = str('./ResourceFiles/images/3d.png')
                 file_extension = fName.split(".")[-1]
+
                 if file_extension == 'png':
                     self.display.ExportToImage(fName)
-                self.design_exist = True
 
             else:
                 for chkbox in main.get_3d_components(main):
@@ -1536,6 +1734,7 @@ class Ui_ModuleWindow(QMainWindow):
 
         dialog = QtWidgets.QDialog()
         #dialog.resize(470, 300)
+
         dialog.setObjectName("Dialog")
         #q.sizeHint().width(), q.sizeHint().height()
         #sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
@@ -1555,6 +1754,7 @@ class Ui_ModuleWindow(QMainWindow):
         inner_grid_widget.setLayout(inner_grid_layout)
         scrollcontent.setLayout(outer_grid_layout)
         section = 0
+        maxi_width = -1
         for op in button_list:
 
             if op[0] == button.objectName():
@@ -1571,6 +1771,7 @@ class Ui_ModuleWindow(QMainWindow):
                     if out_but_type not in [TYPE_TITLE, TYPE_IMAGE, TYPE_MODULE, TYPE_SECTION]:
                         l = QtWidgets.QLabel(inner_grid_widget)
                         #l.setGeometry(QtCore.QRect(10, 10 + i, 120, 25))
+
                         font = QtGui.QFont()
                         font.setPointSize(9)
                         font.setBold(False)
@@ -1580,7 +1781,12 @@ class Ui_ModuleWindow(QMainWindow):
                         l.setObjectName(option[0] + "_label")
                         l.setText(_translate("MainWindow", "<html><head/><body><p>" + lable + "</p></body></html>"))
                         inner_grid_layout.addWidget(l, j, 1, 1, 1)
-                        l.resize(l.sizeHint().width(), l.sizeHint().height())
+                        #l.resize(l.sizeHint().width() + 8, l.sizeHint().height())
+                        metrices = QtGui.QFontMetrics(font)
+                        l.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum))
+                        maxi_width = max(maxi_width, metrices.boundingRect(lable).width() + 8)
+
+
 
                     if out_but_type == TYPE_SECTION:
                         if section != 0:
@@ -1597,27 +1803,36 @@ class Ui_ModuleWindow(QMainWindow):
                         image_widget.setLayout(image_layout)
                         inner_grid_layout = QtWidgets.QGridLayout(inner_grid_widget)
                         inner_grid_widget.setLayout(inner_grid_layout)
-
                         im = QtWidgets.QLabel(image_widget)
                         #im.setGeometry(QtCore.QRect(330, 10, 150, 150))
                         #im.setFixedSize(im.size())
+                        # im.setGeometry(QtCore.QRect(330, 10, 100, 100))
+                        # im.setScaledContents(True)
+                        # im.setFixedSize(im.size())
+
                         pmap = QPixmap(option[3])
-                        im.setPixmap(pmap)
+                        #im.setScaledContents(1)
+                        im.setPixmap(pmap.scaled(170,340,QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation))
+                        #im.setPixmap(pmap)
                         image_layout.addWidget(im)
                         j += 1
-                        im.resize(im.sizeHint().width(), im.sizeHint().height())
+                        #maxi_width = max(maxi_width, im.width())
+                        #im.resize(im.sizeHint().width(), im.sizeHint().height())
 
                         q = QtWidgets.QLabel(scrollcontent)
                         #q.setGeometry(QtCore.QRect(30, 10, 201, 30))
+
                         font = QtGui.QFont()
                         font.setWeight(600)
                         font.setPointSize(11)
                         q.setFont(font)
                         q.setObjectName("_title")
                         q.setText(lable)
+                        q.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Maximum))
                         #q.setFixedSize(q.size())
-                        q.resize(q.sizeHint().width(), q.sizeHint().height())
+                        #q.resize(q.sizeHint().width(), q.sizeHint().height())
                         outer_grid_layout.addWidget(q, j, 1, 1, 2)
+
                         section += 1
 
                     if out_but_type == TYPE_TEXTBOX:
@@ -1632,25 +1847,160 @@ class Ui_ModuleWindow(QMainWindow):
                         r.setObjectName(option[0])
                         r.setText(str(option[3]))
                         inner_grid_layout.addWidget(r, j, 2, 1, 1)
-                        r.resize(r.sizeHint().width()+30, r.sizeHint().height())
+
+                    if out_but_type == TYPE_IMAGE:
+                        im = QtWidgets.QLabel(image_widget)
+                        #im.setGeometry(QtCore.QRect(330, 10, 100, 100))
+                        #im.setScaledContents(True)
+                        #im.setFixedSize(im.size())
+                        pmap = QPixmap(option[3])
+                        im.setPixmap(pmap.scaled(170,340,QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation))
+                        image_layout.addWidget(im)
+
                     j = j + 1
                     i = i + 30
-                outer_grid_layout.addWidget(inner_grid_widget, j, 1, 1, 1)
-                outer_grid_layout.addWidget(image_widget, j, 2, 1, 1)
+
+                if inner_grid_layout.count() > 0:
+                    outer_grid_layout.addWidget(inner_grid_widget, j, 1, 1, 1)
+                if image_layout.count() > 0:
+                    outer_grid_layout.addWidget(image_widget, j, 2, 1, 1)
                 scroll.setWidget(scrollcontent)
-                dialog.setMinimumSize(dialog.sizeHint().width(), 350)
-                #scrollcontent.setGeometry(0,0,maxi_width, 350)
-                #dialog.resize(dialog.sizeHint().width()+140, 300)
-                #scrollcontent.resize(scrollcontent.sizeHint().width()+140, 300)
                 if section == 0:
                     dialog.resize(350, 300)
-                dialog.setFixedSize(dialog.size())
+                #dialog.setFixedSize(dialog.size())
                 dialog.exec()
+
+    def new_material_dialog(self):
+        dialog = QtWidgets.QDialog()
+        dialog.setWindowTitle('Custom Material')
+        layout = QtWidgets.QGridLayout(dialog)
+        widget = QtWidgets.QWidget(dialog)
+        widget.setLayout(layout)
+        _translate = QtCore.QCoreApplication.translate
+        textbox_list = ['Grade', 'Fy_20', 'Fy_20_40', 'Fy_40', 'Fu']
+        i = 0
+        for textbox_name in textbox_list:
+            label = QtWidgets.QLabel(widget)
+            label.setObjectName(textbox_name+"_label")
+            font = QtGui.QFont()
+            font.setPointSize(9)
+            font.setBold(False)
+            font.setWeight(50)
+            label.setFont(font)
+            label.setText(_translate("MainWindow", "<html><body><p>" + textbox_name + "</p></body></html>"))
+            # label.resize(120, 30)
+            label.setFixedSize(100, 30)
+            layout.addWidget(label, i, 1, 1, 1)
+
+            textbox = QtWidgets.QLineEdit(widget)
+            textbox.setObjectName(textbox_name)
+            font = QtGui.QFont()
+            font.setPointSize(11)
+            font.setBold(False)
+            font.setWeight(50)
+            textbox.setFont(font)
+            # textbox.resize(120, 30)
+            textbox.setFixedSize(200, 24)
+            if textbox_name == 'Grade':
+                textbox.setText('Cus____')
+                textbox.setReadOnly(True)
+            else:
+                textbox.setValidator(QtGui.QIntValidator())
+
+            self.connect_change_popup_material(textbox, widget)
+            layout.addWidget(textbox, i, 2, 1, 1)
+
+            i += 1
+
+        add_button = QtWidgets.QPushButton(widget)
+        add_button.setObjectName("material_add")
+        add_button.setText("Add")
+        add_button.clicked.connect(lambda: self.update_material_db(widget))
+        layout.addWidget(add_button, i, 1, 1, 2)
+
+        dialog.setFixedSize(350, 250)
+        closed = dialog.exec()
+        if closed is not None:
+            input_dock_material = self.dockWidgetContents.findChild(QtWidgets.QWidget, KEY_MATERIAL)
+            input_dock_material.clear()
+            for item in connectdb("Material"):
+                input_dock_material.addItem(item)
+
+    def update_material_db(self, widget):
+
+        material = widget.findChild(QtWidgets.QLineEdit, 'Grade').text()
+        values = material.split("_")
+
+        fy_20 = values[1]
+        fy_20_40 = values[2]
+        fy_40 = values[3]
+        fu = values[4]
+        elongation = 0
+
+        if "" in [fy_20, fy_40, fy_20_40, fu]:
+            QMessageBox.information(QMessageBox(), 'Warning', 'Please Fill all missing parameters!')
+            return
+
+        fy_20 = int(fy_20)
+        fy_20_40 = int(fy_20_40)
+        fy_40 = int(fy_40)
+        fu = int(fu)
+
+        if not 0 <= fy_20 <= 1000:
+            QMessageBox.information(QMessageBox(), 'Warning', 'Please select Fy_20 in valid range!')
+            return
+        elif not 0 <= fy_20_40 <= 1000:
+            QMessageBox.information(QMessageBox(), 'Warning', 'Please select Fy_20_40 in valid range!')
+            return
+        elif not 0 <= fy_40 <= 1000:
+            QMessageBox.information(QMessageBox(), 'Warning', 'Please select Fy_40 in valid range!')
+            return
+        elif not 0 <= fu <= 1000:
+            QMessageBox.information(QMessageBox(), 'Warning', 'Please select Fu in valid range!')
+            return
+
+        if fy_20 > 350:
+            elongation = 20
+        elif 250 < fy_20 <= 350:
+            elongation = 22
+        elif fy_20 <= 250:
+            elongation = 23
+
+        conn = sqlite3.connect(PATH_TO_DATABASE)
+        c = conn.cursor()
+        c.execute("SELECT count(*) FROM Material WHERE Grade = ?", (material,))
+        data = c.fetchone()[0]
+
+        if data == 0:
+            c.execute('''INSERT INTO Material (Grade,[Yield Stress (< 20)],[Yield Stress (20 -40)],
+            [Yield Stress (> 40)],[Ultimate Tensile Stress],[Elongation ]) VALUES (?,?,?,?,?,?)''',
+                      (material, fy_20, fy_20_40, fy_40, fu, elongation))
+            conn.commit()
+            c.close()
+            conn.close()
+            QMessageBox.information(QMessageBox(), 'Information', 'Data is added successfully to the database.')
+
+        else:
+            QMessageBox.information(QMessageBox(), 'Warning', 'Material already exists in Database!')
+
+    def connect_change_popup_material(self, textbox, widget):
+        textbox.textChanged.connect(lambda: self.change_popup_material(widget))
+
+    def change_popup_material(self, widget):
+
+        grade = widget.findChild(QtWidgets.QLineEdit, 'Grade')
+        fy_20 = widget.findChild(QtWidgets.QLineEdit, 'Fy_20').text()
+        fy_20_40 = widget.findChild(QtWidgets.QLineEdit, 'Fy_20_40').text()
+        fy_40 = widget.findChild(QtWidgets.QLineEdit, 'Fy_40').text()
+        fu = widget.findChild(QtWidgets.QLineEdit, 'Fu').text()
+        material = str("Cus_"+fy_20+"_"+fy_20_40+"_"+fy_40+"_"+fu)
+        grade.setText(material)
 
     # Function for showing design-preferences popup
 
     def design_preferences(self):
-        self.designPrefDialog.exec()
+        #print(self.designPrefDialog.module_window.input_dock_inputs)
+        self.designPrefDialog.show()
 
     # Function for getting input for design preferences from input dock
     '''
@@ -1661,7 +2011,7 @@ class Ui_ModuleWindow(QMainWindow):
         on_change_tab_list = main.tab_value_changed(main)
         for new_values in on_change_tab_list:
             (tab_name, key_list, key_to_change, key_type, f) = new_values
-            tab = self.designPrefDialog.ui.tabWidget.findChild(QtWidgets.QWidget, tab_name)
+            tab = self.designPrefDialog.ui.tabWidget.tabs.findChild(QtWidgets.QWidget, tab_name)
             for key_name in key_list:
                 key = tab.findChild(QtWidgets.QWidget, key_name)
                 if isinstance(key, QtWidgets.QComboBox):
@@ -1684,22 +2034,22 @@ class Ui_ModuleWindow(QMainWindow):
 
         for edit in main.edit_tabs(main):
             (tab_name, input_dock_key_name, change_typ, f) = edit
-            tab = self.designPrefDialog.ui.tabWidget.findChild(QtWidgets.QWidget, tab_name)
+            tab = self.designPrefDialog.ui.tabWidget.tabs.findChild(QtWidgets.QWidget, tab_name)
             input_dock_key = self.dockWidgetContents.findChild(QtWidgets.QWidget, input_dock_key_name)
             if change_typ == TYPE_CHANGE_TAB_NAME:
-                self.designPrefDialog.ui.tabWidget.setTabText(
-                    self.designPrefDialog.ui.tabWidget.indexOf(tab), f(input_dock_key.currentText()))
+                self.designPrefDialog.ui.tabWidget.tabs.setTabText(
+                    self.designPrefDialog.ui.tabWidget.tabs.indexOf(tab), f(input_dock_key.currentText()))
             elif change_typ == TYPE_REMOVE_TAB:
 
                 if tab.objectName() != f(input_dock_key.currentText()):
-                    self.designPrefDialog.ui.tabWidget.removeTab(
-                        self.designPrefDialog.ui.tabWidget.indexOf(tab))
+                    self.designPrefDialog.ui.tabWidget.tabs.removeTab(
+                        self.designPrefDialog.ui.tabWidget.tabs.indexOf(tab))
                 # if tab:
                 #     self.designPrefDialog.ui.tabWidget.insertTab(0, tab, tab_name)
 
         for refresh in main.refresh_input_dock(main):
             (tab_name, key_name, key_type, tab_key, master_key, value, database_arg) = refresh
-            tab = self.designPrefDialog.ui.tabWidget.findChild(QtWidgets.QWidget, tab_name)
+            tab = self.designPrefDialog.ui.tabWidget.tabs.findChild(QtWidgets.QWidget, tab_name)
             if tab:
                 add_button = tab.findChild(QtWidgets.QWidget, "pushButton_Add_"+tab_name)
                 key = self.dockWidgetContents.findChild(QtWidgets.QWidget, key_name)
@@ -1735,23 +2085,27 @@ class Ui_ModuleWindow(QMainWindow):
                     arg_list.append(key.text())
 
             arg_list.append(self.input_dock_inputs)
-            try:
-                tab1 = self.designPrefDialog.ui.tabWidget.findChild(QtWidgets.QWidget, tab_name)
-                key1 = tab.findChild(QtWidgets.QWidget, KEY_SECSIZE_SELECTED)
-                value1 = key1.text()
-                arg_list.append({KEY_SECSIZE_SELECTED: value1})
-            except:
-                pass
+            # try:
+            #     tab1 = self.designPrefDialog.ui.tabWidget.findChild(QtWidgets.QWidget, tab_name)
+            #     key1 = tab.findChild(QtWidgets.QWidget, KEY_SECSIZE_SELECTED)
+            #     value1 = key1.text()
+            #     arg_list.append({KEY_SECSIZE_SELECTED: value1})
+            # except:
+            #     pass
             val = f(arg_list)
 
             for k2_key_name in k2_key_list:
+                print(k2_key_name)
                 k2 = tab.findChild(QtWidgets.QWidget, k2_key_name)
-                if typ == TYPE_COMBOBOX:
+                if isinstance(k2, QtWidgets.QComboBox):
                     k2.clear()
                     for values in val[k2_key_name]:
                         k2.addItem(str(values))
-                elif typ == TYPE_TEXTBOX:
+                if isinstance(k2, QtWidgets.QLineEdit):
                     k2.setText(str(val[k2_key_name]))
+                if isinstance(k2, QtWidgets.QLabel):
+                    pixmap1 = QPixmap(val[k2_key_name])
+                    k2.setPixmap(pixmap1)
 
     def refresh_section_connect(self, add_button, prev, key_name, key_type, tab_key, arg,data):
         add_button.clicked.connect(lambda: self.refresh_section(prev, key_name, key_type, tab_key, arg,data))
@@ -1762,7 +2116,7 @@ class Ui_ModuleWindow(QMainWindow):
             current_list = connectdb(arg,"popup")
         else:
             current_list = connectdb(arg)
-        text = self.designPrefDialog.findChild(QtWidgets.QWidget, tab_key).text()
+        text = self.designPrefDialog.ui.findChild(QtWidgets.QWidget, tab_key).text()
         key = self.dockWidgetContents.findChild(QtWidgets.QWidget, key_name)
 
         if key_type == TYPE_COMBOBOX:
@@ -1940,6 +2294,7 @@ class Ui_ModuleWindow(QMainWindow):
         self.menuView.setTitle(_translate("MainWindow", "View"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.menuGraphics.setTitle(_translate("MainWindow", "Graphics"))
+        self.menuDB.setTitle(_translate("MainWindow", "Database"))
         self.inputDock.setWindowTitle(_translate("MainWindow", "Input dock"))
         #self.pushButton.setText(_translate("MainWindow", "PushButton"))
         self.btn_Reset.setToolTip(_translate("MainWindow", "Alt+R"))
@@ -1977,9 +2332,17 @@ class Ui_ModuleWindow(QMainWindow):
         self.actionBolt.setText(_translate("MainWindow", "Bolt"))
         self.action2D_view.setText(_translate("MainWindow", "2D view"))
         self.actionZoom_in.setText(_translate("MainWindow", "Zoom in"))
+        self.actionZoom_in.setShortcut(_translate("MainWindow", "Ctrl+I"))
         self.actionZoom_out.setText(_translate("MainWindow", "Zoom out"))
+        self.actionZoom_out.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.actionPan.setText(_translate("MainWindow", "Pan"))
         self.actionRotate_3D_model.setText(_translate("MainWindow", "Rotate 3D model"))
+        self.submenuDownload_db.setTitle(_translate("MainWindow", "Download"))
+        self.actionDownload_column.setText(_translate("MainWindow", "\n\u2022 Column"))
+        self.actionDownload_beam.setText(_translate("MainWindow", "\n\u2022 Beam"))
+        self.actionDownload_channel.setText(_translate("MainWindow", "\n\u2022 Channel"))
+        self.actionDownload_angle.setText(_translate("MainWindow", "\n\u2022 Angle"))
+        self.actionReset_db.setText(_translate("MainWindow", "Reset"))
         self.actionView_2D_on_XY.setText(_translate("MainWindow", "View 2D on XY"))
         self.actionView_2D_on_YZ.setText(_translate("MainWindow", "View 2D on YZ"))
         self.actionView_2D_on_ZX.setText(_translate("MainWindow", "View 2D on ZX"))
@@ -2012,6 +2375,8 @@ class Ui_ModuleWindow(QMainWindow):
         self.actionFAQ.setText(_translate("MainWindow", "FAQ"))
         self.actionDesign_Preferences.setText(_translate("MainWindow", "Design Preferences"))
         self.actionDesign_Preferences.setShortcut(_translate("MainWindow", "Alt+P"))
+        self.actionOsdagSectionModeller.setText(_translate("MainWindow", "Section Modeller"))
+        self.actionOsdagSectionModeller.setShortcut(_translate("MainWindow", "Alt+S"))
         self.actionfinPlate_quit.setText(_translate("MainWindow", "Quit"))
         self.actionfinPlate_quit.setShortcut(_translate("MainWindow", "Shift+Q"))
         self.actio_load_input.setText(_translate("MainWindow", "Load input"))
@@ -2031,20 +2396,31 @@ class Ui_ModuleWindow(QMainWindow):
         else:
             widget.hide()
 
+    def database_reset(self):
 
-    def closeEvent(self, event):
-        '''
-        Closing module window.
-        '''
-        reply = QMessageBox.question(self, 'Message',
-                                     "Are you sure you want to quit?", QMessageBox.Yes, QMessageBox.No)
+        conn = sqlite3.connect(PATH_TO_DATABASE)
+        tables = ["Columns", "Beams", "Angles", "Channels"]
+        text = ""
+        for table in tables:
+            query = "DELETE FROM "+str(table)+" WHERE Source = ?"
+            cursor = conn.execute(query, ('Custom',))
+            text += str(table)+": "+str(cursor.rowcount)+" rows deleted. \n"
+            conn.commit()
+            cursor.close()
+        conn.close()
+        message = QMessageBox()
+        message.setWindowTitle('Successful')
+        message.addButton(message.Ok)
+        message.setText(text)
+        message.exec()
 
-        if reply == QMessageBox.Yes:
-            self.closed.emit()
-            event.accept()
-        else:
-            event.ignore()
+# Function for showing Osdag Section Modeller popup
 
+    def osdag_section_modeller(self):
+        self.OsdagSectionModeller=Ui_OsdagSectionModeller()
+        dialog=QtWidgets.QDialog()
+        self.OsdagSectionModeller.setupUi(dialog)
+        dialog.exec()
 
 from . import icons_rc
 if __name__ == '__main__':

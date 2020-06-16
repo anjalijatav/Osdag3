@@ -77,6 +77,15 @@ class CleatAngleConnection(ShearConnection):
                'Label_19', 'Label_20','Label_21','Label_22'], TYPE_TEXTBOX, self.get_I_sec_properties)
         change_tab.append(t5)
 
+        t6 = (KEY_DISP_COLSEC, [KEY_SUPTNGSEC], ['Label_23'], TYPE_TEXTBOX, self.change_source)
+        change_tab.append(t6)
+
+        t7 = (KEY_DISP_BEAMSEC, [KEY_SUPTDSEC], ['Label_23'], TYPE_TEXTBOX, self.change_source)
+        change_tab.append(t7)
+
+        t8 = (DISP_TITLE_CLEAT, [KEY_ANGLE_SELECTED], ['Label_24'], TYPE_TEXTBOX, self.change_source)
+        change_tab.append(t8)
+
         return change_tab
 
     def input_dictionary_design_pref(self):
@@ -299,6 +308,9 @@ class CleatAngleConnection(ShearConnection):
         t5 = ([KEY_CONN], KEY_IMAGE, TYPE_IMAGE, self.fn_conn_image)
         lst.append(t5)
 
+        t6 = ([KEY_MATERIAL], KEY_MATERIAL, TYPE_CUSTOM_MATERIAL, self.new_material)
+        lst.append(t6)
+
         return lst
 
 
@@ -504,89 +516,9 @@ class CleatAngleConnection(ShearConnection):
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
-    def func_for_validation(self, design_dictionary):
-        all_errors = []
-        self.design_status = False
-        flag = False
-        flag1 = False
-        option_list = self.input_values(self)
-        missing_fields_list = []
-        for option in option_list:
-            if option[2] == TYPE_TEXTBOX:
-                if design_dictionary[option[0]] == '':
-                    missing_fields_list.append(option[1])
-            elif option[2] == TYPE_COMBOBOX and option[0] != KEY_CONN:
-                val = option[3]
-                if design_dictionary[option[0]] == val[0]:
-                    missing_fields_list.append(option[1])
-            elif option[2] == TYPE_COMBOBOX_CUSTOMIZED:
-                if design_dictionary[option[0]] == []:
-                    missing_fields_list.append(option[1])
-            # elif option[2] == TYPE_MODULE:
-            #     if design_dictionary[option[0]] == "Fin Plate":
-
-        if design_dictionary[KEY_CONN] == 'Beam-Beam':
-            primary = design_dictionary[KEY_SUPTNGSEC]
-            secondary = design_dictionary[KEY_SUPTDSEC]
-            conn = sqlite3.connect(PATH_TO_DATABASE)
-            cursor = conn.execute("SELECT D FROM BEAMS WHERE Designation = ( ? ) ", (primary,))
-            lst = []
-            rows = cursor.fetchall()
-            for row in rows:
-                lst.append(row)
-            p_val = lst[0][0]
-            cursor2 = conn.execute("SELECT D FROM BEAMS WHERE Designation = ( ? )", (secondary,))
-            lst1 = []
-            rows1 = cursor2.fetchall()
-            for row1 in rows1:
-                lst1.append(row1)
-            s_val = lst1[0][0]
-            if p_val <= s_val:
-                error = "Secondary beam depth is higher than clear depth of primary beam web " + "\n" + "(No provision in Osdag till now)"
-                all_errors.append(error)
-            else:
-                flag1 = True
-        else:
-            flag1 = True
-
-        if len(missing_fields_list) > 0:
-            error = self.generate_missing_fields_error_string(self,missing_fields_list)
-            all_errors.append(error)
-            # flag = False
-        else:
-            flag = True
-
-        if flag and flag1:
-            self.set_input_values(self, design_dictionary)
-        else:
-            return all_errors
 
     def module_name(self):
         return KEY_DISP_CLEATANGLE
-
-    def generate_missing_fields_error_string(self, missing_fields_list):
-        """
-        Args:
-            missing_fields_list: list of fields that are not selected or entered
-        Returns:
-            error string that has to be displayed
-        """
-        # The base string which should be displayed
-        information = "Please input the following required field"
-        if len(missing_fields_list) > 1:
-            # Adds 's' to the above sentence if there are multiple missing input fields
-            information += "s"
-        information += ": "
-        # Loops through the list of the missing fields and adds each field to the above sentence with a comma
-
-        for item in missing_fields_list:
-            information = information + item + ", "
-
-        # Removes the last comma
-        information = information[:-2]
-        information += "."
-
-        return information
 
     def set_input_values(self, design_dictionary):
         print(design_dictionary)
