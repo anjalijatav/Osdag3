@@ -48,7 +48,7 @@ class ShearConnection(Connection):
             plast_sec_mod_z = ''
             plast_sec_mod_y = ''
             torsion_const=''
-            source = ''
+            source = 'Custom'
             m_o_e = "200"
             m_o_r = "76.9"
             p_r = "0.3"
@@ -540,4 +540,3 @@ class ShearConnection(Connection):
 
         print(self.supported_section.shear_yielding_capacity, self.load.shear_force,
               self.supported_section.tension_yielding_capacity, self.load.axial_force)
-

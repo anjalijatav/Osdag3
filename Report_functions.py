@@ -462,7 +462,7 @@ def design_capacity_of_end_plate(M_dp,b_eff,f_y,gamma_m0,t_p):
 
     design_capacity_of_end_plate= Math(inline=True)
 
-    design_capacity_of_end_plate.append(NoEscape(r'\begin{aligned}  M_{dp} & = { \frac{ b_{eff} *t_p^2 *f_y}{ 4*\gamma_m0}}\\'))
+    design_capacity_of_end_plate.append(NoEscape(r'\begin{aligned}  M_{dp} & = { \frac{ b_{eff} *t_p^2 *f_y}{ 4*\gamma_{m0}}}\\'))
 
     design_capacity_of_end_plate.append(NoEscape(r'&={\frac{' + b_eff +r'*'+t_p+r'^2'+' *'+f_y + r'}{4*'+gamma_m0 + r'}}\\'))
     design_capacity_of_end_plate.append(NoEscape(r'&=' +M_dp  + r'\end{aligned}'))
@@ -656,7 +656,7 @@ def end_plate_thk_req(M_ep,b_eff,f_y,gamma_m0,t_p):
 
     end_plate_thk_eqn = Math(inline=True)
 
-    end_plate_thk_eqn.append(NoEscape(r'\begin{aligned} t_p &= {\sqrt{\frac{ M_{ep}* 4*\gamma_m0}{ b_{eff}*f_y}}}\\'))
+    end_plate_thk_eqn.append(NoEscape(r'\begin{aligned} t_p &= {\sqrt{\frac{ M_{ep}* 4*\gamma_{m0}}{ b_{eff}*f_y}}}\\'))
 
     end_plate_thk_eqn.append(NoEscape(r'&={\sqrt{\frac{' + M_ep +  '*4'+'*' +gamma_m0 + r'}{'+b_eff+ r'*' + f_y + r' }}}\\'))
     end_plate_thk_eqn.append(NoEscape(r'&=' + t_p + '\end{aligned}'))
@@ -674,7 +674,7 @@ def moment_acting_on_end_plate(M_ep,b_eff,f_y,gamma_m0,t_p):
 
     moment_acting_on_end_plate= Math(inline=True)
 
-    moment_acting_on_end_plate.append(NoEscape(r'\begin{aligned}  M_{ep}&= {\frac{b_{eff} *t_p^2 *f_y}{ 4*\gamma_m0}}\\'))
+    moment_acting_on_end_plate.append(NoEscape(r'\begin{aligned}  M_{ep}&= {\frac{b_{eff} *t_p^2 *f_y}{ 4*\gamma_{m0}}}\\'))
 
     moment_acting_on_end_plate.append(NoEscape(r'&={\frac{' + b_eff +'*'+t_p+'^2'+' *'+f_y + '}{4*'+gamma_m0 + r'}}\\'))
     moment_acting_on_end_plate.append(NoEscape(r'&=' +M_ep + '\end{aligned}'))
@@ -994,6 +994,7 @@ def tensile_capacity_prov(T_dg, T_dn, T_db =0.0):
 
 
 def spacing (sp,t_w):
+ 
     # sp = max(15,s+5)
     sp = str(sp)
     t_w = str(t_w)
@@ -1049,6 +1050,7 @@ def IR_req(IR):
 
 
 def min_weld_size_req(conn_plates_weld,min_weld_size):
+
     t1 = str(conn_plates_weld[0])
     t2 = str(conn_plates_weld[1])
     tmax = str(max(conn_plates_weld))
@@ -1187,6 +1189,81 @@ def min_max_axial_capacity(axial_capacity,min_ac): #todo anjali
     return min_ac_eqn
 
 
+def ir_sum_bb_cc(Al, M , A_c ,M_c,IR_axial ,IR_moment ,sum_IR):
+    IR_axial = str(IR_axial)
+    IR_moment = str(IR_moment)
+    Al = str(Al)
+    M = str(M)
+    A_c = str(A_c)
+    M_c = str(M_c)
+    sum_IR =str(sum_IR)
+    ir_sum_bb_cc_eqn = Math(inline=True)
+    ir_sum_bb_cc_eqn.append(NoEscape(r'\begin{aligned} IR ~axial~~~~&= A_l / A_c \\'))
+    ir_sum_bb_cc_eqn.append(NoEscape(r'& ='+ Al +'/'+ A_c+r' \\'))
+    ir_sum_bb_cc_eqn.append(NoEscape(r'& ='+ IR_axial +r' \\'))
+
+    ir_sum_bb_cc_eqn.append(NoEscape(r'IR ~moment &= M / M_c \\'))
+    ir_sum_bb_cc_eqn.append(NoEscape(r'& =' + M + '/' + M_c + r' \\'))
+    ir_sum_bb_cc_eqn.append(NoEscape(r'& =' + IR_moment + r' \\'))
+
+    ir_sum_bb_cc_eqn.append(NoEscape(r'IR ~sum~~~~~ &= IR ~axial + IR ~moment  \\'))
+    ir_sum_bb_cc_eqn.append(NoEscape(r'&= '+ IR_axial +'+ '+IR_moment + r' \\'))
+    ir_sum_bb_cc_eqn.append(NoEscape(r'& =' + sum_IR + r'\end{aligned}'))
+    return ir_sum_bb_cc_eqn
+
+def min_loads_required(conn):
+    min_loads_required_eqn= Math(inline=True)
+    min_loads_required_eqn.append(NoEscape(r'\begin{aligned}  &if~~ IR ~axial < 0.3 ~and~ IR ~moment < 0.5 \\'))
+    min_loads_required_eqn.append(NoEscape(r' &~~~Ac_{min} = 0.3 * A_c\\'))
+    min_loads_required_eqn.append(NoEscape(r' &~~~Mc_{min}= 0.5 * M_c\\'))
+    if conn =="beam_beam":
+        min_loads_required_eqn.append(NoEscape(r' &elif~~ sum ~IR <= 1.0 ~and~ IR ~moment < 0.5\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~if~~ (0.5 - IR ~moment) < (1 - sum ~IR)\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~~~~Mc_{min} = 0.5 * M_c\\'))
+        min_loads_required_eqn.append(NoEscape(r'& ~~~else\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~~~~Mc_{min} = M + ((1 - sum ~IR) * M_c)\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~Ac_{min} = Al \\'))
+
+        min_loads_required_eqn.append(NoEscape(r'&elif~~ sum ~IR <= 1.0~ and~ IR ~axial < 0.3\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~if~~ (0.3 - IR ~axial) < (1 -  sum ~IR)\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~~~~Ac_{min} = 0.3 * A_c\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~else~~\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~~~~Ac_{min} = Al + ((1 - sum ~IR) * A_c)\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~Mc_{min} = M \\'))
+    else:
+        min_loads_required_eqn.append(NoEscape(r'&elif~~ sum ~IR <= 1.0~ and~ IR ~axial < 0.3\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~if~~ (0.3 - IR ~axial) < (1 -  sum ~IR)\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~~~~Ac_{min} = 0.3 * A_c\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~else~~\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~~~~Ac_{min} = Al + ((1 - sum ~IR) * A_c)\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~Mc_{min} = M \\'))
+
+        min_loads_required_eqn.append(NoEscape(r' &elif~~ sum ~IR <= 1.0 ~and~ IR ~moment < 0.5\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~if~~ (0.5 - IR ~moment) < (1 - sum ~IR)\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~~~~Mc_{min} = 0.5 * M_c\\'))
+        min_loads_required_eqn.append(NoEscape(r'& ~~~else\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~~~~Mc_{min} = M + ((1 - sum ~IR) * M_c)\\'))
+        min_loads_required_eqn.append(NoEscape(r'&~~~Ac_{min} = Al \\'))
+
+    min_loads_required_eqn.append(NoEscape(r'&else~~\\'))
+    min_loads_required_eqn.append(NoEscape(r'&~~~Ac_{min} = Al\\'))
+    min_loads_required_eqn.append(NoEscape(r'&~~~Mc_{min} = M \end{aligned}'))
+    return min_loads_required_eqn
+
+def min_loads_provided(min_ac,min_mc,conn):
+    min_ac = str(min_ac)
+    min_mc = str(min_mc)
+
+    if conn == "beam_beam":
+        min_loads_provided_eqn = Math(inline=True)
+        min_loads_provided_eqn.append(NoEscape(r'\begin{aligned} & Mc_{min} =' + min_mc + r'\\'))
+        min_loads_provided_eqn.append(NoEscape(r'& Ac_{min} =' + min_ac +  r'\end{aligned}'))
+    else:
+        min_loads_provided_eqn = Math(inline=True)
+        min_loads_provided_eqn.append(NoEscape(r'\begin{aligned} & Ac_{min} =' + min_ac + r'\\'))
+        min_loads_provided_eqn.append(NoEscape(r'& Mc_{min} =' + min_mc +  r'\end{aligned}'))
+    return min_loads_provided_eqn
+
 def axial_capacity_req(axial_capacity,min_ac):
     min_ac = str(min_ac)
     axial_capacity = str(axial_capacity)
@@ -1205,11 +1282,11 @@ def prov_axial_load(axial_input,min_ac,app_axial_load,axial_capacity):
 
     axial_capacity = str(axial_capacity)
     prov_axial_load_eqn = Math(inline=True)
-    prov_axial_load_eqn.append(NoEscape(r'\begin{aligned} Ac_{min} &= 0.3 * A_c\\'))
-    prov_axial_load_eqn.append(NoEscape(r'&= 0.3 *' + axial_capacity + r'\\'))
-    prov_axial_load_eqn.append(NoEscape(r'&=' + min_ac + r'\\'))
+    # prov_axial_load_eqn.append(NoEscape(r'\begin{aligned} Ac_{min} &= 0.3 * A_c\\'))
+    # prov_axial_load_eqn.append(NoEscape(r'&= 0.3 *' + axial_capacity + r'\\'))
+    # prov_axial_load_eqn.append(NoEscape(r'&=' + min_ac + r'\\'))
 
-    prov_axial_load_eqn.append(NoEscape(r'Au~~ &= max(A,Ac_{min} )\\'))
+    prov_axial_load_eqn.append(NoEscape(r'\begin{aligned} Au~~ &= max(A,Ac_{min} )\\'))
     prov_axial_load_eqn.append(NoEscape(r'&= max( ' + axial_input + ',' + min_ac + r')\\'))
     prov_axial_load_eqn.append(NoEscape(r'&=' + app_axial_load + r'\end{aligned}'))
     return prov_axial_load_eqn
@@ -1317,10 +1394,10 @@ def prov_moment_load(moment_input,min_mc,app_moment_load,moment_capacity):
     app_moment_load = str(app_moment_load)
     moment_capacity = str(moment_capacity)
     app_moment_load_eqn = Math(inline=True)
-    app_moment_load_eqn.append(NoEscape(r'\begin{aligned} Mc_{min} &= 0.5 * M_c\\'))
-    app_moment_load_eqn.append(NoEscape(r'&= 0.5 *' + moment_capacity + r'\\'))
-    app_moment_load_eqn.append(NoEscape(r'&=' + min_mc + r'\\'))
-    app_moment_load_eqn.append(NoEscape(r' Mu &= max(M,Mc_{min} )\\'))
+    # app_moment_load_eqn.append(NoEscape(r'\begin{aligned} Mc_{min} &= 0.5 * M_c\\'))
+    # app_moment_load_eqn.append(NoEscape(r'&= 0.5 *' + moment_capacity + r'\\'))
+    # app_moment_load_eqn.append(NoEscape(r'&=' + min_mc + r'\\'))
+    app_moment_load_eqn.append(NoEscape(r' \begin{aligned} Mu &= max(M,Mc_{min} )\\'))
     app_moment_load_eqn.append(NoEscape(r'&= max(' + moment_input + r',' + min_mc + r')\\'))
     app_moment_load_eqn.append(NoEscape(r'&=' + app_moment_load + r'\end{aligned}'))
     return  app_moment_load_eqn
@@ -1847,8 +1924,47 @@ def long_joint_welded_beam_prov(plate_height,l_w,t_w,gap,t_t,Tc,Tr):
         long_joint_welded_beam_prov.append(NoEscape(r'\beta_{l_w}& = 1.2 - (0.2*' + l_str + ')/(150*' + t_t+ r')\\& =' + Bi + r'\\'))
         long_joint_welded_beam_prov.append(NoEscape(r' V_{rd}& = ' + Bi + ' * ' + Tc + '=' + Tr + r' \end{aligned}'))
 
-
     return long_joint_welded_beam_prov
+
+
+def long_joint_welded_prov(h,l,t_t,ws,wsr):
+    lj = max(h,l)
+    lt = 150 * t_t
+    B = 1.2 - ((0.2 * lj) / (150 * t_t))
+    if B <= 0.6:
+        B = 0.6
+    elif B >= 1:
+        B = 1
+    else:
+        B = B
+    Bi = str(round(B, 2))
+    t_t= str(t_t)
+    lt_str = str(lt)
+    h = str(h)
+    l = str(l)
+    ws = str(ws)
+    wsr = str(wsr)
+    ljs= str(lj)
+
+    long_joint_welded_prov = Math(inline=True)
+    # if conn =="web":
+    if lj < lt:
+        long_joint_welded_prov.append(NoEscape(r'\begin{aligned} l ~&= pt.length ~ or ~ pt.height \\'))
+        long_joint_welded_prov.append(NoEscape(r' l_l &= max('+h +','+l+r') \\'))
+        long_joint_welded_prov.append(NoEscape(r' &='+ ljs + r' \\'))
+        long_joint_welded_prov.append(NoEscape(r'& 150 * t_t =150 * '+t_t+' = '+lt_str +r' \\'))
+        long_joint_welded_prov.append(NoEscape(r'& since,~l < 150 * t_t~\\&then~V_{rd} = V_{db} \\'))
+        long_joint_welded_prov.append(NoEscape(r' V_{rd} &= ' + ws + r' \end{aligned}'))
+    else:
+        long_joint_welded_prov.append(NoEscape(r'\begin{aligned} l~&= pt.length ~or ~pt.height \\'))
+        long_joint_welded_prov.append(NoEscape(r' l_l &= max(' + h + ',' + l + r') \\'))
+        long_joint_welded_prov.append(NoEscape(r' &=' + ljs + r' \\'))
+        long_joint_welded_prov.append(NoEscape(r'& 150 * t_t =150 * ' + t_t + ' = ' + lt_str + r' \\'))
+        long_joint_welded_prov.append(NoEscape(r'&since,~l \geq 150 * t_t~ \\&then~V_{rd} = \beta_{lw} * V_{db} \\'))
+        long_joint_welded_prov.append(NoEscape(r'\beta_{l_w}& = 1.2 - (0.2*' + lj + ')/(150*' + t_t+ r')\\& =' + Bi + r'\\'))
+        long_joint_welded_prov.append(NoEscape(r' V_{rd}& = ' + Bi + ' * ' + ws + '=' + wsr + r' \end{aligned}'))
+
+    return long_joint_welded_prov
 
 
 def throat_req():
@@ -2154,8 +2270,8 @@ def moment_cap(beta,m_d,f_y,gamma_m0,m_fd,mom_cap):
     mom_cap = str(mom_cap)
     moment_cap =Math(inline=True)
 
-    moment_cap.append(NoEscape(r'\begin{aligned} mom_{cap} &=  m_d - beta*(m_d -m_fd)  \\'))
-    moment_cap.append(NoEscape(r'&= ' + m_d + r'-' + beta + r'*('+m_d+r'-'+m_fd+r') \\'))
+    moment_cap.append(NoEscape(r'\begin{aligned} M_{c} &=  m_d - \beta(m_d -m_{fd})  \\'))
+    moment_cap.append(NoEscape(r'&= ' + m_d + r'-' + beta + r'('+m_d+r'-'+m_fd+r') \\'))
     moment_cap.append(NoEscape(r'&= ' + mom_cap + r'\end{aligned}'))
     return moment_cap
 

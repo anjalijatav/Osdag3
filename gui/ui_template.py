@@ -45,6 +45,7 @@ from .ui_design_preferences import Ui_Dialog
 
 from gui.ui_summary_popup import Ui_Dialog1
 from design_report.reportGenerator import save_html
+from .ui_OsdagSectionModeller import Ui_OsdagSectionModeller
 #from .ui_design_preferences import DesignPreferences
 from .UI_DESIGN_PREFERENCE import DesignPreferences
 from design_type.connection.shear_connection import ShearConnection
@@ -70,7 +71,7 @@ from design_type.connection.column_cover_plate_weld import ColumnCoverPlateWeld
 from design_type.connection.base_plate_connection import BasePlateConnection
 from design_type.tension_member.tension_bolted import Tension_bolted
 from design_type.tension_member.tension_welded import Tension_welded
-
+import logging
 from cad.cad3dconnection import cadconnection
 
 class Ui_ModuleWindow(QtWidgets.QMainWindow):
@@ -78,10 +79,24 @@ class Ui_ModuleWindow(QtWidgets.QMainWindow):
     closed = pyqtSignal()
     def  __init__(self, main,folder,parent=None):
         super(Ui_ModuleWindow, self).__init__(parent=parent)
+        resolution = QtWidgets.QDesktopWidget().screenGeometry()
+        width = resolution.width()
+        height = resolution.height()
+        self.resize(width*(0.75),height*(0.7))
         self.ui = Window()
+
         self.ui.setupUi(self,main,folder)
         #self.showMaximized()
+        #self.showNormal()
+
         self.resized.connect(self.resize_dockComponents)
+
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+        centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
 
     def resizeEvent(self, event):
         self.resized.emit()
@@ -104,8 +119,8 @@ class Ui_ModuleWindow(QtWidgets.QMainWindow):
         width = self.ui.outputDock.width()
         self.ui.outputDock.resize(width,self.height())
         self.ui.out_widget.resize(width,posi)
-        self.ui.btn_CreateDesign.move((width/2)-168,posi+8)
-        self.ui.save_outputDock.move((width/2)+28,posi+8)
+        self.ui.btn_CreateDesign.move((width/2)-(186/2),posi+8)
+        self.ui.save_outputDock.move((width/2)-(186/2),posi+52)
 
     def closeEvent(self, event):
         '''
@@ -115,6 +130,9 @@ class Ui_ModuleWindow(QtWidgets.QMainWindow):
                                      "Are you sure you want to quit?", QMessageBox.Yes, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
+            logger = logging.getLogger('osdag')  #  Remove all the previous handlers
+            for handler in logger.handlers[:]:
+                logger.removeHandler(handler)
             self.closed.emit()
             event.accept()
         else:
@@ -122,6 +140,12 @@ class Ui_ModuleWindow(QtWidgets.QMainWindow):
 
 class Window(QMainWindow):
     #closed = pyqtSignal()
+    def center(self):
+        frameGm = self.frameGeometry()
+        screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
+        centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+        frameGm.moveCenter(centerPoint)
+        self.move(frameGm.topLeft())
 
     def open_customized_popup(self, op, KEYEXISTING_CUSTOMIZED):
         """
@@ -142,11 +166,11 @@ class Window(QMainWindow):
     def open_summary_popup(self, main):
 
         if not main.design_button_status:
-            QMessageBox.warning(QMessageBox(), 'Warning', 'No design created!')
+            QMessageBox.warning(self, 'Warning', 'No design created!')
             return
 
         self.new_window = QtWidgets.QDialog()
-        self.new_ui = Ui_Dialog1(self.design_exist)
+        self.new_ui = Ui_Dialog1(main.design_button_status)
         self.new_ui.setupUi(self.new_window, main)
         self.new_ui.btn_browse.clicked.connect(lambda: self.getLogoFilePath(self.new_window, self.new_ui.lbl_browse))
         self.new_ui.btn_saveProfile.clicked.connect(lambda: self.saveUserProfile(self.new_window))
@@ -216,7 +240,7 @@ class Window(QMainWindow):
                                                   '*.txt')
         if os.path.isfile(filename):
             outfile = open(filename, 'r')
-            reportsummary = yaml.load(outfile)
+            reportsummary = yaml.safe_load(outfile)
             self.new_ui.lineEdit_companyName.setText(reportsummary["ProfileSummary"]['CompanyName'])
             self.new_ui.lbl_browse.setText(reportsummary["ProfileSummary"]['CompanyLogo'])
             self.new_ui.lineEdit_groupName.setText(reportsummary["ProfileSummary"]['Group/TeamName'])
@@ -349,8 +373,8 @@ class Window(QMainWindow):
         self.frame_2.setMinimumSize(QtCore.QSize(0, 100))
         self.frame_2.setFrameShape(QtWidgets.QFrame.Box)
         self.frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame_2.setLineWidth(1)
-        self.frame_2.setMidLineWidth(1)
+        #self.frame_2.setLineWidth(1)
+        #self.frame_2.setMidLineWidth(1)
         self.frame_2.setObjectName("frame_2")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.frame_2)
         self.verticalLayout.setContentsMargins(1, 1, 1, 1)
@@ -400,6 +424,9 @@ class Window(QMainWindow):
         self.menuGraphics = QtWidgets.QMenu(self.menubar)
 
         self.menuGraphics.setObjectName("menuGraphics")
+        self.menuDB = QtWidgets.QMenu(self.menubar)
+
+        self.menuDB.setObjectName("menuDB")
         MainWindow.setMenuBar(self.menubar)
 
         ####################################################################
@@ -419,7 +446,7 @@ class Window(QMainWindow):
         #self.inputDock.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         font = QtGui.QFont()
         font.setFamily("Arial")
-        font.setPointSize(11)
+        font.setPointSize(10)
         font.setBold(True)
         font.setItalic(False)
         font.setWeight(75)
@@ -482,7 +509,7 @@ class Window(QMainWindow):
                 #l.setGeometry(QtCore.QRect(6, 10 + i, 120, 25))
 
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 l.setFont(font)
@@ -498,7 +525,7 @@ class Window(QMainWindow):
                 combo = QtWidgets.QComboBox(self.dockWidgetContents)
                 #combo.setGeometry(QtCore.QRect(150, 10 + i, 150, 27))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 combo.setFont(font)
@@ -518,14 +545,14 @@ class Window(QMainWindow):
 
                 if lable == 'Material':
                     combo.setCurrentIndex(1)
-                    maxi_width_right = max(maxi_width_right, item_width+5)
+                    maxi_width_right = max(maxi_width_right, item_width)
                 else:
                     combo.view().setMinimumWidth(item_width + 25)
 
             if type == TYPE_TEXTBOX:
                 r = QtWidgets.QLineEdit(self.dockWidgetContents)
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 r.setFont(font)
@@ -562,7 +589,7 @@ class Window(QMainWindow):
                 l = QtWidgets.QLineEdit(self.dockWidgetContents)
                 l.setGeometry(QtCore.QRect(150, 10 + i, 150, 27))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(True)
                 font.setWeight(50)
                 l.setFont(font)
@@ -707,7 +734,7 @@ class Window(QMainWindow):
                     self.on_change_connect(key_changed, updated_list, data)
 
         self.btn_Reset = QtWidgets.QPushButton(self.dockWidgetContents)
-        self.btn_Reset.setGeometry(QtCore.QRect((maxi_width/2)-110, 650, 100, 35))
+        self.btn_Reset.setGeometry(QtCore.QRect((maxi_width/2)-110, 650, 100, 30))
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
@@ -717,7 +744,7 @@ class Window(QMainWindow):
         self.btn_Reset.setObjectName("btn_Reset")
 
         self.btn_Design = QtWidgets.QPushButton(self.dockWidgetContents)
-        self.btn_Design.setGeometry(QtCore.QRect((maxi_width/2)+10, 650, 100, 35))
+        self.btn_Design.setGeometry(QtCore.QRect((maxi_width/2)+10, 650, 100, 30))
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
@@ -749,7 +776,7 @@ class Window(QMainWindow):
         #self.outputDock.setMaximumSize(QtCore.QSize(maxi_width+220, 710))
         font = QtGui.QFont()
         font.setFamily("Arial")
-        font.setPointSize(11)
+        font.setPointSize(10)
         font.setBold(True)
         font.setWeight(75)
         self.outputDock.setFont(font)
@@ -787,7 +814,7 @@ class Window(QMainWindow):
                 l = QtWidgets.QLabel(self.dockWidgetContents_out)
                 #l.setGeometry(QtCore.QRect(6, 10 + i, maxi_width , 25))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 l.setFont(font)
@@ -807,7 +834,7 @@ class Window(QMainWindow):
 
                 #r.setGeometry(QtCore.QRect(100, 10 + i, 150, 27))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 r.setFont(font)
@@ -828,7 +855,7 @@ class Window(QMainWindow):
 
                 #b.setGeometry(QtCore.QRect(150, 10 + i, 150, 27))
                 font = QtGui.QFont()
-                font.setPointSize(11)
+                font.setPointSize(10)
                 font.setBold(False)
                 font.setWeight(50)
                 b.setFont(font)
@@ -852,7 +879,7 @@ class Window(QMainWindow):
                 font.setWeight(65)
                 q.setFont(font)
                 q.setObjectName("_title")
-
+                # q.setVisible(True if option[4] else False)
                 #q.setFixedSize(q.size())
                 q.setText(_translate("MainWindow",
                                      "<html><head/><body><p><span style=\" font-weight:600;\">" + lable + "</span></p></body></html>"))
@@ -913,8 +940,9 @@ class Window(QMainWindow):
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.outputDock)
         self.btn_CreateDesign = QtWidgets.QPushButton(self.dockWidgetContents_out)
         self.save_outputDock = QtWidgets.QPushButton(self.dockWidgetContents_out)
+
         self.btn_CreateDesign.setFixedSize(185, 35)
-        self.save_outputDock.setFixedSize(140, 35)
+        self.save_outputDock.setFixedSize(185, 35)
         self.btn_CreateDesign.setAutoDefault(True)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -1020,6 +1048,24 @@ class Window(QMainWindow):
         font.setFamily("DejaVu Sans")
         self.actionRotate_3D_model.setFont(font)
         self.actionRotate_3D_model.setObjectName("actionRotate_3D_model")
+        self.submenuDownload_db = QtWidgets.QMenu(MainWindow)
+        self.submenuDownload_db.setFont(font)
+        self.submenuDownload_db.setObjectName("submenuDownload_db")
+        self.actionDownload_column = QtWidgets.QAction(MainWindow)
+        self.actionDownload_column.setFont(font)
+        self.actionDownload_column.setObjectName("actionDownload_column")
+        self.actionDownload_beam = QtWidgets.QAction(MainWindow)
+        self.actionDownload_beam.setFont(font)
+        self.actionDownload_beam.setObjectName("actionDownload_beam")
+        self.actionDownload_channel = QtWidgets.QAction(MainWindow)
+        self.actionDownload_channel.setFont(font)
+        self.actionDownload_channel.setObjectName("actionDownload_channel")
+        self.actionDownload_angle = QtWidgets.QAction(MainWindow)
+        self.actionDownload_angle.setFont(font)
+        self.actionDownload_angle.setObjectName("actionDownload_angle")
+        self.actionReset_db = QtWidgets.QAction(MainWindow)
+        self.actionReset_db.setFont(font)
+        self.actionReset_db.setObjectName("actionReset_db")
         self.actionView_2D_on_XY = QtWidgets.QAction(MainWindow)
         self.actionView_2D_on_XY.setObjectName("actionView_2D_on_XY")
         self.actionView_2D_on_YZ = QtWidgets.QAction(MainWindow)
@@ -1129,8 +1175,11 @@ class Window(QMainWindow):
         self.actionDesign_Preferences.triggered.connect(lambda: self.common_function_for_save_and_design(main, data, "Design_Pref"))
         self.actionDesign_Preferences.triggered.connect(lambda: self.combined_design_prefer(data,main))
         self.actionDesign_Preferences.triggered.connect(self.design_preferences)
-        self.designPrefDialog = DesignPreferences(main, input_dictionary=self.input_dock_inputs)
+        self.designPrefDialog = DesignPreferences(main, self, input_dictionary=self.input_dock_inputs)
 
+        self.actionOsdagSectionModeller=QtWidgets.QAction(MainWindow)
+        self.actionOsdagSectionModeller.setObjectName("actionDesign_Preferences")
+        self.actionOsdagSectionModeller.triggered.connect(self.osdag_section_modeller)
         # self.designPrefDialog.rejected.connect(lambda: self.design_preferences('rejected'))
         self.actionfinPlate_quit = QtWidgets.QAction(MainWindow)
         self.actionfinPlate_quit.setObjectName("actionfinPlate_quit")
@@ -1154,6 +1203,7 @@ class Window(QMainWindow):
         # self.menuEdit.addAction(self.actionCopy)
         # self.menuEdit.addAction(self.actionPaste)
         self.menuEdit.addAction(self.actionDesign_Preferences)
+        self.menuEdit.addAction(self.actionOsdagSectionModeller)
         self.menuView.addAction(self.actionEnlarge_font_size)
         self.menuView.addSeparator()
         self.menuHelp.addAction(self.actionSample_Tutorials)
@@ -1175,10 +1225,18 @@ class Window(QMainWindow):
             self.menuGraphics.addAction(action)
         self.menuGraphics.addSeparator()
         self.menuGraphics.addAction(self.actionChange_background)
+        self.menuDB.addMenu(self.submenuDownload_db)
+        self.submenuDownload_db.addAction(self.actionDownload_column)
+        self.submenuDownload_db.addAction(self.actionDownload_beam)
+        self.submenuDownload_db.addAction(self.actionDownload_angle)
+        self.submenuDownload_db.addAction(self.actionDownload_channel)
+        self.menuDB.addSeparator()
+        self.menuDB.addAction(self.actionReset_db)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuGraphics.menuAction())
+        self.menubar.addAction(self.menuDB.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi()
@@ -1195,6 +1253,12 @@ class Window(QMainWindow):
         self.actionCreate_design_report.triggered.connect(lambda:self.open_summary_popup(main))
         self.actionZoom_out.triggered.connect(lambda: self.zoom_model(zoom_type="out"))
         self.actionZoom_in.triggered.connect(lambda: self.zoom_model(zoom_type="in"))
+        self.actionDownload_column.triggered.connect(lambda: self.designPrefDialog.ui.download_Database(table="Columns"))
+        self.actionDownload_beam.triggered.connect(lambda: self.designPrefDialog.ui.download_Database(table="Beams"))
+        self.actionDownload_channel.triggered.connect(lambda: self.designPrefDialog.ui.download_Database(table="Channels"))
+        self.actionDownload_angle.triggered.connect(lambda: self.designPrefDialog.ui.download_Database(table="Angles"))
+        self.actionReset_db.triggered.connect(self.database_reset)
+
 
         from osdagMainSettings import backend_name
         self.display, _ = self.init_display(backend_str=backend_name())
@@ -1522,7 +1586,7 @@ class Window(QMainWindow):
         try:
             in_file = str(fileName)
             with open(in_file, 'r') as fileObject:
-                uiObj = yaml.load(fileObject)
+                uiObj = yaml.safe_load(fileObject)
             module = uiObj[KEY_MODULE]
 
             # module_class = self.return_class(module)
@@ -1595,7 +1659,8 @@ class Window(QMainWindow):
         elif trigger_type == "Design_Pref":
 
             if self.prev_inputs != self.input_dock_inputs:
-                self.designPrefDialog = DesignPreferences(main, input_dictionary=self.input_dock_inputs)
+                self.designPrefDialog = DesignPreferences(main, self, input_dictionary=self.input_dock_inputs)
+
                 if 'Select Section' in self.input_dock_inputs.values():
                     self.designPrefDialog.flag = False
                 else:
@@ -1612,7 +1677,7 @@ class Window(QMainWindow):
 
             if error is not None:
                 self.show_error_msg(error)
-
+                return
             out_list = main.output_values(main, status)
             for option in out_list:
                 if option[2] == TYPE_TEXTBOX:
@@ -1626,8 +1691,6 @@ class Window(QMainWindow):
                 elif option[2] == TYPE_OUT_BUTTON:
                     self.dockWidgetContents_out.findChild(QtWidgets.QWidget, option[0]).setEnabled(True)
 
-
-            self.design_exist = False
 
             if status is True and main.module in [KEY_DISP_FINPLATE, KEY_DISP_BEAMCOVERPLATE,
                                                   KEY_DISP_BEAMCOVERPLATEWELD, KEY_DISP_CLEATANGLE,
@@ -1644,9 +1707,9 @@ class Window(QMainWindow):
                     action.setEnabled(True)
                 fName = str('./ResourceFiles/images/3d.png')
                 file_extension = fName.split(".")[-1]
+
                 if file_extension == 'png':
                     self.display.ExportToImage(fName)
-                self.design_exist = True
 
             else:
                 for chkbox in main.get_3d_components(main):
@@ -1938,7 +2001,6 @@ class Window(QMainWindow):
     def design_preferences(self):
         #print(self.designPrefDialog.module_window.input_dock_inputs)
         self.designPrefDialog.show()
-        self.prev_inputs = self.input_dock_inputs
 
     # Function for getting input for design preferences from input dock
     '''
@@ -2023,29 +2085,27 @@ class Window(QMainWindow):
                     arg_list.append(key.text())
 
             arg_list.append(self.input_dock_inputs)
-            try:
-                tab1 = self.designPrefDialog.ui.tabWidget.findChild(QtWidgets.QWidget, tab_name)
-                key1 = tab.findChild(QtWidgets.QWidget, KEY_SECSIZE_SELECTED)
-                value1 = key1.text()
-                arg_list.append({KEY_SECSIZE_SELECTED: value1})
-            except:
-                pass
+            # try:
+            #     tab1 = self.designPrefDialog.ui.tabWidget.findChild(QtWidgets.QWidget, tab_name)
+            #     key1 = tab.findChild(QtWidgets.QWidget, KEY_SECSIZE_SELECTED)
+            #     value1 = key1.text()
+            #     arg_list.append({KEY_SECSIZE_SELECTED: value1})
+            # except:
+            #     pass
             val = f(arg_list)
 
             for k2_key_name in k2_key_list:
+                print(k2_key_name)
                 k2 = tab.findChild(QtWidgets.QWidget, k2_key_name)
-                if typ == TYPE_COMBOBOX:
+                if isinstance(k2, QtWidgets.QComboBox):
                     k2.clear()
                     for values in val[k2_key_name]:
                         k2.addItem(str(values))
-                elif typ == TYPE_TEXTBOX:
+                if isinstance(k2, QtWidgets.QLineEdit):
                     k2.setText(str(val[k2_key_name]))
-                elif typ == TYPE_IMAGE:
-                    # k2 = tab.dockWidgetContents.findChild(QtWidgets.QWidget, k2_key_name)
-                    pixmap1 = QPixmap(val)
-                    print(pixmap1,"gbfbf")
+                if isinstance(k2, QtWidgets.QLabel):
+                    pixmap1 = QPixmap(val[k2_key_name])
                     k2.setPixmap(pixmap1)
-
 
     def refresh_section_connect(self, add_button, prev, key_name, key_type, tab_key, arg,data):
         add_button.clicked.connect(lambda: self.refresh_section(prev, key_name, key_type, tab_key, arg,data))
@@ -2234,6 +2294,7 @@ class Window(QMainWindow):
         self.menuView.setTitle(_translate("MainWindow", "View"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.menuGraphics.setTitle(_translate("MainWindow", "Graphics"))
+        self.menuDB.setTitle(_translate("MainWindow", "Database"))
         self.inputDock.setWindowTitle(_translate("MainWindow", "Input dock"))
         #self.pushButton.setText(_translate("MainWindow", "PushButton"))
         self.btn_Reset.setToolTip(_translate("MainWindow", "Alt+R"))
@@ -2276,6 +2337,12 @@ class Window(QMainWindow):
         self.actionZoom_out.setShortcut(_translate("MainWindow", "Ctrl+O"))
         self.actionPan.setText(_translate("MainWindow", "Pan"))
         self.actionRotate_3D_model.setText(_translate("MainWindow", "Rotate 3D model"))
+        self.submenuDownload_db.setTitle(_translate("MainWindow", "Download"))
+        self.actionDownload_column.setText(_translate("MainWindow", "\n\u2022 Column"))
+        self.actionDownload_beam.setText(_translate("MainWindow", "\n\u2022 Beam"))
+        self.actionDownload_channel.setText(_translate("MainWindow", "\n\u2022 Channel"))
+        self.actionDownload_angle.setText(_translate("MainWindow", "\n\u2022 Angle"))
+        self.actionReset_db.setText(_translate("MainWindow", "Reset"))
         self.actionView_2D_on_XY.setText(_translate("MainWindow", "View 2D on XY"))
         self.actionView_2D_on_YZ.setText(_translate("MainWindow", "View 2D on YZ"))
         self.actionView_2D_on_ZX.setText(_translate("MainWindow", "View 2D on ZX"))
@@ -2308,6 +2375,8 @@ class Window(QMainWindow):
         self.actionFAQ.setText(_translate("MainWindow", "FAQ"))
         self.actionDesign_Preferences.setText(_translate("MainWindow", "Design Preferences"))
         self.actionDesign_Preferences.setShortcut(_translate("MainWindow", "Alt+P"))
+        self.actionOsdagSectionModeller.setText(_translate("MainWindow", "Section Modeller"))
+        self.actionOsdagSectionModeller.setShortcut(_translate("MainWindow", "Alt+S"))
         self.actionfinPlate_quit.setText(_translate("MainWindow", "Quit"))
         self.actionfinPlate_quit.setShortcut(_translate("MainWindow", "Shift+Q"))
         self.actio_load_input.setText(_translate("MainWindow", "Load input"))
@@ -2327,9 +2396,31 @@ class Window(QMainWindow):
         else:
             widget.hide()
 
+    def database_reset(self):
 
+        conn = sqlite3.connect(PATH_TO_DATABASE)
+        tables = ["Columns", "Beams", "Angles", "Channels"]
+        text = ""
+        for table in tables:
+            query = "DELETE FROM "+str(table)+" WHERE Source = ?"
+            cursor = conn.execute(query, ('Custom',))
+            text += str(table)+": "+str(cursor.rowcount)+" rows deleted. \n"
+            conn.commit()
+            cursor.close()
+        conn.close()
+        message = QMessageBox()
+        message.setWindowTitle('Successful')
+        message.addButton(message.Ok)
+        message.setText(text)
+        message.exec()
 
+# Function for showing Osdag Section Modeller popup
 
+    def osdag_section_modeller(self):
+        self.OsdagSectionModeller=Ui_OsdagSectionModeller()
+        dialog=QtWidgets.QDialog()
+        self.OsdagSectionModeller.setupUi(dialog)
+        dialog.exec()
 
 from . import icons_rc
 if __name__ == '__main__':
