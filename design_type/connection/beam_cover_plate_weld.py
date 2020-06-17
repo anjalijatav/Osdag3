@@ -1600,6 +1600,7 @@ class BeamCoverPlateWeld(MomentConnection):
                 else:
                     class_of_section1 = "N/A"
 
+
         print("class_of_section", class_of_section1)
         if class_of_section1 == "plastic":
             class_of_section1 = 1
@@ -2415,6 +2416,7 @@ class BeamCoverPlateWeld(MomentConnection):
             self.report_check.append(t1)
 
 ####################### Flange plate Capacities check########################
+
         ###################
         # if self.flange_plate_capacity_axial == True:
         if self.flange_plate_weld_status == True:
@@ -2538,10 +2540,8 @@ class BeamCoverPlateWeld(MomentConnection):
 
 
 
-
-
-
-        ##############outside#######
+#
+##############outside#######
         # if self.flange_weld.strength > self.flange_weld.stress:
         #     if self.available_long_flange_length > self.flange_plate.height:
         #         self.design_status = True
@@ -2553,6 +2553,7 @@ class BeamCoverPlateWeld(MomentConnection):
         #     self.flange_plate.length = 2 * (self.available_long_flange_length + (2*self.flange_weld.size)) + self.flange_plate.gap
         #     self.l_req_flangelength = round_up((2 * self.available_long_flange_length) + self.flange_plate.height - (
         #                 2 * self.flange_weld.size))
+
     ##############outside#######
         # if self.flange_weld.stress < self.flange_weld.strength:
         # if self.available_long_flange_length > self.flange_plate.height:

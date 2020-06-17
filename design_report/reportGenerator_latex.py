@@ -43,7 +43,7 @@ class CreateLatex(Document):
         jobnumber = str(reportsummary['JobNumber'])
         client = str(reportsummary['Client'])
 
-        does_design_exist = reportsummary['does_design_exist']
+        does_design_exist  = reportsummary['does_design_exist']
         # Add document header
         geometry_options = {"top": "4cm", "hmargin": "2cm", "headheight": "65pt", "footskip": "65pt"}
         doc = Document(geometry_options=geometry_options,indent=False)
