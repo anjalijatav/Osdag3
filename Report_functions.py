@@ -24,10 +24,11 @@ from pylatex.utils import bold
 
 
 def min_pitch(d):
-    """ Calculate the min pitch distance
-
-    :param d:Diameter of provided bolt in mm (float)
-    :return:
+    """
+     Calculate the min pitch distance
+     Args:
+          d:Diameter of provided bolt in mm (float)
+     Returns:
            Minimum pitch distance in mm (float)
      Note:
             Reference:
@@ -50,7 +51,8 @@ def min_pitch(d):
 
 
 def cl_10_2_2_min_spacing(d, parameter='pitch'):
-    """ minimum spacing between two adjacent fasteners as per cl.10.2.2, IS 800:2007
+    """
+    minimum spacing between two adjacent fasteners as per cl.10.2.2, IS 800:2007
     Args:
         d: diameter of the fastener (int)
 
@@ -72,7 +74,8 @@ def cl_10_2_2_min_spacing(d, parameter='pitch'):
 
 
 def cl_10_2_3_1_max_spacing(t, parameter='pitch'):
-    """ maximum spacing between two adjacent fasteners as per cl.10.2.3.1, IS 800:2007
+    """
+    maximum spacing between two adjacent fasteners as per cl.10.2.3.1, IS 800:2007
     Args:
         t: thickness of the thinner plate (int)
 
@@ -94,7 +97,8 @@ def cl_10_2_3_1_max_spacing(t, parameter='pitch'):
 
 
 def cl_10_2_4_2_min_edge_end_dist(d, bolt_hole_type='Standard', edge_type='a - Sheared or hand flame cut', parameter='end_dist'):
-    """Calculate minimum end and edge distance
+    """
+    Calculate minimum end and edge distance
     Args:
          d - Nominal diameter of fastener in mm (float)
          bolt_hole_type - Either 'Standard', 'Over-sized', 'Short Slot' or 'Long Slot' (str)
@@ -132,7 +136,8 @@ def cl_10_2_4_2_min_edge_end_dist(d, bolt_hole_type='Standard', edge_type='a - S
 
 
 def cl_10_2_4_3_max_edge_dist(plate_thicknesses, f_y, corrosive_influences=False, parameter='end_dist'):
-    """Calculate maximum end and edge distance
+    """
+    Calculate maximum end and edge distance
     Args:
          plate_thicknesses - List of thicknesses in mm of outer plates (list or tuple)
          f_y - Yield strength of plate material in MPa (float)
@@ -175,11 +180,13 @@ def cl_10_2_4_3_max_edge_dist(plate_thicknesses, f_y, corrosive_influences=False
     return end_edge_eqn
 
 def max_pitch(t):
-    """  Calculate the maximum pitch distance
+    """
+     Calculate the maximum pitch distance
+     Args:
 
-
-    :param t: Thickness of thinner plate in mm (float)
-    :return: Max pitch in mm (float)
+         t: Thickness of thinner plate in mm (float)
+     Returns:
+           Max pitch in mm (float)
      Note:
             Reference:
             IS 800:2007,  cl 10.2.3
@@ -206,16 +213,18 @@ def max_pitch(t):
     return max_pitch_eqn
 
 def min_edge_end(d_0,edge_type):
-    """ Calculate minimum end and edge distance
+    """
+    Calculate minimum end and edge distance
 
+    Args:
+           d_0:Nominal diameter of fastener in mm (float)
 
-    :param d_0:Nominal diameter of fastener in mm (float)
+           edge_type: Either 'hand_flame_cut' or 'machine_flame_cut' (str)
 
-    :param edge_type: Either 'hand_flame_cut' or 'machine_flame_cut' (str)
+    Returns:
+            Minimum edge and end distances from the centre of any hole to the nearest edge of a plate in mm (float)
 
-    :return:   Minimum edge and end distances from the centre of any hole to the nearest edge of a plate in mm (float)
-
-        Note:
+    Note:
             Reference:
             IS 800:2007, cl. 10.2.4.2
 
@@ -242,16 +251,18 @@ def min_edge_end(d_0,edge_type):
 
 #TODO: consider using max_edge_end_new instead of this function in all modules
 def max_edge_end(f_y,t):
-    """Calculate maximum end and edge distance
+    """
+    Calculate maximum end and edge distance
 
 
+    Args:
+           f_y:Yield strength of plate material in MPa (float)
 
-    :param f_y:Yield strength of plate material in MPa (float)
+           t:Thickness of thinner plate in mm (float)
 
-    :param t:Thickness of thinner plate in mm (float)
-
-    :return: Maximum edge distance to the nearest line of fasteners from an edge of any un-stiffened part in mm (float)
-      Note:
+    Returns:
+            Maximum edge distance to the nearest line of fasteners from an edge of any un-stiffened part in mm (float)
+    Note:
             Reference:
             IS 800:2007, cl. 10.2.4.3
 
@@ -274,15 +285,17 @@ def max_edge_end(f_y,t):
 
 
 def max_edge_end_new(t_fu_fy,corrosive_influences):
-    """Calculate maximum end and edge distance(new)
+    """
+    Calculate maximum end and edge distance(new)
+     Args:
 
+         t_fu_fy: Thickness of thinner plate in mm (float)
+         corrosive_influences: Whether the members are exposed to corrosive influences or not (Boolean)
 
-    :param t_fu_fy: Thickness of thinner plate in mm (float)
-    :param corrosive_influences: Whether the members are exposed to corrosive influences or not (Boolean)
+    Returns:
+         Maximum edge distance to the nearest line of fasteners from an edge of any un-stiffened part in mm (float)
 
-    :return:  Maximum edge distance to the nearest line of fasteners from an edge of any un-stiffened part in mm (float)
-
-        Note:
+    Note:
             Reference:
             IS 800:2007, cl. 10.2.4.3
 
@@ -330,17 +343,19 @@ def max_edge_end_new(t_fu_fy,corrosive_influences):
 
 
 def bolt_shear_prov(f_ub,n_n,a_nb,gamma_mb,bolt_shear_capacity):
-    """ Calculate bolt shearing capacity 
+    """
+    Calculate bolt shearing capacity
+    Args:
+         f_ub: Ultimate tensile strength of the bolt in MPa (float)
+         n_n: Number of shear planes with threads intercepting the shear plane (int)
 
-    :param f_ub: Ultimate tensile strength of the bolt in MPa (float)
-    :param n_n: Number of shear planes with threads intercepting the shear plane (int)
+         a_nb: Net Shear area of the bolt at threads in sq. mm  (float)
 
-    :param a_nb: Net Shear area of the bolt at threads in sq. mm  (float)
-
-    :param gamma_mb: Partial safety factor =1.25 [Ref: Table 5, cl.5.4.1,IS 800:2007]
-    :param bolt_shear_capacity: Bolt shear capacity in KN  (float)
-    :return:  Shear capacity of bolt(provided ) in KN  (float)
-       Note:
+         gamma_mb: Partial safety factor =1.25 [Ref: Table 5, cl.5.4.1,IS 800:2007]
+         bolt_shear_capacity: Bolt shear capacity in KN  (float)
+    Returns:
+            Shear capacity of bolt(provided ) in KN  (float)
+    Note:
             Reference:
             IS 800:2007, cl. 10.3.3
 
@@ -361,17 +376,19 @@ def bolt_shear_prov(f_ub,n_n,a_nb,gamma_mb,bolt_shear_capacity):
 
 
 def bolt_bearing_prov(k_b,d,conn_plates_t_fu_fy,gamma_mb,bolt_bearing_capacity):
-    """  Calculate bolt bearing capacity of bolt
+    """
+    Calculate bolt bearing capacity of bolt
 
-    
-    :param k_b:  min(e/(3.0*d_0), p/(3.0*d_0)-0.25, f_ub/f_u, 1.0)
+    Args:
+        k_b:  min(e/(3.0*d_0), p/(3.0*d_0)-0.25, f_ub/f_u, 1.0)
        
-    :param d: Diameter of bolt in mm (float)
-    :param conn_plates_t_fu_fy: Ultimate tensile strength of the plate in MPa (float)
-    :param gamma_mb:Partial safety factor =1.25 [Ref: Table 5, cl.5.4.1,IS 800:2007]
-    :param bolt_bearing_capacity: Bolt bearing capacity in KN (float)
-    :return:   Bearing capacity of bolt(provided ) in KN  (float)
-       Note:
+        d: Diameter of bolt in mm (float)
+        conn_plates_t_fu_fy: Ultimate tensile strength of the plate in MPa (float)
+        gamma_mb:Partial safety factor =1.25 [Ref: Table 5, cl.5.4.1,IS 800:2007]
+        bolt_bearing_capacity: Bolt bearing capacity in KN (float)
+    Returns:
+            Bearing capacity of bolt(provided ) in KN  (float)
+    Note:
             Reference:
             IS 800:2007, cl. 10.3.4
  
@@ -402,17 +419,19 @@ def bolt_bearing_prov(k_b,d,conn_plates_t_fu_fy,gamma_mb,bolt_bearing_capacity):
 
 
 def bolt_capacity_prov(bolt_shear_capacity,bolt_bearing_capacity,bolt_capacity):
-    """  Calculate bolt  capacity (min of bearing and shearing)
+    """
+    Calculate bolt  capacity (min of bearing and shearing)
 
+    Args:
+         bolt_shear_capacity: Bolt shearing capacity in KN (float)
     
-    :param bolt_shear_capacity: Bolt shearing capacity in KN (float)
+         bolt_bearing_capacity: Bolt bearing capacity in KN (float)
     
-    :param bolt_bearing_capacity: Bolt bearing capacity in KN (float)
-    
-    :param bolt_capacity: Bolt  capacity (min of bearing and shearing) in KN (float)
+         bolt_capacity: Bolt  capacity (min of bearing and shearing) in KN (float)
 
-    :return:  Capacity  of bolt (min of bearing and shearing) in KN (float)
-       Note:
+    Returns:
+            Capacity  of bolt (min of bearing and shearing) in KN (float)
+    Note:
             Reference:
             IS 800:2007, cl. 10.3.2
  
@@ -432,7 +451,8 @@ def bolt_capacity_prov(bolt_shear_capacity,bolt_bearing_capacity,bolt_capacity):
 
 
 def cl_10_3_5_bearing_bolt_tension_resistance(f_ub, f_yb, A_sb, A_n, safety_factor_parameter=KEY_DP_WELD_FAB_FIELD):
-    """Calculate design tensile strength of bearing bolt
+    """
+    Calculate design tensile strength of bearing bolt
     Args:
         f_ub - Ultimate tensile strength of the bolt in MPa (float)
         f_yb - Yield strength of the bolt in MPa (float)
@@ -460,13 +480,15 @@ def cl_10_3_5_bearing_bolt_tension_resistance(f_ub, f_yb, A_sb, A_n, safety_fact
 
 
 def cl_10_3_6_bearing_bolt_combined_shear_and_tension(V_sb, V_db, T_b, T_db, value):
-    """Check for bolt subjected to combined shear and tension
+    """
+    Check for bolt subjected to combined shear and tension
     Args:
         V_sb - factored shear force acting on the bolt,
         V_db - design shear capacity,
         T_b - factored tensile force acting on the bolt,
         T_db - design tension capacity.
-    return: combined shear and friction value
+    Returns:
+        combined shear and friction value
     Note:
         Reference:
         IS 800:2007,  cl 10.3.6
@@ -487,22 +509,24 @@ def cl_10_3_6_bearing_bolt_combined_shear_and_tension(V_sb, V_db, T_b, T_db, val
 
 
 def HSFG_bolt_capacity_prov(mu_f,n_e,K_h,fub,Anb,gamma_mf,capacity):
-    """  Calculate design shear strength of friction grip bolt as governed by slip
+    """
+    Calculate design shear strength of friction grip bolt as governed by slip
  
-       
-    :param mu_f:Coefficient of friction (slip factor) as specified in Table 20 , IS 800:2007
+    Args:
+         mu_f:Coefficient of friction (slip factor) as specified in Table 20 , IS 800:2007
            
-    :param n_e:Number of  effective interfaces offering  frictional resistance to slip (int)
-    :param K_h:1 for bolts in clearence holes and 0.85 for bolts in oversized holes
-    :param fub: Ultimate tensile strength of the bolt in KN (float)
+         n_e:Number of  effective interfaces offering  frictional resistance to slip (int)
+         K_h:1 for bolts in clearence holes and 0.85 for bolts in oversized holes
+         fub: Ultimate tensile strength of the bolt in KN (float)
            
-    :param Anb: Net area of bolt in mm square
-    :param gamma_mf:Partial safety factor  [Ref: Table 5, cl.5.4.1,IS 800:2007]
-    :param capacity: Design shear strength of friction grip bolt as governed by slip in N (float)
+         Anb: Net area of bolt in mm square
+         gamma_mf:Partial safety factor  [Ref: Table 5, cl.5.4.1,IS 800:2007]
+         capacity: Design shear strength of friction grip bolt as governed by slip in N (float)
 
-    :return:Design shear strength of friction grip bolt as governed by slip in N (float)
+    Returns:
+           Design shear strength of friction grip bolt as governed by slip in N (float)
 
-      Note:
+    Note:
             Reference:
             IS 800:2007,  cl 10.4.3
 
@@ -526,15 +550,16 @@ def HSFG_bolt_capacity_prov(mu_f,n_e,K_h,fub,Anb,gamma_mf,capacity):
 
 def get_trial_bolts(V_u, A_u,bolt_capacity,multiple=1,conn=None):
 
-    """ Calculate Total no. of bolts required for both side of web/ flange splices
+    """
+    Calculate Total no. of bolts required for both side of web/ flange splices
 
-
-    :param V_u:Actual  shear force acting on the bolt(direct shear+ force due to eccentricity) in KN
-    :param A_u: Axial force acting on the bolt inn KN
-    :param bolt_capacity: Capacity of  web/flange bolt  in KN
-    :param multiple: 2 for web ,4 for flange  (int)
-    :return:
-      Total no. of bolts required for both side of web/ flange splices
+    Args:
+        V_u:Actual  shear force acting on the bolt(direct shear+ force due to eccentricity) in KN
+        A_u: Axial force acting on the bolt in KN
+        bolt_capacity: Capacity of  web/flange bolt  in KN
+        multiple: 2 for web ,4 for flange  (int)
+    Returns:
+          Total no. of bolts required for both side of web/ flange splices
     """
 
     res_force = math.sqrt(V_u**2+ A_u**2)
@@ -555,20 +580,19 @@ def get_trial_bolts(V_u, A_u,bolt_capacity,multiple=1,conn=None):
 
 
 def parameter_req_bolt_force(bolts_one_line,gauge,ymax,xmax,bolt_line,pitch,length_avail, conn=None):
-    """ Calculate xmax and ymax
-
-    :param bolts_one_line: No. of bolts in one row (float)
-    :param gauge: Gauge distance in mm (float)
-    :param ymax: Vertical distance of farthest bolt from center of rotation of bolt group in mm (float)
-
-
-    :param xmax: :Horizontal distance of farthest bolt from center of rotation of bolt group in mm (float)
-
-    :param bolt_line: No. of row of bolts (float)
-    :param pitch: Pitch distance in mm (float)
-    :param length_avail: Length available in mm  (float)
-    :param conn:Connection type (str)
-    :return: xmax and ymax
+    """
+    Calculate xmax and ymax
+    Args:
+        bolts_one_line: No. of bolts in one row (float)
+        gauge: Gauge distance in mm (float)
+        ymax: Vertical distance of farthest bolt from center of rotation of bolt group in mm (float)
+        xmax: :Horizontal distance of farthest bolt from center of rotation of bolt group in mm (float)
+        bolt_line: No. of row of bolts (float)
+        pitch: Pitch distance in mm (float)
+        length_avail: Length available in mm  (float)
+        conn:Connection type (str)
+    Returns:
+         xmax and ymax
 
 
 
@@ -614,13 +638,15 @@ def parameter_req_bolt_force(bolts_one_line,gauge,ymax,xmax,bolt_line,pitch,leng
 
 
 def moment_demand_req_bolt_force(shear_load, web_moment,moment_demand,ecc):
-    """ Calculate moment demand on web section
-
-    :param shear_load: Factored shear force acting on member in KN (float)
-    :param web_moment: Moment in web in KN-m (float)
-    :param moment_demand: Moment demand by section in N-mm (float)
-    :param ecc:Distance between bolt center line toface of connected supporting section in mm (float)
-    :return: Moment demand on  web section in N-mm (float)
+    """
+     Calculate moment demand on web section
+     Args:
+          shear_load: Factored shear force acting on member in KN (float)
+          web_moment: Moment in web in KN-m (float)
+          moment_demand: Moment demand by section in N-mm (float)
+          ecc:Distance between bolt center line toface of connected supporting section in mm (float)
+    Returns:
+          Moment demand on  web section in N-mm (float)
 
     """
 
@@ -638,13 +664,19 @@ def moment_demand_req_bolt_force(shear_load, web_moment,moment_demand,ecc):
 
 def design_capacity_of_end_plate(M_dp,b_eff,f_y,gamma_m0,t_p):
     """
+    Calculate design capacity of end plate
+    Args:
+         M_dp:Design capacity of end plate in N-mm (float)
+         b_eff:Effective width for load dispersion
+         f_y:Yeild strength of  plate material in N/mm square (float)
+         gamma_m0: IS800_2007.cl_5_4_1_Table_5["gamma_m0"]['yielding']  (float)
+         t_p:Thickness of end plate
+    Returns:
+        design capacity of end plate
+    Note:
+            Reference:
+            IS 800:2007,  cl 7.3
 
-    :param M_dp:
-    :param b_eff:
-    :param f_y:
-    :param gamma_m0:
-    :param t_p:
-    :return:
     """
 
     M_dp= str(M_dp)
@@ -658,26 +690,30 @@ def design_capacity_of_end_plate(M_dp,b_eff,f_y,gamma_m0,t_p):
     design_capacity_of_end_plate.append(NoEscape(r'\begin{aligned}  M_{dp} & = { \frac{ b_{eff} *t_p^2 *f_y}{ 4*\gamma_{m0}}}\\'))
 
     design_capacity_of_end_plate.append(NoEscape(r'&={\frac{' + b_eff +r'*'+t_p+r'^2'+' *'+f_y + r'}{4*'+gamma_m0 + r'}}\\'))
-    design_capacity_of_end_plate.append(NoEscape(r'&=' +M_dp  + r'\end{aligned}'))
+    design_capacity_of_end_plate.append(NoEscape(r'&=' +M_dp  + r'\\}'))
+    design_capacity_of_end_plate.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~7.3)&\end{aligned}'))
+
     return design_capacity_of_end_plate
 
 def Vres_bolts(bolts_one_line,ymax,xmax,bolt_line,axial_load ,moment_demand,r,vbv,tmv,tmh,abh,vres,shear_load,conn=None):
-    """ Calculte resultant shear load on each bolt
-
-    :param bolts_one_line: No. of bolts provided in one row (int)
-    :param ymax: Vertical distance of farthest bolt from center of rotation of bolt group in mm (float)
-    :param xmax:Horizontal   distance of farthest bolt from center of rotation of bolt group in mm (float)
-    :param bolt_line: NO. of row of bolts (int)
-    :param axial_load: Axial compressive force due to factored loads in KN (float)
-    :param moment_demand:Moment demand on  web section in KN-mm (float)
-    :param r: Distance of each bolt from center of rotation of each group in mm (float)
-    :param vbv: Horizontal force acting on each bolt in KN (float)
-    :param tmv:Vertical shear force acting on each bolt due to moment devloped by ecentricity in KN (float)
-    :param tmh: Horizontal shear force acting on each bolt due to moment devloped by ecentricity in KN (float)
-    :param abh: Vertical force acting on each bolt in KN (float)
-    :param vres: Resultant sher load on  each bolt in KN (float)
-    :param shear_load: Factored shear force acting on member in KN (float)
-    :return: Resultant shear load on bolt in KN (float)
+    """
+    Calculte resultant shear load on each bolt
+    Args:
+         bolts_one_line: No. of bolts provided in one row (int)
+         ymax: Vertical distance of farthest bolt from center of rotation of bolt group in mm (float)
+         xmax:Horizontal   distance of farthest bolt from center of rotation of bolt group in mm (float)
+         bolt_line: NO. of row of bolts (int)
+         axial_load: Axial compressive force due to factored loads in KN (float)
+         moment_demand:Moment demand on  web section in KN-mm (float)
+         r: Distance of each bolt from center of rotation of each group in mm (float)
+         vbv: Horizontal force acting on each bolt in KN (float)
+         tmv:Vertical shear force acting on each bolt due to moment devloped by ecentricity in KN (float)
+         tmh: Horizontal shear force acting on each bolt due to moment devloped by ecentricity in KN (float)
+         abh: Vertical force acting on each bolt in KN (float)
+         vres: Resultant sher load on  each bolt in KN (float)
+         shear_load: Factored shear force acting on member in KN (float)
+    Returns:
+          Resultant shear load on bolt in KN (float)
 
 
 
@@ -738,19 +774,21 @@ def Vres_bolts(bolts_one_line,ymax,xmax,bolt_line,axial_load ,moment_demand,r,vb
 
 
 def forces_in_web(Au,T,A,t,D,Zw,Mu,Z,Mw,Aw):
-    """ Calculate axial force in web and moment in web
-
-    :param Au: Gross area of web cover plate in mm^2 (float)
-    :param T: Thickness of flaNGE in mm (float)
-    :param A: Total area of smaller column in mm square (float)
-    :param t: Thickness of web in mm (float)
-    :param D: Depth of the column in mm (float)
-    :param Zw: Section modules of web in mm^4 (float)
-    :param Mu: Factored bending moment in N-mm (float)
-    :param Z: Section modules of section in mm^4 (float)
-    :param Mw:Moment in web in N-mm (float)
-    :param Aw: Vertical compression forcecarried by web of the section
-    :return:Web axial force and moment in web
+    """
+    Calculate axial force in web and moment in web
+    Args:
+         Au: Gross area of web cover plate in mm^2 (float)
+         T: Thickness of flaNGE in mm (float)
+         A: Total area of smaller column in mm square (float)
+         t: Thickness of web in mm (float)
+         D: Depth of the column in mm (float)
+         Zw: Section modules of web in mm^4 (float)
+         Mu: Factored bending moment in N-mm (float)
+         Z: Section modules of section in mm^4 (float)
+         Mw:Moment in web in N-mm (float)
+         Aw: Vertical compression force carried by web of the section
+    Returns:
+          Web axial force and moment in web
     """
     Au = str(Au)
     T = str(T)
@@ -776,19 +814,21 @@ def forces_in_web(Au,T,A,t,D,Zw,Mu,Z,Mw,Aw):
 
 
 def forces_in_flange(Au, B,T,A,D,Mu,Mw,Mf,Af,ff):
-    """Calculate forces in flange and flange moment
-
-    :param Au: Factored axial force in KN (float)
-    :param B: Width of flange in mm (float)
-    :param T: Thikness of flange in mm (float)
-    :param A: Total area of smaller column in mm square (float)
-    :param D: Depth of column in mm (float)
-    :param Mu: Factored bending moment in KN-mm (float)
-    :param Mw: Moment in web in KN-mm (float)
-    :param Mf: Moment in flange in KN-mm (float)
-    :param Af: Axial force in flange in KN (float)
-    :param ff: Force in each cover plate due to moment in KN (float)
-    :return: Flange moment,force in each cover plate due to moment,Axial flange force
+    """
+    Calculate forces in flange and flange moment
+    Args:
+         Au: Factored axial force in KN (float)
+         B: Width of flange in mm (float)
+         T: Thikness of flange in mm (float)
+         A: Total area of smaller column in mm square (float)
+         D: Depth of column in mm (float)
+         Mu: Factored bending moment in KN-mm (float)
+         Mw: Moment in web in KN-mm (float)
+         Mf: Moment in flange in KN-mm (float)
+         Af: Axial force in flange in KN (float)
+         ff: Force in each cover plate due to moment in KN (float)
+    Returns:
+          Flange moment,force in each cover plate due to moment,Axial flange force
 
     """
     Au =str(Au)
@@ -819,12 +859,14 @@ def forces_in_flange(Au, B,T,A,D,Mu,Mw,Mf,Af,ff):
 
 
 def min_plate_ht_req(beam_depth,min_plate_ht):
-    """ Calculate min plate height required
-
-    :param beam_depth: Depth of section in mm (float)
-    :param min_plate_ht:Min plate height required in mm (float)
-    :return: Min plate height required
-     Note:
+    """
+    Calculate min plate height required
+    Args:
+        beam_depth: Depth of section in mm (float)
+        min_plate_ht:Min plate height required in mm (float)
+    Returns:
+          Min plate height required
+    Note:
             Reference:
             INSDAG - Chapter 5, Section 5.2.3
 
@@ -832,9 +874,9 @@ def min_plate_ht_req(beam_depth,min_plate_ht):
     beam_depth = str(beam_depth)
     min_plate_ht = str(round(min_plate_ht,2))
     min_plate_ht_eqn = Math(inline=True)
-    min_plate_ht_eqn.append(NoEscape(r'\begin{aligned}0.6 * d_b&= 0.6 * '+ beam_depth + r'='+min_plate_ht+r'\end{aligned}'))
-    min_plate_ht_eqn.append(NoEscape(r'&(Ref~ INSDAG-Chapter 5,&\\'))
-    min_plate_ht_eqn.append(NoEscape(r'&and~Section 5.2.3)&\end{aligned}'))
+    min_plate_ht_eqn.append(NoEscape(r'\begin{aligned}0.6 * d_b&= 0.6 * '+ beam_depth + r'='+min_plate_ht+r'\\}'))
+    min_plate_ht_eqn.append(NoEscape(r'&(Ref~ INSDAG-Chapter 5,~Section 5.2.3)&\end{aligned}'))
+
 
     return min_plate_ht_eqn
 
@@ -842,10 +884,11 @@ def min_plate_ht_req(beam_depth,min_plate_ht):
 def min_flange_plate_ht_req(beam_width,min_flange_plate_ht):## when only outside plate is considered
     """
     Calculate  Min flane plate height
-
-    :param beam_width: Width of section in mm (float)
-    :param min_flange_plate_ht:Min flange plate height in mm (float)
-    :return: Required min flange plate height in mm (float)
+    Args:
+           beam_width: Width of section in mm (float)
+           min_flange_plate_ht:Min flange plate height in mm (float)
+    Returns:
+           Required min flange plate height in mm (float)
     """
     beam_width = str(beam_width)
     min_flange_plate_ht = str(min_flange_plate_ht)
@@ -857,13 +900,15 @@ def min_flange_plate_ht_req(beam_width,min_flange_plate_ht):## when only outside
 
 
 def min_inner_flange_plate_ht_req(beam_width, web_thickness,root_radius,min_inner_flange_plate_ht): ## when inside and outside plate is considered #todo
-    """ Calculate minimum inner flange plate height
-
-    :param beam_width: Width of section in mm (float)
-    :param web_thickness: Web thickness in mm (float)
-    :param root_radius: Root radius in mm (float)
-    :param min_inner_flange_plate_ht: Min inner flange plate height  in mm (float)
-    :return:Minimum inner flange plate height
+    """
+    Calculate minimum inner flange plate height
+    Args:
+        beam_width: Width of section in mm (float)
+        web_thickness: Web thickness in mm (float)
+        root_radius: Root radius in mm (float)
+        min_inner_flange_plate_ht: Min inner flange plate height  in mm (float)
+    Returns:
+         Minimum inner flange plate height
     """
     beam_width = str(beam_width) ### same function used for max height
     min_inner_flange_plate_ht = str(min_inner_flange_plate_ht)
@@ -878,15 +923,17 @@ def min_inner_flange_plate_ht_req(beam_width, web_thickness,root_radius,min_inne
 
 
 def max_plate_ht_req(connectivity,beam_depth, beam_f_t, beam_r_r, notch, max_plate_h):
-    """ Calculate maximum height for fin plate
-
-    :param connectivity:
-    :param beam_depth:Section depth in mm (float)
-    :param beam_f_t: Flange thickness in mm  (float)
-    :param beam_r_r:Root radius in mm  (float)
-    :param notch: Supported section notch height in mm  (float)
-    :param max_plate_h: Fin plate of max height in mm  (float)
-    :return: Maximum height for Fin plate
+    """
+    Calculate maximum height for fin plate
+    Args:
+          connectivity:
+          beam_depth:Section depth in mm (float)
+          beam_f_t: Flange thickness in mm  (float)
+          beam_r_r:Root radius in mm  (float)
+          notch: Supported section notch height in mm  (float)
+          max_plate_h: Fin plate of max height in mm  (float)
+    Returns:
+          Maximum height for Fin plate
     """
     beam_depth = str(beam_depth)
     beam_f_t = str(beam_f_t)
@@ -905,10 +952,12 @@ def max_plate_ht_req(connectivity,beam_depth, beam_f_t, beam_r_r, notch, max_pla
 
 def disp_clause(disp,clause):
     """
-
-    :param disp:
-    :param clause:
-    :return:
+    Find plate height and plate height clause
+    Args:
+        disp:Plate height in mm (float)
+        clause:Plate height clause in mm (float)
+    Returns:
+         plate height and plate height clause
     """
 
     disp_clause_eqn = Math(inline=True)
@@ -918,6 +967,14 @@ def disp_clause(disp,clause):
     return disp_clause_eqn
 
 def end_plate_ht_req(D,e,h_p):
+    """Calculate end plate height foe column end plate connection
+    Args:
+         D:section depth in mm (float)
+         e: End distance in mm (float)
+         h_p:End plate height in mm (float)
+    Returns:
+         End plate height
+    """
 
 
 
@@ -932,6 +989,22 @@ def end_plate_ht_req(D,e,h_p):
     return end_plate_ht_eqn
 
 def end_plate_thk_req(M_ep,b_eff,f_y,gamma_m0,t_p):
+    """
+    Calculate end plate thickness
+     Args:
+         M_ep:Moment acting on the end plate in N-mm (float)
+         b_eff:Effective width for load dispersion
+         f_y:Yeild strength of  plate material in N/mm square (float)
+         gamma_m0: IS800_2007.cl_5_4_1_Table_5["gamma_m0"]['yielding']  (float)
+         t_p:Thickness of end plate
+    Returns:
+        end plate thickness
+    Note:
+            Reference:
+            IS 800:2007,  cl 7.3
+
+
+    """
 
     M_ep= str(M_ep)
     t_p = str(t_p)
@@ -944,12 +1017,26 @@ def end_plate_thk_req(M_ep,b_eff,f_y,gamma_m0,t_p):
     end_plate_thk_eqn.append(NoEscape(r'\begin{aligned} t_p &= {\sqrt{\frac{ M_{ep}* 4*\gamma_{m0}}{ b_{eff}*f_y}}}\\'))
 
     end_plate_thk_eqn.append(NoEscape(r'&={\sqrt{\frac{' + M_ep +  '*4'+'*' +gamma_m0 + r'}{'+b_eff+ r'*' + f_y + r' }}}\\'))
-    end_plate_thk_eqn.append(NoEscape(r'&=' + t_p + '\end{aligned}'))
+    end_plate_thk_eqn.append(NoEscape(r'&=' + t_p + r'\\}'))
+    end_plate_thk_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~7.3)&\end{aligned}'))
     return end_plate_thk_eqn
 
 
 
 def moment_acting_on_end_plate(M_ep,b_eff,f_y,gamma_m0,t_p):
+    """  Calculate moment acting on the  end plate
+    Args:
+         M_ep:  moment acting on the  end plate in N-mm (float)
+         b_eff:Effective width for load dispersion
+         f_y:Yeild strength of  plate material in N/mm square (float)
+         gamma_m0: IS800_2007.cl_5_4_1_Table_5["gamma_m0"]['yielding']  (float)
+         t_p:Thickness of end plate
+    Returns:
+         moment acting on the end plate
+
+
+
+    """
 
 
 
@@ -970,6 +1057,17 @@ def moment_acting_on_end_plate(M_ep,b_eff,f_y,gamma_m0,t_p):
 
 
 def min_plate_length_req(min_pitch, min_end_dist,bolt_line,min_length):
+    """
+    Calculate minimum length of fin plate
+     Args:
+
+        min_pitch: minimum pitch distance in mm (float)
+        min_end_dist: minimum end distance in mm (float)
+        bolt_line: no. of rows of bolts in fin plate (int)
+        min_length: minimum length of fin plate in  mm (float)
+    Returns:
+           minimum length of fin plate
+    """
 
     min_pitch = str(min_pitch)
     min_end_dist = str(min_end_dist)
@@ -984,15 +1082,18 @@ def min_plate_length_req(min_pitch, min_end_dist,bolt_line,min_length):
 
 def min_flange_plate_length_req(min_pitch, min_end_dist,bolt_line,min_length,gap,sec =None):
 
-    """ Calculate minimum flange plate length required
+    """
+    Calculate minimum flange plate length required
+    Args:
 
-    :param min_pitch:Min pitch distance of flange bolt in mm (float)
-    :param min_end_dist: Min end distance of flange bolt in mm (float)
-    :param bolt_line: No. of bolts provided in one line in mm (int)
-    :param min_length: Flange plate of minimum lenght in mm (float)
-    :param gap: Gap between flange plate in mm (float)
-    :param sec: Beam or Column (str)
-    :return:
+        min_pitch:Min pitch distance of flange bolt in mm (float)
+        min_end_dist: Min end distance of flange bolt in mm (float)
+        bolt_line: No. of bolts provided in one line in mm (int)
+        min_length: Flange plate of minimum lenght in mm (float)
+        gap: Gap between flange plate in mm (float)
+        sec: Beam or Column (str)
+    Returns:
+        minimum flange plate length required
     """
 
     min_pitch = str(min_pitch)
@@ -1018,9 +1119,11 @@ def min_flange_plate_length_req(min_pitch, min_end_dist,bolt_line,min_length,gap
 
 def min_plate_thk_req(t_w):
     """
-
-    :param t_w:
-    :return:
+    Calculate min thickness of the fin plate
+    Args:
+        t_w:Web thickness in mm (float)
+    Returns:
+        min thickness of the fin plate
     """
     t_w = str(t_w)
     min_plate_thk_eqn = Math(inline=True)
@@ -1029,15 +1132,17 @@ def min_plate_thk_req(t_w):
 
 
 def shear_yield_prov(h,t, f_y, gamma, V_dg,multiple=1):
-    """Calculate shear yielding capacity of  plate (provided)
-
-    :param h:  Plate ht in mm (float)
-    :param t:  Plate thickness in mm (float)
-    :param f_y:Yeild strength of  plate material in N/mm square (float)
-    :param gamma: IS800_2007.cl_5_4_1_Table_5["gamma_m0"]['yielding']  (float)
-    :param V_dg: Shear yeilding capacity of  plate in N (float)
-    :param multiple:2 (int)
-    :return: Shear yielding capacity of  plate
+    """
+    Calculate shear yielding capacity of  plate (provided)
+    Args:
+        h:  Plate ht in mm (float)
+        t:  Plate thickness in mm (float)
+        f_y:Yeild strength of  plate material in N/mm square (float)
+        gamma: IS800_2007.cl_5_4_1_Table_5["gamma_m0"]['yielding']  (float)
+        V_dg: Shear yeilding capacity of  plate in N (float)
+        multiple:2 (int)
+    Returns:
+         Shear yielding capacity of  plate
     """
 
     h = str(h)
@@ -1057,17 +1162,18 @@ def shear_yield_prov(h,t, f_y, gamma, V_dg,multiple=1):
 
 
 def shear_rupture_prov(h, t, n_r, d_o, fu,v_dn,multiple =1):
-    """ Calculate shear rupture capacity of  plate (provided)
-
-    :param h: Height of  plate in mm (float)
-    :param t:Thickness of  plate in mm (float)
-    :param n_r:No of bolts provided in one line (float)
-    :param d_o:Nominal diameter of bolt provide in plate in mm (float)
-    :param fu: Ultimate strength of  plate material in N/mm square (float)
-
-    :param v_dn: Shear rupture of plate in KN (float)
-    :param multiple: 1 (int)
-    :return: shear rupture capacity of  plate
+    """
+     Calculate shear rupture capacity of  plate (provided)
+     Args:
+          h: Height of  plate in mm (float)
+          t:Thickness of  plate in mm (float)
+          n_r:No of bolts provided in one line (float)
+          d_o:Nominal diameter of bolt provide in plate in mm (float)
+          fu: Ultimate strength of  plate material in N/mm square (float)
+          v_dn: Shear rupture of plate in KN (float)
+          multiple: 1 (int)
+    Returns:
+          shear rupture capacity of  plate
     """
     h = str(h)
     t = str(t)
@@ -1083,6 +1189,19 @@ def shear_rupture_prov(h, t, n_r, d_o, fu,v_dn,multiple =1):
     return shear_rup_eqn
 
 def vres_cap_bolt_check(V_u, A_u,bolt_capacity,bolt_req,multiple=1,conn=None):
+    """
+    Calculate no. of bolts required for flange and web
+    Args:
+
+         V_u:Shear force  in KN (float)
+         A_u:Axial force  in KN (float)
+         bolt_capacity:Bolt capacity  in KN (float)
+         bolt_req:no. of bolts required (int)
+         multiple:1
+         conn:
+    Returns:
+         no. of bolts required (int)
+    """
 
     res_force = math.sqrt(V_u**2+ A_u**2)
     trial_bolts = multiple * math.ceil(res_force/bolt_req)
@@ -1102,6 +1221,12 @@ def vres_cap_bolt_check(V_u, A_u,bolt_capacity,bolt_req,multiple=1,conn=None):
     return trial_bolts_eqn
 
 def section_classification(class_of_section=None):
+    """
+    Find class of the section
+    Args:
+         class_of_section:
+    Returns:
+    """
 
     section_classification_eqn = Math(inline=True)
     if class_of_section == int(1):
@@ -1166,17 +1291,19 @@ def section_classification(class_of_section=None):
 
 
 def tension_yield_prov(l,t, f_y, gamma, T_dg):
-    """ Calculate tension yieldung capacity of provided plate under axial tension
+    """
+    Calculate tension yieldung capacity of provided plate under axial tension
+    Args:
+         l: Height of  provided plate in mm (float)
+         t: Thickness of  provided plate in mm (float)
+         f_y: Yield stress of material
+         gamma:Partial safety factor for failure in the tension by yielding
+         T_dg: Tension yieldung capacity of provided plate under axial tension
 
-    :param l: Height of  provided plate in mm (float)
-    :param t: Thickness of  provided plate in mm (float)
-    :param f_y: Yield stress of material
-    :param gamma:Partial safety factor for failure in the tension by yielding
-    :param T_dg: Tension yieldung capacity of provided plate under axial tension
+    Returns:
+          Tension yieldung capacity of provided plate under axial tension
 
-    :return:  Tension yieldung capacity of provided plate under axial tension
-
-      Note:
+    Note:
             Reference:
             IS 800:2007,  cl 6.2
 
@@ -1194,19 +1321,20 @@ def tension_yield_prov(l,t, f_y, gamma, T_dg):
     tension_yield_eqn.append(NoEscape(r'&=\frac{'+l+'*'+t+'*'+f_y+'}{'+gamma+r'}\\'))
 
     tension_yield_eqn.append(NoEscape(r'&=' + T_dg + r'\\}'))
-    tension_yield_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    tension_yield_eqn.append(NoEscape(r'&and~Clause~6.2)&\end{aligned}'))
+    tension_yield_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.2)&\end{aligned}'))
 
     return tension_yield_eqn
 
 
 def height_of_flange_cover_plate(B,sp,b_fp): #weld
-    """ Calculate height of falnge cover plate
-
-    :param B:Width of  flange section in mm (float)
-    :param sp: Spacing between flange plate in mm (float)
-    :param b_fp: Height of flange cover plate in mm (float)
-    :return: Height of flange cover plate in mm (float)
+    """
+    Calculate height of falnge cover plate
+    Args:
+        B:Width of  flange section in mm (float)
+        sp: Spacing between flange plate in mm (float)
+        b_fp: Height of flange cover plate in mm (float)
+    Returns:
+          Height of flange cover plate in mm (float)
     """
     B = str(B)
     sp = str(sp)
@@ -1221,14 +1349,16 @@ def height_of_flange_cover_plate(B,sp,b_fp): #weld
 
 
 def height_of_web_cover_plate(D,sp,b_wp,T,R_1): #weld
-    """ Calculate height of web cover plate
-
-    :param D: Depth of the section in mm (float)
-    :param sp: Space between web plate in mm (float)
-    :param b_wp: Height of web cover plate in mm (float)
-    :param T: Thickness of flange in mm (float)
-    :param R_1: Root radius in mm (float)
-    :return: Height of web cover plate in mm (float)
+    """
+    Calculate height of web cover plate
+    Args:
+        D: Depth of the section in mm (float)
+        sp: Space between web plate in mm (float)
+        b_wp: Height of web cover plate in mm (float)
+        T: Thickness of flange in mm (float)
+        R_1: Root radius in mm (float)
+    Returns:
+         Height of web cover plate in mm (float)
     """
     D = str(D)
     sp = str(sp)
@@ -1245,14 +1375,17 @@ def height_of_web_cover_plate(D,sp,b_wp,T,R_1): #weld
 
 
 def inner_plate_height_weld(B,sp,t,r_1, b_ifp):#weld
-    """Calculate inner flange plate height for beam welded
+    """
+    Calculate inner flange plate height for beam welded
+    Args:
 
-    :param B:Width of flange in mm (float)
-    :param sp: Spacing between flange plate in mm (float)
-    :param t: Web thickness in mm (float)
-    :param r_1: Root radius in mm (float)
-    :param b_ifp: Height of inner flange plate in mm (float)
-    :return:  Height of inner flange plate in mm (float)
+        B:Width of flange in mm (float)
+        sp: Spacing between flange plate in mm (float)
+        t: Web thickness in mm (float)
+        r_1: Root radius in mm (float)
+        b_ifp: Height of inner flange plate in mm (float)
+    Returns:
+         Height of inner flange plate in mm (float)
     """
     B = str(B)
     sp = str(sp)
@@ -1267,14 +1400,16 @@ def inner_plate_height_weld(B,sp,t,r_1, b_ifp):#weld
 
 
 def plate_Length_req(l_w,t_w,g,l_fp,conn =None): #weld
-    """ Calculate minimum flange plate length
-
-    :param l_w: Weld length of flange in mm (float)
-    :param t_w:Flange weld size in mm (float)
-    :param g: Gap between flange plate in mm (float)
-    :param l_fp: Minimum flange plate length in mm (float)
-    :param conn: Flange or web (str)
-    :return:  Minimum flange plate length  in mm (float)
+    """
+    Calculate minimum flange plate length
+    Args:
+       l_w: Weld length of flange in mm (float)
+       t_w:Flange weld size in mm (float)
+       g: Gap between flange plate in mm (float)
+       l_fp: Minimum flange plate length in mm (float)
+       conn: Flange or web (str)
+    Returns:
+          Minimum flange plate length  in mm (float)
     """
     l_w = str(l_w)
     t_w = str (t_w)
@@ -1294,12 +1429,14 @@ def plate_Length_req(l_w,t_w,g,l_fp,conn =None): #weld
 
 
 def flange_weld_stress(F_f,l_eff,F_ws):
-    """ Calculate  stress in flange due to welding
-
-    :param F_f: Flange force in KN (float)
-    :param l_eff: Effective weld length of flange in mm (float)
-    :param F_ws: Flange weld stress in KN/mm (float)
-    :return: Stress in flange due to welding (float)
+    """
+    Calculate  stress in flange due to welding
+    Args:
+        F_f: Flange force in KN (float)
+        l_eff: Effective weld length of flange in mm (float)
+        F_ws: Flange weld stress in KN/mm (float)
+    Returns:
+         Stress in flange due to welding (float)
 
       Note:
             Reference:
@@ -1311,25 +1448,26 @@ def flange_weld_stress(F_f,l_eff,F_ws):
     flange_weld_stress_eqn = Math(inline=True)
     flange_weld_stress_eqn.append(NoEscape(r'\begin{aligned} Stress &= \frac{F_f*1000}{l_{eff}}}\\'))
     flange_weld_stress_eqn.append(NoEscape(r' &= \frac{' + F_f + '*1000}{' + l_eff + r'}\\'))
-    flange_weld_stress_eqn.append(NoEscape(r'&= ' + F_ws + r'\end{aligned}'))
-    flange_weld_stress_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    flange_weld_stress_eqn.append(NoEscape(r'&and~Clause~10.5.9)\end{aligned}'))
+    flange_weld_stress_eqn.append(NoEscape(r'&= ' + F_ws + r'\\}'))
+    flange_weld_stress_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.5.9)\end{aligned}'))
 
     return flange_weld_stress_eqn
 
 
 def tension_yield_prov(l,t, f_y, gamma, T_dg,multiple =1):
-    """Calculate tension yieldung capacity of provided plate under axial tension
+    """
+    Calculate tension yieldung capacity of provided plate under axial tension
+    Args:
+        l: Height of  provided plate in mm (float)
+        t: Thickness of  provided plate in mm (float)
+        f_y:Yield stress of material in N/mm square (float)
+        gamma:Partial safety factor for failure in the tension by yielding (float)
+        T_dg: Tension yieldung capacity of provided plate under axial tension in N (float)
+        multiple:1  (int)
+    Returns:
+          Tension yieldung capacity of provided plate under axial tension
 
-    :param l: Height of  provided plate in mm (float)
-    :param t: Thickness of  provided plate in mm (float)
-    :param f_y:Yield stress of material in N/mm square (float)
-    :param gamma:Partial safety factor for failure in the tension by yielding (float)
-    :param T_dg: Tension yieldung capacity of provided plate under axial tension in N (float)
-    :param multiple:1  (int)
-    :return:  Tension yieldung capacity of provided plate under axial tension
-
-      Note:
+    Note:
             Reference:
             IS 800:2007,  cl 6.2
 
@@ -1347,32 +1485,31 @@ def tension_yield_prov(l,t, f_y, gamma, T_dg,multiple =1):
     tension_yield_eqn.append(NoEscape(r'&=\frac{'+multiple+'*'+l+'*'+t+'*'+f_y+'}{'+gamma+r'}\\'))
 
     tension_yield_eqn.append(NoEscape(r'&=' + T_dg +r')\\'))
-    tension_yield_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    tension_yield_eqn.append(NoEscape(r'&and~Clause~6.2)&\end{aligned}'))
-
+    tension_yield_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.2)&\end{aligned}'))
     return tension_yield_eqn
 
 
 def tension_rupture_bolted_prov(w_p, t_p, n_c, d_o, fu,gamma_m1,T_dn,multiple=1):
-    """ Calculate design in tension as governed by rupture of net
+    """
+    Calculate design in tension as governed by rupture of net
          cross-sectional area in case of bolted connection
-
-    :param w_p: Width of given section in mm (float)
-    :param t_p: Thikness of given section in mm (float)
-    :param n_c: No. of bolt holes in critical section (int)
-    :param d_o: Diameter of bolt hole in mm (int)
-    :param fu: Ultimate stress of material in N/mm square (float)
-    :param gamma_m1:Partial safety factor for failure at ultimate stress  (float)
-    :param T_dn: Rupture strength of net cross-sectional area in N (float)
-    :param multiple: 1
-    :return: design in tension as governed by rupture of net cross-sectional area
-       Note:
+    Args:
+         w_p: Width of given section in mm (float)
+         t_p: Thikness of given section in mm (float)
+         n_c: No. of bolt holes in critical section (int)
+         d_o: Diameter of bolt hole in mm (int)
+         fu: Ultimate stress of material in N/mm square (float)
+         gamma_m1:Partial safety factor for failure at ultimate stress  (float)
+         T_dn: Rupture strength of net cross-sectional area in N (float)
+         multiple: 1
+    Returns:
+         design in tension as governed by rupture of net cross-sectional area
+    Note:
             Reference:
             IS 800:2007,  cl 6.3
 
     """
 
-def tension_rupture_bolted_prov(w_p, t_p, n_c, d_o, fu,gamma_m1,T_dn,multiple=1):
     w_p = str(w_p)
     t_p = str(t_p)
     n_c = str(n_c)
@@ -1386,24 +1523,26 @@ def tension_rupture_bolted_prov(w_p, t_p, n_c, d_o, fu,gamma_m1,T_dn,multiple=1)
     Tensile_rup_eqnb.append(NoEscape(r'\begin{aligned} T_{dn} &= \frac{0.9*A_{n}*f_u}{\gamma_{m1}}\\'))
     Tensile_rup_eqnb.append(NoEscape(r'&=\frac{'+multiple+'*0.9* ('+ w_p + '-' + n_c +'*'+ d_o + ')*' + t_p + '*' + f_u + r'}{' + gamma_m1 + r'}\\'))
     Tensile_rup_eqnb.append(NoEscape(r'&=' + T_dn + r'\\}'))
-    Tensile_rup_eqnb.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    Tensile_rup_eqnb.append(NoEscape(r'&and~Clause~6.3)&\end{aligned}'))
+    Tensile_rup_eqnb.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.3)&\end{aligned}'))
+
 
     return Tensile_rup_eqnb
 
 
 def tension_rupture_welded_prov(w_p, t_p, fu,gamma_m1,T_dn,multiple =1):
-    """ Calculate design in tension as governed by rupture of net
+    """
+    Calculate design in tension as governed by rupture of net
          cross-sectional area in case of welded connection
-
-    :param w_p: Width of given section in mm (float)
-    :param t_p: Thikness of given section in mm (float)
-    :param fu: Ultimate stress of material in N/mm square (float)
-    :param gamma_m1:Partial safety factor for failure at ultimate stress  (float)
-    :param T_dn: rupture strength of net cross-sectional area in N (float)
-    :param multiple: 1 (int)
-    :return: design in tension as governed by rupture of net cross-sectional area
-       Note:
+    Args:
+         w_p: Width of given section in mm (float)
+         t_p: Thikness of given section in mm (float)
+         fu: Ultimate stress of material in N/mm square (float)
+         gamma_m1:Partial safety factor for failure at ultimate stress  (float)
+         T_dn: rupture strength of net cross-sectional area in N (float)
+         multiple: 1 (int)
+    Returns:
+          design in tension as governed by rupture of net cross-sectional area
+    Note:
             Reference:
             IS 800:2007,  cl 6.3
 
@@ -1422,20 +1561,21 @@ def tension_rupture_welded_prov(w_p, t_p, fu,gamma_m1,T_dn,multiple =1):
     # Tensile_rup_eqnw.append(NoEscape(r'&=\frac{0.9*'+w_p+'*'+t_p+'*'+f_u+'}{'+gamma_m1+r'}\\'))
     Tensile_rup_eqnw.append(NoEscape(r'&=\frac{' + multiple + '*0.9*' + w_p + '*' + t_p + '*' + f_u + '}{' + gamma_m1 + r'}\\'))
     Tensile_rup_eqnw.append(NoEscape(r'&=' + T_dn +r'\\}'))
-    Tensile_rup_eqnw.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    Tensile_rup_eqnw.append(NoEscape(r'&and~Clause~6.3)&\end{aligned}'))
+    Tensile_rup_eqnw.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.3)&\end{aligned}'))
 
     return Tensile_rup_eqnw
 
 
 def tensile_capacity_prov(T_dg, T_dn, T_db =0.0):
-    """ Calculate Design strength of member
-
-    :param T_dg:Yeiding capacity of member
-    :param T_dn: Rupture capacity of member
-    :param T_db: Block shear capacity of member
-    :return: Design strength of member min of( Yeiding ,Rupture  and Block shear capacity)
-     Note:
+    """
+    Calculate Design strength of member
+    Args:
+         T_dg:Yeiding capacity of member
+         T_dn: Rupture capacity of member
+         T_db: Block shear capacity of member
+    Returns:
+          Design strength of member min of( Yeiding ,Rupture  and Block shear capacity)
+    Note:
             Reference:
             IS 800:2007,  cl 6.3
 
@@ -1458,19 +1598,22 @@ def tensile_capacity_prov(T_dg, T_dn, T_db =0.0):
         tension_capacity_eqn.append(NoEscape(r'\begin{aligned} T_d &= min(T_{dg},T_{dn})\\'))
         tension_capacity_eqn.append(NoEscape(r'&= min(' + T_dg + ',' + T_dn + r')\\'))
     tension_capacity_eqn.append(NoEscape(r'&='+ T_d + r'\\}'))
-    tension_capacity_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    tension_capacity_eqn.append(NoEscape(r'&and~Clause~6.3)&\end{aligned}'))
+    tension_capacity_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.3)&\end{aligned}'))
+
+
 
     return tension_capacity_eqn
 
 
 def spacing (sp,t_w):
 
-    """Calculate spacing
-
-    :param sp:Spacing required in mm (float)
-    :param t_w:Size of weld in mm (float)
-    :return:Required spacing (float)
+    """
+    Calculate spacing
+    Args:
+        sp:Spacing required in mm (float)
+        t_w:Size of weld in mm (float)
+    Returns:
+        Required spacing (float)
     """
 
     # sp = max(15,s+5)
@@ -1484,12 +1627,14 @@ def spacing (sp,t_w):
 
 
 def throat_thickness_req(t,t_t):
-    """ Calculate throat thickness of fillet weld
-
-    :param t: Thickness of thinner plate of element being welded  in mm (float)
-    :param t_t: Throat thickness of fillet weld in mm (float)
-    :return:  Required throat thickness of fillet weld in mm (float)
-      Note:
+    """
+     Calculate throat thickness of fillet weld
+     Args:
+         t: Thickness of thinner plate of element being welded  in mm (float)
+         t_t: Throat thickness of fillet weld in mm (float)
+    Returns:
+         Required throat thickness of fillet weld in mm (float)
+    Note:
             Reference:
             IS 800:2007,  cl 10.5.3.1
 
@@ -1501,21 +1646,23 @@ def throat_thickness_req(t,t_t):
     throat_thickness_eqn = Math(inline=True)
     throat_thickness_eqn.append(NoEscape(r'\begin{aligned} [t_t& <= .7*t ]; [t_t& = >= 3]\\'))
     throat_thickness_eqn.append(NoEscape(r'&='+ t_t+ r'\\}'))
-    throat_thickness_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    throat_thickness_eqn.append(NoEscape(r'&and~Clause~10.5.3.1)&\end{aligned}'))
+    throat_thickness_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.3)&\end{aligned}'))
+
 
     return throat_thickness_eqn
 
 
 def height_of_inner_flange_cover_plate(b_fp,B,t_w,r_r,sp):
-    """ Calculate height of inner flange cover plate
-
-    :param b_fp: Height of inner flange cover plate in mm (float)
-    :param B: Width of flange section in mm (float)
-    :param t_w:Web thickness in mm (float)
-    :param r_r:Root radius in mm (float)
-    :param sp: Flange spacing in mm (float)
-    :return: Height of inner flange cover plate
+    """
+    Calculate height of inner flange cover plate
+    Args:
+         b_fp: Height of inner flange cover plate in mm (float)
+         B: Width of flange section in mm (float)
+         t_w:Web thickness in mm (float)
+         r_r:Root radius in mm (float)
+         sp: Flange spacing in mm (float)
+    Returns:
+         Height of inner flange cover plate
     """
    # sp= max(15,s+5)
     b_fp =str(b_fp)
@@ -1532,18 +1679,21 @@ def height_of_inner_flange_cover_plate(b_fp,B,t_w,r_r,sp):
 
 
 def mom_axial_IR_prov(M,M_d,N,N_d,IR):
-    """Calculate
+    """
+    Calculate
+    Args:
+         M:Plate moment demand in KN-mm (float)
+         M_d:Moment capacity of the section in KN-mm (float)
+         N: Load axial force in KN (float)
+         N_d:Tension capacity of the plate in KN (float)
+         IR:
+    Returns:
 
-    :param M:Plate moment demand in KN-mm (float)
-    :param M_d:Moment capacity of the section in KN-mm (float)
-    :param N: Load axial force in KN (float)
-    :param N_d:Tension capacity of the plate in KN (float)
-    :param IR:
-       Note:
+    Note:
             Reference:
             IS 800:2007,  cl 10.7
 
-    :return:
+
     """
     M = str(M)
     M_d = str(M_d)
@@ -1552,14 +1702,18 @@ def mom_axial_IR_prov(M,M_d,N,N_d,IR):
     IR = str(IR)
     mom_axial_IR_eqn = Math(inline=True)
     mom_axial_IR_eqn.append(NoEscape(r'\begin{aligned} \frac{'+M+'}{'+M_d+r'}+\frac{'+N+'}{'+N_d+'}='+IR+r'\end{aligned}'))
-    mom_axial_IR_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    mom_axial_IR_eqn.append(NoEscape(r'&and~Clause~10.7)&\end{aligned}'))
+    mom_axial_IR_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.7)&\end{aligned}'))
+
 
     return mom_axial_IR_eqn
 
 
 def IR_req(IR):
+    """
 
+    :param IR:
+    :return:
+    """
     IR = str(IR)
     IR_req_eqn = Math(inline=True)
     IR_req_eqn.append(NoEscape(r'\begin{aligned} \leq'+IR+'\end{aligned}'))
@@ -1567,17 +1721,18 @@ def IR_req(IR):
 
 
 def min_weld_size_req(conn_plates_weld,min_weld_size):
-    """Calculate minimum size of fillet weld as per Table 21 of IS 800:2007
+    """
+    Calculate minimum size of fillet weld as per Table 21 of IS 800:2007
+    Args:
 
-
-    :param conn_plates_weld:Thickness of either plate element being welded in mm (float)
+        conn_plates_weld:Thickness of either plate element being welded in mm (float)
                              Thickness of other plate element being welded in mm (float)
 
-    :param min_weld_size: Minimum size of first run or of a single run fillet weld in mm (float)
+         min_weld_size: Minimum size of first run or of a single run fillet weld in mm (float)
 
-
-    :return:
-       Note:
+    Returns:
+          minimum size of fillet weld
+    Note:
             Reference:
             IS 800, Table 21 (Cl 10.5.2.3) : Minimum Size of First Run or of a Single Run Fillet Weld
 
@@ -1594,26 +1749,29 @@ def min_weld_size_req(conn_plates_weld,min_weld_size):
     min_weld_size_eqn.append(NoEscape(r'&='+tmax+r'\\'))
     min_weld_size_eqn.append(NoEscape(r'&IS800:2007~cl.10.5.2.3~Table 21,\\'))
     min_weld_size_eqn.append(NoEscape(r' &t_{w_{min}}=' + weld_min + r'\\}'))
-    min_weld_size_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    min_weld_size_eqn.append(NoEscape(r'&and~Clause~10.5.2.3)&\end{aligned}'))
+    min_weld_size_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.5.2.3)&\end{aligned}'))
+
 
     return min_weld_size_eqn
 
 
 def min_weld_size_req_01(conn_plates_weld, red, min_weld_size):
-    """Calculate minimum size of fillet weld,to avoid the
+    """
+    Calculate minimum size of fillet weld,to avoid the
         risk of cracking in the absence of preheating
+    Args:
+        conn_plates_weld:Thickness of either plate element being welded in mm (float
+        Thickness of other plate element being welded in mm (float)
 
-    :param conn_plates_weld:Thickness of either plate element being welded in mm (float)
-                             Thickness of other plate element being welded in mm (float)
-
-    :param red:reduce the thickness of thicker part according to given size range
-    :param min_weld_size:minimum size of the weld
-        Note:
+        red:reduce the thickness of thicker part according to given size range
+        min_weld_size:minimum size of the weld
+    Returns:
+        minimum size of the weld
+    Note:
             Reference:
             IS 800, Table 21 (Cl 10.5.2.3) : Minimum Size of First Run or of a Single Run Fillet Weld
 
-    :return:
+
     """
     # t1 = str(conn_plates_weld[0])
     # t2 = str(conn_plates_weld[0])
@@ -1628,25 +1786,26 @@ def min_weld_size_req_01(conn_plates_weld, red, min_weld_size):
     min_weld_size_eqn.append(NoEscape(r'& ='+tmax+ '~or~' +tmin+ r'\\'))
     min_weld_size_eqn.append(NoEscape(r'& IS800:2007~cl.10.5.2.3~Table 21\\' ))
     min_weld_size_eqn.append(NoEscape(r'& t_{w_{min}}~based~on~thicker~part=' + weld_min + r'\}'))
-    min_weld_size_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    min_weld_size_eqn.append(NoEscape(r'&and~Clause~10.5.2.3)&\end{aligned}'))
-
+    min_weld_size_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.5.2.3)&\end{aligned}'))
     return min_weld_size_eqn
 
 
 def max_weld_size_req(conn_plates_weld,max_weld_size):
-    """Calculate maximum weld size of fillet weld
+    """
+    Calculate maximum weld size of fillet weld
+    Args:
 
-
-    :param conn_plates_weld: Thickness of either plate element being welded in mm (float)
+        conn_plates_weld: Thickness of either plate element being welded in mm (float)
                             Thickness of other plate element being welded in mm (float)
 
-    :param max_weld_size: Maximum weld size of fillet weld
-       Note:
+         max_weld_size: Maximum weld size of fillet weld
+    Returns:
+          Maximum weld size of fillet weld
+    Note:
             Reference:
             IS 800:2007,  cl 10.5.3.1
 
-    :return:
+
     """
     t1 = str(conn_plates_weld[0])
     t2 = str(conn_plates_weld[1])
@@ -1657,30 +1816,32 @@ def max_weld_size_req(conn_plates_weld,max_weld_size):
     max_weld_size_eqn.append(NoEscape(r'\begin{aligned} & Thickness~of~Thinner~part\\'))
     max_weld_size_eqn.append(NoEscape(r'&=min('+t1+','+t2+r')='+t_min+r'\\'))
     max_weld_size_eqn.append(NoEscape(r'&t_{w_{max}} =' + weld_max + r'\end{aligned}'))
-    max_weld_size_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    max_weld_size_eqn.append(NoEscape(r'&and~Clause~10.5.3.1)&\end{aligned}'))
+    max_weld_size_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.5.3.1)&\end{aligned}'))
 
     return max_weld_size_eqn
 
 
 def weld_strength_req(V,A,M,Ip_w,y_max,x_max,l_w,R_w):
-    """Calculate resultant stress on weld
+    """
+    Calculate resultant stress on weld
+    Args:
+        V:Factored shear force acting on the member in KN (float)
+        A:Vertical compression force carried by web of the section in KN (float)
 
-    :param V:Factored shear force acting on the member in KN (float)
-    :param A:Vertical compression force carried by web of the section in KN (float)
+        M:Moment devloped by ecentricity in KN/mm(float)
+        Ip_w:Polar moment inertia of the web group in mm^4 (float)
+        y_max:Vertical distance of farthest point in weld group from shear center of the weld group in mm (float)
+        x_max:Horizontal distance of farthest point in weld group from shear center of the weld group in mm (float)
 
-    :param M:Moment devloped by ecentricity in KN/mm(float)
-    :param Ip_w:Polar moment inertia of the web group in mm^4 (float)
-    :param y_max:Vertical distance of farthest point in weld group from shear center of the weld group in mm (float)
-    :param x_max:Horizontal distance of farthest point in weld group from shear center of the weld group in mm (float)
-
-    :param l_w:Required effective web weld length in mm (float)
-    :param R_w:Resultant stress on the weld in KN/mm (float)
-       Note:
+        l_w:Required effective web weld length in mm (float)
+        R_w:Resultant stress on the weld in KN/mm (float)
+    Returns:
+         Resultant stress on the weld
+    Note:
             Reference:
             IS 800:2007,  cl 10.5.7.1.1
 
-    :return:
+
     """
     T_wh = str(round(M * y_max/Ip_w,2))
     T_wv = str(round(M * x_max/Ip_w,2))
@@ -1703,35 +1864,32 @@ def weld_strength_req(V,A,M,Ip_w,y_max,x_max,l_w,R_w):
     weld_stress_eqn.append(NoEscape(r'A_{wh}&=\frac{A}{l_w}=\frac{'+A+'}{'+l_w+r'}\\'))
     weld_stress_eqn.append(NoEscape(r'R_w&=\sqrt{('+T_wh+'+'+A_wh+r')^2 + ('+T_wv+'+'+V_wv+r')^2}\\'))
     weld_stress_eqn.append(NoEscape(r'&='+R_w+r'\\}'))
-    weld_stress_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    weld_stress_eqn.append(NoEscape(r'&and~Clause~10.5.7.1.1)&\end{aligned}'))
+    weld_stress_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.5.7.1.1)&\end{aligned}'))
+
 
     return weld_stress_eqn
 
 
 def weld_strength_stress(V_u,A_w,M_d,Ip_w,y_max,x_max,l_eff,R_w):
-    """Calculate resultant stress on weld
-
-    :param V_u:factored shear force acting on the member in KN (float)
-
-    :param A_w:vertical compression force carried by web of the section in KN (float)
-
-    :param M_d:moment devloped by ecentricity in KN/mm(float)
-
-    :param Ip_w:moment devloped by ecentricity in KN/mm(float)
-
-    :param y_max:moment devloped by ecentricity in KN/mm(float)
-
-    :param x_max:horizontal distance of farthest point in weld group from shear center of the weld group in mm (float)
-
-    :param l_eff:required effective web weld length in mm (float)
-    :param R_w:resultant stress on the weld in KN/mm (float)
-       Note:
+    """
+    Calculate resultant stress on weld
+    Args:
+          V_u:factored shear force acting on the member in KN (float)
+          A_w:vertical compression force carried by web of the section in KN (float)
+          M_d:moment devloped by ecentricity in KN/mm(float)
+          Ip_w:moment devloped by ecentricity in KN/mm(float)
+          y_max:moment devloped by ecentricity in KN/mm(float)
+          x_max:horizontal distance of farthest point in weld group from shear center of the weld group in mm (float)
+          l_eff:required effective web weld length in mm (float)
+          R_w:resultant stress on the weld in KN/mm (float)
+    Returns:
+          resultant stress on the weld
+    Note:
             Reference:
             IS 800:2007,  cl 10.5.7.1.1
 
 
-    :return:
+
     """
     T_wh = str(round(M_d * y_max/Ip_w,2))
     T_wv = str(round(M_d * x_max/Ip_w,2))
@@ -1758,21 +1916,23 @@ def weld_strength_stress(V_u,A_w,M_d,Ip_w,y_max,x_max,l_eff,R_w):
     weld_stress_eqn.append(NoEscape(r'&=\frac{'+A_w+'}{'+l_eff+r'}\\'))
     weld_stress_eqn.append(NoEscape(r'R_w&=\sqrt{('+T_wh+'+'+A_wh+r')^2 + ('+T_wv+'+'+V_wv+r')^2}\\'))
     weld_stress_eqn.append(NoEscape(r'&='+R_w+r'\\}'))
-    weld_stress_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    weld_stress_eqn.append(NoEscape(r'&and~Clause~10.5.7.1.1)&\end{aligned}'))
+    weld_stress_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.5.7.1.1)&\end{aligned}'))
+
 
     return weld_stress_eqn
 
 
 def weld_strength_prov(conn_plates_weld_fu,gamma_mw,t_t,f_w):
-    """Calculate the design strength of fillet weld
-
-    :param conn_plates_weld_fu:Ultimate stresses of weld and parent metal in MPa (list or tuple) in N/mm square(float)
-    :param gamma_mw: 1.25(for shop weld);1.5(site weld)  (float)
-    :param t_t:Throat thickness in mm (float)
-    :param f_w:Design strength of fillet weld in N/mm (float)
-    :return:
-        Note:
+    """
+    Calculate the design strength of fillet weld
+    Args:
+         conn_plates_weld_fu:Ultimate stresses of weld and parent metal in MPa (list or tuple) in N/mm square(float)
+         gamma_mw: 1.25(for shop weld);1.5(site weld)  (float)
+         t_t:Throat thickness in mm (float)
+         f_w:Design strength of fillet weld in N/mm (float)
+    Returns:
+        Design strength of fillet weld
+    Note:
             Reference:
             IS 800:2007,  cl 10.5.7.1.1
 
@@ -1786,21 +1946,23 @@ def weld_strength_prov(conn_plates_weld_fu,gamma_mw,t_t,f_w):
     weld_strength_eqn.append(NoEscape(r'\begin{aligned} f_w &=\frac{t_t*f_u}{\sqrt{3}*\gamma_{mw}}\\'))
     weld_strength_eqn.append(NoEscape(r'&=\frac{'+t_t+'*'+f_u+'}{\sqrt{3}*'+ gamma_mw+r'}\\'))
     weld_strength_eqn.append(NoEscape(r'&='+f_w+r'\\}'))
-    weld_strength_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    weld_strength_eqn.append(NoEscape(r'&and~Clause~10.5.7.1.1)&\end{aligned}'))
+    weld_strength_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.5.7.1.1)&\end{aligned}'))
+
 
     return weld_strength_eqn
 
 
 def axial_capacity(area,fy, gamma_m0,axial_capacity): #todo anjali
-    """ Calculate axial capacity of member
-
-    :param area: Gross area of member in mm square (float)
-    :param fy:Yeilding strength of material in N/mm square (float)
-    :param gamma_m0: IS800_2007.cl_5_4_1_Table_5['gamma_m0']  (float)
-    :param axial_capacity: Axial capacity of member in mm square (float)
-    :return:
-       Note:
+    """
+    Calculate axial capacity of member
+    Args:
+         area: Gross area of member in mm square (float)
+         fy:Yeilding strength of material in N/mm square (float)
+         gamma_m0: IS800_2007.cl_5_4_1_Table_5['gamma_m0']  (float)
+         axial_capacity: Axial capacity of member in mm square (float)
+    Returns:
+        Axial capacity of member
+    Note:
             Reference:
             IS 800:2007,  cl 10.7
 
@@ -1813,19 +1975,19 @@ def axial_capacity(area,fy, gamma_m0,axial_capacity): #todo anjali
     axial_capacity_eqn.append(NoEscape(r'\begin{aligned} A_c &=\frac{A*f_y}{\gamma_{m0} *10^3}\\'))
     axial_capacity_eqn.append(NoEscape(r'&=\frac{'+area+'*'+fy+'}{'+ gamma_m0+r'* 10^3}\\'))
     axial_capacity_eqn.append(NoEscape(r'&=' + axial_capacity + r'\\}'))
-    axial_capacity_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    axial_capacity_eqn.append(NoEscape(r'&and~Clause~10.7)&\end{aligned}'))
-
+    axial_capacity_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.7)&\end{aligned}'))
     return axial_capacity_eqn
 
 
 def min_max_axial_capacity(axial_capacity,min_ac): #todo anjali
-    """Calculate minimum and maximum axial capacity of member
-
-    :param axial_capacity: axial capacity of member in KN
-    :param min_ac: minimum axial capacity of member in KN
-    :return:
-     Note:
+    """
+    Calculate minimum and maximum axial capacity of member
+    Args:
+         axial_capacity: axial capacity of member in KN
+         min_ac: minimum axial capacity of member in KN
+    Returns:
+          minimum axial capacity of member
+    Note:
             Reference:
             IS 800:2007,  cl 10.7
 
@@ -1838,9 +2000,7 @@ def min_max_axial_capacity(axial_capacity,min_ac): #todo anjali
     min_ac_eqn.append(NoEscape(r'&=' + min_ac + r'\\'))
     min_ac_eqn.append(NoEscape(r'Ac_{max} &= Ac \\'))
     min_ac_eqn.append(NoEscape(r'&=' +axial_capacity+ r'\\}'))
-    min_ac_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    min_ac_eqn.append(NoEscape(r'&and~Clause~10.7)&\end{aligned}'))
-
+    min_ac_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.7)&\end{aligned}'))
     return min_ac_eqn
 
 
@@ -1920,12 +2080,15 @@ def min_loads_provided(min_ac,min_mc,conn):
     return min_loads_provided_eqn
 
 def axial_capacity_req(axial_capacity,min_ac):
-    """Calculate minimum  required axial capacity of member
+    """
+    Calculate minimum  required axial capacity of member
+    Args:
+         axial_capacity:Axial capacity of member in KN
+         min_ac: Minimum axial capacity of member in KN
+    Returns:
+         Minimum axial capacity of member in KN
 
-      :param axial_capacity:Axial capacity of member in KN
-      :param min_ac: Minimum axial capacity of member in KN
-      :return:
-       Note:
+    Note:
               Reference:
               IS 800:2007,  cl 10.7
 
@@ -1938,20 +2101,22 @@ def axial_capacity_req(axial_capacity,min_ac):
     ac_req_eqn.append(NoEscape(r'&= 0.3 *' + axial_capacity + r'\\'))
     ac_req_eqn.append(NoEscape(r'&=' + min_ac + r'\\'))
     ac_req_eqn.append(NoEscape(r'Ac_{max} &=' +axial_capacity +r'\\}'))
-    ac_req_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    ac_req_eqn.append(NoEscape(r'&and~Clause~10.7)&\end{aligned}'))
+    ac_req_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.7)&\end{aligned}'))
+
 
     return ac_req_eqn
 
 
 def prov_axial_load(axial_input,min_ac,app_axial_load,axial_capacity):
-    """Calculate load axial force for column end plate
-
-    :param axial_input:Axial load in KN (float)
-    :param min_ac:Minimum axial load in KN (float)
-    :param app_axial_load:Factored axial load in KN (float)
-    :return:
-      Note:
+    """
+    Calculate load axial force for column end plate
+    Args:
+         axial_input:Axial load in KN (float)
+         min_ac:Minimum axial load in KN (float)
+         app_axial_load:Factored axial load in KN (float)
+    Returns:
+        Factored axial load
+    Note:
               Reference:
               IS 800:2007,  cl 10.7
 
@@ -1971,22 +2136,24 @@ def prov_axial_load(axial_input,min_ac,app_axial_load,axial_capacity):
     prov_axial_load_eqn.append(NoEscape(r'\begin{aligned} Au~~ &= max(A,Ac_{min} )\\'))
     prov_axial_load_eqn.append(NoEscape(r'&= max( ' + axial_input + ',' + min_ac + r')\\'))
     prov_axial_load_eqn.append(NoEscape(r'&=' + app_axial_load + r'\\}'))
-    prov_axial_load_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    prov_axial_load_eqn.append(NoEscape(r'&and~Clause~10.7)&\end{aligned}'))
+    prov_axial_load_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.7)&\end{aligned}'))
+
 
     return prov_axial_load_eqn
 
 
 def shear_capacity(h, t,f_y, gamma_m0,shear_capacity): # same as #todo anjali
-    """Calculate factored design shear force in the section due to external actions
-
-    :param h:Height of the section
-    :param t:Thickness of the section
-    :param f_y: Yield strength of web
-    :param gamma_m0:1.1 (partial safety factor against shear failure)
-    :param shear_capacity:Factored design shear force
-    :return:
-       Note:
+    """
+    Calculate factored design shear force in the section due to external actions
+    Args:
+         h:Height of the section
+         t:Thickness of the section
+         f_y: Yield strength of web
+         gamma_m0:1.1 (partial safety factor against shear failure)
+         shear_capacity:Factored design shear force
+    Returns:
+           Factored design shear force
+    Note:
               Reference:
               IS 800:2007,  cl 8.4
 
@@ -2000,20 +2167,23 @@ def shear_capacity(h, t,f_y, gamma_m0,shear_capacity): # same as #todo anjali
     shear_capacity_eqn = Math(inline=True)
     shear_capacity_eqn.append(NoEscape(r'\begin{aligned} S_c &= \frac{0.6*A_v*f_y}{\sqrt{3}*\gamma_{mo} *10^3}\\'))
     shear_capacity_eqn.append(NoEscape(r'&=\frac{0.6*' + h + r'*' + t + r'*' + f_y + r'}{\sqrt{3}*' + gamma_m0 + r' *10^3}\\'))
-    shear_capacity_eqn.append(NoEscape(r'&=' + shear_capacity + r'\end{aligned}'))
+    shear_capacity_eqn.append(NoEscape(r'&=' + shear_capacity + r'\\}'))
+    shear_capacity_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~8.4)&\end{aligned}'))
 
     return shear_capacity_eqn
 
 
 def min_max_shear_capacity(shear_capacity,min_sc): #todo anjali
-    """Calculate minimum and maximum factored design shear force in the section due to external actions
+    """
+    Calculate minimum and maximum factored design shear force in the section due to external actions
+    Args:
 
+         shear_capacity:Factored design shear force
+         min_sc:Minimum factored design shear force in the section due to external actions
 
-    :param shear_capacity:Factored design shear force
-    :param min_sc:Minimum factored design shear force in the section due to external actions
-
-    :return:
-       Note:
+    Returns:
+        minimum and maximum factored design shear force in the section due to external actions
+    Note:
               Reference:
               IS 800:2007,  cl 8.4
 
@@ -2028,20 +2198,21 @@ def min_max_shear_capacity(shear_capacity,min_sc): #todo anjali
     min_sc_eqn.append(NoEscape(r'&=' + min_sc + r'\\'))
     min_sc_eqn.append(NoEscape(r'Vc_{max} &= Sc \\'))
     min_sc_eqn.append(NoEscape(r'&=' +shear_capacity+ r'\\}'))
-    min_sc_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    min_sc_eqn.append(NoEscape(r'&and~Clause~8.4)&\end{aligned}'))
+    min_sc_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~8.4)&\end{aligned}'))
 
     return min_sc_eqn
 
 def prov_shear_load(shear_input,min_sc,app_shear_load,shear_capacity_1):
-    """Calculate maximum shear force
+    """
+    Calculate maximum shear force
+    Args:
 
-
-    :param shear_inputFfactored input shear force
-    :param min_sc:Minimum shear force
-    :param app_shear_load:Maximum of factored input shear force and minimum shear force
-    :return:
-       Note:
+        shear_input factored input shear force
+        min_sc:Minimum shear force
+        app_shear_load:Maximum of factored input shear force and minimum shear force
+    Returns:
+        maximum shear force
+    Note:
               Reference:
               IS 800:2007,  cl 8.4
 
@@ -2060,22 +2231,26 @@ def prov_shear_load(shear_input,min_sc,app_shear_load,shear_capacity_1):
     app_shear_load_eqn.append(NoEscape(r' Vu~~ &= max(V,Vc_{min})\\'))
     app_shear_load_eqn.append(NoEscape(r'&=  max(' + shear_input + ',' + min_sc + r')\\'))
     app_shear_load_eqn.append(NoEscape(r'&=' + app_shear_load + r'\\'))
-    app_shear_load_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    app_shear_load_eqn.append(NoEscape(r'&and~Clause~8.4)&\end{aligned}'))
+    app_shear_load_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~8.4)&\end{aligned}'))
+
 
     return app_shear_load_eqn
 
 
 def plastic_moment_capacty(beta_b, Z_p, f_y, gamma_m0 ,Pmc):  # same as #todo anjali
-    """Calculate member design moment capacity
+    """
+    Calculate member design moment capacity
+    Args:
 
-    :param beta_b:1 for plastic and compact sections & Ze/Zp for semi compact section (int)
-    :param Z_p:Plastic section modulus of cross section mm^3 (float)
-    :param f_y:Yield stress of the material in N/mm square  (float)
-    :param gamma_m0:partial safety factor (float)
-    :param Pmc:Plastic moment capacity in  N-mm (float)
-    :return:
-       Note:
+          beta_b:1 for plastic and compact sections & Ze/Zp for semi compact section (int)
+          Z_p:Plastic section modulus of cross section mm^3 (float)
+          f_y:Yield stress of the material in N/mm square  (float)
+          gamma_m0:partial safety factor (float)
+          Pmc:Plastic moment capacity in  N-mm (float)
+    Returns:
+        Plastic moment capacity in  N-mm (float)
+
+    Note:
               Reference:
               IS 800:2007,  cl 8.2.1.2
 
@@ -2090,24 +2265,26 @@ def plastic_moment_capacty(beta_b, Z_p, f_y, gamma_m0 ,Pmc):  # same as #todo an
     Pmc_eqn.append(NoEscape(r'\begin{aligned} Pmc &= \frac{\beta_b * Z_p *fy}{\gamma_{mo} * 10^6}\\'))
     Pmc_eqn.append(NoEscape(r'&=\frac{' + beta_b + r'*' +Z_p + r'*' + f_y + r'}{' + gamma_m0 + r' * 10^6}\\'))
     Pmc_eqn.append(NoEscape(r'&=' + Pmc + r'\\'))
-    Pmc_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    Pmc_eqn.append(NoEscape(r'&and~Clause~8.2.1.2)&\end{aligned}'))
+    Pmc_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~8.2.1.2)&\end{aligned}'))
+
 
     return Pmc_eqn
 
 
 def moment_d_deformation_criteria(fy,Z_e,Mdc):  # todo priti#
-    """Calculate moment deformation capacity
+    """
+    Calculate moment deformation capacity
+    Args:
+         fy:Yield stress of the material in  N/mm square (float)
 
-    :param fy:Yield stress of the material in  N/mm square (float)
-
-    :param Z_e:Elastic section modulus of cross section in  mm^3 (float)
-    :param Mdc:Moment deformation capacity in  N-mm (float)
-       Note:
+         Z_e:Elastic section modulus of cross section in  mm^3 (float)
+         Mdc:Moment deformation capacity in  N-mm (float)
+    Note:
               Reference:
               IS 800:2007,  cl 8.2.1.2
 
-    :return:
+    Returns:
+         moment deformation capacity
     """
 
     fy = str(fy)
@@ -2120,20 +2297,23 @@ def moment_d_deformation_criteria(fy,Z_e,Mdc):  # todo priti#
 
 
     Mdc_eqn.append(NoEscape(r'&= ' + Mdc+ r'\\'))
-    Mdc_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    Mdc_eqn.append(NoEscape(r'&and~Clause~8.2.1.2)&\end{aligned}'))
+    Mdc_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~8.2.1.2)&\end{aligned}'))
 
     return  Mdc_eqn
 
 
 def moment_capacity (Pmc , Mdc, M_c):
-    """Calculate moment capacity of the section
+    """
+    Calculate moment capacity of the section
+    Args:
 
-    :param Pmc:Plastic moment capacity of the member in  N-mm (float)
-    :param Mdc:Moment deformation capacity of the member in  N-mm (float)
-    :param M_c: Moment capacity of the section in  N-mm (float)
-    :return:
-     Note:
+         Pmc:Plastic moment capacity of the member in  N-mm (float)
+         Mdc:Moment deformation capacity of the member in  N-mm (float)
+         M_c: Moment capacity of the section in  N-mm (float)
+    Returns:
+         moment capacity of the section
+
+    Note:
               Reference:
               IS 800:2007,  cl 8.2.1.2
 
@@ -2146,19 +2326,19 @@ def moment_capacity (Pmc , Mdc, M_c):
     M_c_eqn.append(NoEscape(r'\begin{aligned} M_c &= min(Pmc,Mdc)\\'))
     M_c_eqn.append(NoEscape(r'&=min('+Pmc+','+Mdc+ r')\\'))
     M_c_eqn.append(NoEscape(r'&=' + M_c + r'\\'))
-    M_c_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    M_c_eqn.append(NoEscape(r'&and~Clause~8.2.1.2)&\end{aligned}'))
-
+    M_c_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~8.2.1.2)&\end{aligned}'))
     return M_c_eqn
 
 
 def min_max_moment_capacity(moment_capacity,min_mc): #todo anjali
-    """Calculate minimum and maximum moment capacity of the section
-
-    :param moment_capacity:Moment capacity of the section
-    :param min_mc:Min moment capacity of the section
-    :return:Minimum and maximum moment capacity of the section
-     Note:
+    """
+    Calculate minimum and maximum moment capacity of the section
+    Args:
+         moment_capacity:Moment capacity of the section
+         min_mc:Min moment capacity of the section
+    Returns:
+          Minimum and maximum moment capacity of the section
+    Note:
               Reference:
               IS 800:2007,  cl 8.2.1.2
 
@@ -2171,19 +2351,22 @@ def min_max_moment_capacity(moment_capacity,min_mc): #todo anjali
     min_mc_eqn.append(NoEscape(r'&=' + min_mc + r'\\'))
     min_mc_eqn.append(NoEscape(r' Mc_{max} &= Mc \\'))
     min_mc_eqn.append(NoEscape(r'&=' +moment_capacity+ r'\\'))
-    min_mc_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    min_mc_eqn.append(NoEscape(r'&and~Clause~8.2.1.2)&\end{aligned}'))
+    min_mc_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~8.2.1.2)&\end{aligned}'))
+
 
     return min_mc_eqn
 
 
 def prov_moment_load(moment_input,min_mc,app_moment_load,moment_capacity):
-    """Calculate max moment load of input moment and min moment of the section
+    """
+    Calculate max moment load of input moment and min moment of the section
+    Args:
 
-    :param moment_input:Factored input moment in KN (float)
-    :param min_mc:Min moment of the section in KN (float)
-    :param app_moment_load:Factored moment max of input moment and min moment of the section in KN (float)
-    :return:
+         moment_input:Factored input moment in KN (float)
+         min_mc:Min moment of the section in KN (float)
+         app_moment_load:Factored moment max of input moment and min moment of the section in KN (float)
+    Returns:
+         max moment load of input moment and min moment of the section
     Note:
               Reference:
               IS 800:2007,  cl 8.2.1.2
@@ -2201,25 +2384,27 @@ def prov_moment_load(moment_input,min_mc,app_moment_load,moment_capacity):
     app_moment_load_eqn.append(NoEscape(r' \begin{aligned} Mu &= max(M,Mc_{min} )\\'))
     app_moment_load_eqn.append(NoEscape(r'&= max(' + moment_input + r',' + min_mc + r')\\'))
     app_moment_load_eqn.append(NoEscape(r'&=' + app_moment_load + r'\\'))
-    app_moment_load_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    app_moment_load_eqn.append(NoEscape(r'&and~Clause~8.2.1.2)&\end{aligned}'))
-
+    app_moment_load_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~8.2.1.2)&\end{aligned}'))
     return  app_moment_load_eqn
 
 
 def shear_rupture_prov_beam(h, t, n_r, d_o, fu,v_dn,gamma_m1,multiple=1):
-    """ Calculate design strength in tension due to rupture of critical section in case of bolted connection
+    """
+    Calculate design strength in tension due to rupture of critical section in case of bolted connection
+    Args:
+         h:Height of the flange in mm (float)
+         t:Thickness of the flange in mm (float)
+         n_r:No. of bolts hole in critical section (int)
+         d_o:Diameter of the bolt hole in mm (float)
+         fu:Ultimate stress of the material N/ mm square (float)
+         v_dn:Design strength due to ruoture in N (float)
+         gamma_m1:Partial safety factor for failure at ultimate stress (float)
+         multiple:1 (int)
+    Returns:
+          design strength in tension due to rupture of critical section in case of bolted connection
 
-    :param h:Height of the flange in mm (float)
-    :param t:Thickness of the flange in mm (float)
-    :param n_r:No. of bolts hole in critical section (int)
-    :param d_o:Diameter of the bolt hole in mm (float)
-    :param fu:Ultimate stress of the material N/ mm square (float)
-    :param v_dn:Design strength due to ruoture in N (float)
-    :param gamma_m1:Partial safety factor for failure at ultimate stress (float)
-    :param multiple:1 (int)
-    :return:
-      Note:
+
+    Note:
               Reference:
               IS 800:2007,  cl 6.3
 
@@ -2239,23 +2424,24 @@ def shear_rupture_prov_beam(h, t, n_r, d_o, fu,v_dn,gamma_m1,multiple=1):
     shear_rup_eqn.append(NoEscape(r'&= \frac{'+ multiple+'*0.9 *('+h+'-('+n_r+'*'+d_o+'))*'+t+'*'+f_u+ '}{\sqrt{3}*'+gamma_m1+ r'}\\'))
 
     shear_rup_eqn.append(NoEscape(r'&=' + v_dn + r'\\'))
-    shear_rup_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    shear_rup_eqn.append(NoEscape(r'&and~Clause~6.3)&\end{aligned}'))
-
+    shear_rup_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.3)&\end{aligned}'))
     return shear_rup_eqn
 
 
 def shear_Rupture_prov_weld(h, t,  fu,v_dn,gamma_m1,multiple =1):  #weld
-    """Calculate design strength in tension due to rupture of critical section in case of welded connection
+    """
+    Calculate design strength in tension due to rupture of critical section in case of welded connection
+    Args:
+         h:Height of the flange in mm (float)
+         t:Thickness of the flange in mm (float)
+         fu:Ultimate stress of the material N/ mm square (float)
+         v_dn:Design strength due to ruoture in N (float)
+         gamma_m1:Partial safety factor for failure at ultimate stress (float)
+         multiple:1
+    Returns:
+        design strength in tension due to rupture of critical section in case of welded connection
 
-    :param h:Height of the flange in mm (float)
-    :param t:Thickness of the flange in mm (float)
-    :param fu:Ultimate stress of the material N/ mm square (float)
-    :param v_dn:Design strength due to ruoture in N (float)
-    :param gamma_m1:Partial safety factor for failure at ultimate stress (float)
-    :param multiple:1
-    :return:
-      Note:
+    Note:
               Reference:
               IS 800:2007,  cl 6.3
 
@@ -2273,12 +2459,22 @@ def shear_Rupture_prov_weld(h, t,  fu,v_dn,gamma_m1,multiple =1):  #weld
     shear_rup_eqn.append(NoEscape(r'\begin{aligned} V_{dn} &= \frac{0.9*A_{vn}*f_u}{\sqrt{3}*\gamma_{m1}}\\'))
     shear_rup_eqn.append(NoEscape(r'&=\frac{'+ multiple+'*0.9*'+h+'*'+t+'*'+f_u+'}{\sqrt{3}*' +gamma_m1+ r'}\\'))
     shear_rup_eqn.append(NoEscape(r'&=' + v_dn + r'\\'))
-    shear_rup_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    shear_rup_eqn.append(NoEscape(r'&and~Clause~6.3)&\end{aligned}'))
+    shear_rup_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.3)&\end{aligned}'))
 
     return shear_rup_eqn
 
 def shear_capacity_prov(V_dy, V_dn, V_db=0.0):
+    """
+    Calculate shear capacity of member
+
+    Args:
+        V_dy: yielding capacity of plate
+        V_dn: rupture capacity of plate
+        V_db: block shear capacity of plate
+    Returns:
+         shear capacity of member
+    """
+
     shear_capacity_eqn = Math(inline=True)
     if  V_db !=0.0:
          V_d = min(V_dy,V_dn,V_db)
@@ -2296,13 +2492,22 @@ def shear_capacity_prov(V_dy, V_dn, V_db=0.0):
          shear_capacity_eqn.append(NoEscape(r'\begin{aligned} V_d &= min(V_{dy},V_{dn})\\'))
          shear_capacity_eqn.append(NoEscape(r'&= min(' + V_dy + ',' + V_dn + r')\\'))
 
-         shear_capacity_eqn.append(NoEscape(r'&='+V_d + r'\\'))
-         shear_capacity_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-         shear_capacity_eqn.append(NoEscape(r'&and~Clause~6.1)&\end{aligned}'))
-    return shear_capacity_eqn
+         shear_capacity_eqn.append(NoEscape(r'&='+V_d + r'\end{aligned}'))
+         return shear_capacity_eqn
 
 
 def shear_capacity_prov(V_dy, V_dn, V_db = 0.0):
+    """
+    Calculate shear capacity of member
+
+    Args:
+        V_dy: yielding capacity of plate
+        V_dn: rupture capacity of plate
+        V_db: block shear capacity of plate
+    Returns:
+         shear capacity of member
+
+    """
     shear_capacity_eqn = Math(inline=True)
     if V_db != 0.0:
         V_d = min(V_dy,V_dn,V_db)
@@ -2388,11 +2593,13 @@ def get_pass_fail2(min, provided, max):
 
 def min_prov_max(min, provided,max):
     """
-
-    :param min:
-    :param provided:
-    :param max:
-    :return:
+    Calculate min and maximum axial capacity (provided)
+    Args:
+        min:0.3*tension yeilding caapcity of the section
+        provided:resisting force
+        max:tension yeilding caapcity of the section
+    Returns:
+        min and maximum axial capacity (provided)
     """
     min = float(min)
     provided = float(provided)
@@ -2407,15 +2614,17 @@ def min_prov_max(min, provided,max):
 
 
 def member_yield_prov(Ag, fy, gamma_m0, member_yield,multiple = 1):
-    """Calculate member yielding capacity of the member
-
-    :param Ag:Gross area of the section in mm square (float)
-    :param fy:Yeilding strength of material in N/mm square (float)
-    :param gamma_m0:partial safety factor for failure in tension by yeilding (float)
-    :param member_yield:Member yeilding capacity in N (float)
-    :param multiple:1 (int)
-    :return:
-     Note:
+    """
+    Calculate member yielding capacity of the member
+    Args:
+         Ag:Gross area of the section in mm square (float)
+         fy:Yeilding strength of material in N/mm square (float)
+         gamma_m0:partial safety factor for failure in tension by yeilding (float)
+         member_yield:Member yeilding capacity in N (float)
+         multiple:1 (int)
+    Returns:
+         member yielding capacity of the member
+    Note:
               Reference:
               IS 800:2007,  cl 6.2
 
@@ -2428,35 +2637,35 @@ def member_yield_prov(Ag, fy, gamma_m0, member_yield,multiple = 1):
     member_yield_eqn = Math(inline=True)
     member_yield_eqn.append(NoEscape(r'\begin{aligned}T_{dg}~or~A_c&= \frac{'+ multiple + r' * A_g ~ f_y}{\gamma_{m0}}\\'))
     member_yield_eqn.append(NoEscape(r'&= \frac{'+ multiple + '*' + Ag + '*' + fy + '}{'+ gamma_m0 + r'}\\'))
-    member_yield_eqn.append(NoEscape(r'&= ' + member_yield + r'\end{aligned}'))
-    member_yield_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    member_yield_eqn.append(NoEscape(r'&and~Clause~6.2)&\end{aligned}'))
-
+    member_yield_eqn.append(NoEscape(r'&= ' + member_yield + r'\\}'))
+    member_yield_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.2)&\end{aligned}'))
     return member_yield_eqn
 
 
 def member_rupture_prov(A_nc, A_go, F_u, F_y, L_c, w, b_s, t,gamma_m0,gamma_m1,beta,member_rup,multiple = 1):
-    """Calculate design strength due to rupture of critical section
-
-    :param A_nc:Net area of connected leg in mm square (float)
-    :param A_go:Gross area of outstanding leg in mm square (float)
-    :param F_u:Ultimate stress of the material in N/mm square (float)
-    :param F_y:Yield stess of the material in mm N/square (float)
-    :param L_c:Length of the end connection in mm  (float)
-    :param w:Outstanding leg width in mm  (float)
-    :param b_s:Shear lag width in mm  (float)
-    :param t:thickness of the leg in mm  (float)
-    :param gamma_m0:partial safety factor for failure in tension by yeilding (float)
-    :param gamma_m1:partial safety factor for failure at ultimate stress (float)
-    :param beta:as per section 6.3.3 (float)
-    :param member_rup:design strength due to rupture of critical section (float)
-
-    :param multiple:1
-      Note:
+    """
+    Calculate design strength due to rupture of critical section
+    Args:
+          A_nc:Net area of connected leg in mm square (float)
+          A_go:Gross area of outstanding leg in mm square (float)
+          F_u:Ultimate stress of the material in N/mm square (float)
+          F_y:Yield stess of the material in mm N/square (float)
+          L_c:Length of the end connection in mm  (float)
+          w:Outstanding leg width in mm  (float)
+          b_s:Shear lag width in mm  (float)
+          t:thickness of the leg in mm  (float)
+          gamma_m0:partial safety factor for failure in tension by yeilding (float)
+          gamma_m1:partial safety factor for failure at ultimate stress (float)
+          beta:as per section 6.3.3 (float)
+          member_rup:design strength due to rupture of critical section (float)
+          multiple:1
+    Returns:
+           design strength due to rupture of critical section
+    Note:
               Reference:
               IS 800:2007,  cl 6.3
 
-    :return:
+
     """
     w = str(w)
     t = str(t)
@@ -2480,20 +2689,22 @@ def member_rupture_prov(A_nc, A_go, F_u, F_y, L_c, w, b_s, t,gamma_m0,gamma_m1,b
     member_rup_eqn.append(NoEscape(r'T_{dn} &= '+multiple+'*' r'(\frac{0.9*A_{nc}*f_{u}}{\gamma_{m1}} + \frac{\beta * A_{go} * f_{y}}{\gamma_{m0}})\\'))
     member_rup_eqn.append(NoEscape(r'&= '+multiple+ r'*(\frac{0.9* '+ A_nc +'*' + fu + '}{'+ gamma_m1 + r'} + \frac{' + beta + '*' + A_go + '*' + fy + '}{' + gamma_m0 + r'})\\'))
     member_rup_eqn.append(NoEscape(r'&= '+ member_rup + r'\\'))
-    member_rup_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    member_rup_eqn.append(NoEscape(r'&and~Clause~6.3)&\end{aligned}'))
-
+    member_rup_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.3)&\end{aligned}'))
     return member_rup_eqn
 
 
 def flange_weld_stress(F_f,l_eff,F_ws):
-    """Calculate flange weld stress
+    """
+    Calculate flange weld stress
 
-    :param F_f:flange force in KN (float)
-    :param l_eff:available effective length in mm (float)
-    :param F_ws:flange weld stress in N/mm (float)
-    :return:
-       Note:
+    Args:
+
+        F_f:flange force in KN (float)
+        l_eff:available effective length in mm (float)
+        F_ws:flange weld stress in N/mm (float)
+    Returns:
+        flange weld stress
+    Note:
               Reference:
               IS 800:2007,  cl 10.5.9
 
@@ -2505,26 +2716,29 @@ def flange_weld_stress(F_f,l_eff,F_ws):
     flange_weld_stress_eqn.append(NoEscape(r'\begin{aligned} Stress &= \frac{F_f*10^3}{l_{eff}}\\'))
     flange_weld_stress_eqn.append(NoEscape(r' &= \frac{'+F_f+'*10^3}{'+l_eff+ r'}\\'))
     flange_weld_stress_eqn.append(NoEscape(r'&= ' + F_ws+ r'\\'))
-    flange_weld_stress_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    flange_weld_stress_eqn.append(NoEscape(r'&and~Clause~10.5.9)&\end{aligned}'))
+    flange_weld_stress_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.5.9)&\end{aligned}'))
 
     return flange_weld_stress_eqn
 
 
 def blockshear_prov(Tdb,A_vg = None, A_vn = None, A_tg = None, A_tn = None, f_u = None, f_y = None ,gamma_m0 = None ,gamma_m1 = None,stress=None):
-    """calculate block shear strength of the plate or member
+    """
+    Calculate block shear strength of the plate or member
 
-    :param Tdb:block shear strength of the plate or member in N (float)
-    :param A_vg:gross area of plate attached to web in shear along bolt line parallel to y axis in mm square (float)
-    :param A_vn:net area of web cover plate attached to web in shear along bolt line parallel to y axis in mm square (float)
-    :param A_tg:minimum gross area in tension along bolt line parallel to x-axis in mm square (float)
-    :param A_tn:minimum net area in tension along bolt line perpendicular to shear load in mm square (float)
-    :param f_u:ultimate stress of material in N/mm square (float)
-    :param f_y:yield stress of material in N/mm square (float)
-    :param gamma_m0:partial safety factor for failure in tension by yielding (float)
-    :param gamma_m1:partial safety factor for failure at ultimate stress (float)
-    :return:
-       Note:
+    Args:
+
+        Tdb:block shear strength of the plate or member in N (float)
+        A_vg:gross area of plate attached to web in shear along bolt line parallel to y axis in mm square (float)
+        A_vn:net area of web cover plate attached to web in shear along bolt line parallel to y axis in mm square (float)
+        A_tg:minimum gross area in tension along bolt line parallel to x-axis in mm square (float)
+        A_tn:minimum net area in tension along bolt line perpendicular to shear load in mm square (float)
+        f_u:ultimate stress of material in N/mm square (float)
+        f_y:yield stress of material in N/mm square (float)
+        gamma_m0:partial safety factor for failure in tension by yielding (float)
+        gamma_m1:partial safety factor for failure at ultimate stress (float)
+    Returns:
+        block shear strength of the plate or member
+    Note:
               Reference:
               IS 800:2007,  cl 6.4
 
@@ -2550,9 +2764,8 @@ def blockshear_prov(Tdb,A_vg = None, A_vn = None, A_tg = None, A_tn = None, f_u 
     else:
         member_block_eqn.append(NoEscape(r'\begin{aligned}T_{db1} &= \frac{A_{vg} f_{y}}{\sqrt{3} \gamma_{m0}} + \frac{0.9 A_{tn} f_{u}}{\gamma_{m1}}\\'))
         member_block_eqn.append(NoEscape(r'T_{db2} &= \frac{0.9*A_{vn} f_{u}}{\sqrt{3} \gamma_{m1}} + \frac{A_{tg} f_{y}}{\gamma_{m0}}\\'))
-        member_block_eqn.append(NoEscape(r'T_{db} &= min(T_{db1}, T_{db2})= ' + Tdb + r'\end{aligned}'))
-
-    # member_block_eqn.append(NoEscape(r'&= \frac{' + A_vg + '*' + f_y + '}{" 1.732*' + gamma_m0 + 'r'} + &+ +'\frac{"0.9*" + A_vn + '*' + f_u + '}{'+1.732+'*' + gamma_m0 + r'} '\\'))
+        member_block_eqn.append(NoEscape(r'T_{db} &= min(T_{db1}, T_{db2})= ' + Tdb + r'\\}'))
+        member_block_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~6.4)&\end{aligned}'))
 
     return member_block_eqn
 
@@ -2570,14 +2783,18 @@ def slenderness_req():
 
 
 def slenderness_prov(K, L, r, slender):
-    """Calculate effective selenderness ratio
+    """
+    Calculate effective selenderness ratio
 
-    :param K:Constant according to the end condition (float)
-    :param L:Actual length of the section in mm (float)
-    :param r:Radius of gyration  in mm (float)
-    :param slender:  effective selenderness ratio (float)
-    :return:
-        Note:
+    Args:
+
+         K:Constant according to the end condition (float)
+         L:Actual length of the section in mm (float)
+         r:Radius of gyration  in mm (float)
+         slender:  effective selenderness ratio (float)
+    Returns:
+        effective selenderness ratio
+    Note:
               Reference:
               IS 800:2007,  cl 7.1.2
 
@@ -2590,9 +2807,7 @@ def slenderness_prov(K, L, r, slender):
     slender_eqn = Math(inline=True)
     slender_eqn.append(NoEscape(r'\begin{aligned}\frac{K * L}{r} &= \frac{'+K+'*'+L+'}{'+r+ r'}\\'))
     slender_eqn.append(NoEscape(r'&= ' + slender + r'\\}'))
-    slender_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    slender_eqn.append(NoEscape(r'&and~Clause~7.1.2)&\end{aligned}'))
-
+    slender_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~7.1.2)&\end{aligned}'))
     return slender_eqn
 
 
@@ -2609,11 +2824,14 @@ def efficiency_req():
 
 def efficiency_prov(F, Td, eff):
     """
+    Calculate efficiency of the tension member(provided)
 
-    :param F:
-    :param Td:
-    :param eff:
-    :return:
+    Args:
+         F:axial force on the member in KN (float)
+         Td:tension capacity of the section in KN (float)
+         eff:efficiency of the tension member  (float)
+    Returns:
+        efficiency of the tension member
     """
     F = str(F)
     Td = str(round(Td/1000,2))
@@ -2626,13 +2844,15 @@ def efficiency_prov(F, Td, eff):
 
 
 def gusset_ht_prov(beam_depth, clearance, height, mul = 1):
-    """Calculate gusset height
-
-    :param beam_depth:Section depth
-    :param clearance:clearence between gusset plates
-    :param height:Height of the gusset plate
-    :param mul:
-    :return:
+    """
+    Calculate gusset plate height
+    Args:
+         beam_depth:Section depth in mm (float)
+         clearance:clearence between gusset plates in mm (float)
+         height:Height of the gusset plate in mm (float)
+         mul:
+    Returns:
+         gusset plate height
     """
     beam_depth = str(beam_depth)
     clearance = str(clearance)
@@ -2648,13 +2868,17 @@ def gusset_ht_prov(beam_depth, clearance, height, mul = 1):
 
 
 def gusset_lt_b_prov(nc,p,e,length):
-    """Calculate length of the gusset plate in case of bolted connection
+    """
+    Calculate length of the gusset plate in case of bolted connection
 
-    :param nc:No. of row of bolts (int)
-    :param p: pitch distance of the gusset plate in mm (float)
-    :param e:Edge distance of the gusset plate in mm (float)
-    :param length:length of the gusset plate in mm (float)
-    :return:
+    Args:
+
+        nc:No. of row of bolts (int)
+        p: pitch distance of the gusset plate in mm (float)
+        e:Edge distance of the gusset plate in mm (float)
+        length:length of the gusset plate in mm (float)
+    Returns:
+        length of the gusset plate in case of bolted connection
     """
     nc = str(nc)
     p = str(p)
@@ -2670,12 +2894,16 @@ def gusset_lt_b_prov(nc,p,e,length):
 
 
 def gusset_lt_w_prov(weld,cls,length):
-    """Calculate length of the gusset plate in case of welded connection
+    """
+    Calculate length of the gusset plate in case of welded connection
 
-    :param weld:weld length in mm (float)
-    :param cls:clearance in mm (float)
-    :param length:plate length in mm (float)
-    :return:
+    Args:
+          weld:weld length in mm (float)
+          cls:clearance in mm (float)
+          length:plate length in mm (float)
+    Returns:
+        length of the gusset plate in case of welded connection
+
     """
     weld = str(weld)
     cls = str(cls)
@@ -2707,15 +2935,18 @@ def long_joint_bolted_req():
 
 def long_joint_bolted_prov(nc,nr,p,g,d,Tc,Tr):
     """
+    Calculate reduced bolt capacity in case of long joint
 
-    :param nc:No. of row of bolts in one line (int)
-    :param nr:No. of  bolts in one line (int)
-    :param p:Pitch distance of the plate in mm (float)
-    :param g:Gauge distance of the plate in mm (float)
-    :param d:Diameter of the bolt in mm (float)
-    :param Tc:Bolt capacity  in KN (float)
-    :param Tr: Reduced bolt capacity  in KN (float)
-    :return:
+    Args:
+         nc:No. of row of bolts in one line (int)
+         nr:No. of  bolts in one line (int)
+         p:Pitch distance of the plate in mm (float)
+         g:Gauge distance of the plate in mm (float)
+         d:Diameter of the bolt in mm (float)
+         Tc:Bolt capacity  in KN (float)
+         Tr: Reduced bolt capacity  in KN (float)
+    Returns:
+        Reduced bolt capacity  in KN (float)
     """
     lc = (nc - 1) * p
     lr = (nr - 1) * g
@@ -2769,22 +3000,26 @@ def long_joint_bolted_prov(nc,nr,p,g,d,Tc,Tr):
 
 def long_joint_bolted_beam(nc,nr,p,g,d,Tc,Tr,joint,end_dist,gap,edge_dist,web_thickness,root_radius,conn=None):
     """
+    Calculate reduced bolt capacity in case of long joint
 
-    :param nc:No. of row of bolts in one line (int)
-    :param nr:No. of  bolts in one line (int)
-    :param p:Pitch distance of the plate in mm (float)
-    :param g:Gauge distance of the plate in mm (float)
-    :param d:Diameter of the bolt in mm (float)
-    :param Tc:Bolt capacity  in KN (float)
-    :param Tr: Reduced bolt capacity  in KN (float)
+    Args:
 
-    :param joint:Flange or web (str)
-    :param end_dist: flange plate end distance in mm (float)
-    :param gap:gap between flange plate in mm (float)
-    :param edge_dist: flane plate edge distance in mm (float)
-    :param web_thickness: web thickness in mm (float)
-    :param root_radius: root radius of the section in mm (float)
-    :return:
+        nc:No. of row of bolts in one line (int)
+        nr:No. of  bolts in one line (int)
+        p:Pitch distance of the plate in mm (float)
+        g:Gauge distance of the plate in mm (float)
+        d:Diameter of the bolt in mm (float)
+        Tc:Bolt capacity  in KN (float)
+        Tr: Reduced bolt capacity  in KN (float)
+        joint:Flange or web (str)
+        end_dist: flange plate end distance in mm (float)
+        gap:gap between flange plate in mm (float)
+        edge_dist: flane plate edge distance in mm (float)
+        web_thickness: web thickness in mm (float)
+        root_radius: root radius of the section in mm (float)
+    Returns:
+        reduced bolt capacity in case of long joint
+
     """
 
     if joint == 'web':
@@ -2919,15 +3154,18 @@ def long_joint_welded_req():
 
 def long_joint_welded_beam_prov(plate_height,l_w,t_w,gap,t_t,Tc,Tr):
     """
+    Calculate Reduced flange weld strength  in case of long joint
 
-    :param plate_height:
-    :param l_w:
-    :param t_w:
-    :param gap:
-    :param t_t:
-    :param Tc:
-    :param Tr:
-    :return:
+    Args:
+         plate_height:flange plate height in mm (float)
+         l_w:available long flane length in mm (float)
+         t_w:flange weld size in mm (float)
+         gap:flange plate gap  in mm (float)
+         t_t:flange weld throat thickness in mm (float)
+         Tc:flange weld strength in KN (float)
+         Tr:reduced flange weld strength in KN/mm (float)
+    Returns:
+        reduced flange weld strength in KN/mm (float)
     """
     ll = round(2*(l_w +(2*t_w)) +gap,2)
     lh = plate_height
@@ -2986,6 +3224,19 @@ def long_joint_welded_beam_prov(plate_height,l_w,t_w,gap,t_t,Tc,Tr):
 
 
 def long_joint_welded_prov(h,l,t_t,ws,wsr):
+    """
+    Calculate Reduced flange weld strength  in case of long joint (welded connection)
+
+    Args:
+
+         h: plate height in mm (float)
+         l: plate length in mm (float)
+         t_t: weld throat thickness  in mm (float)
+         ws: weld strength  in KN (float)
+         wsr:reduced weld strength  in KN (float)
+    Returns:
+        reduced weld strength
+    """
     lj = max(h,l)
     lt = 150 * t_t
     B = 1.2 - ((0.2 * lj) / (150 * t_t))
@@ -3037,12 +3288,15 @@ def throat_req():
 
 
 def throat_prov(tw,f):
-    """Calculate effective throat thickness of fillet weld for stress calculation
+    """
+    Calculate effective throat thickness of fillet weld for stress calculation
 
-    :param tw:Fillet weld size in mm (float)
-    :param f:Constant depending upon the angle between  fusion faces  (float)
-    :return: Throat thickness in mm (float)
-        Note:
+    Args:
+         tw:Fillet weld size in mm (float)
+         f:Constant depending upon the angle between  fusion faces  (float)
+    Returns:
+        Throat thickness in mm (float)
+    Note:
               Reference:
               IS 800:2007,  cl 10.5.3.1
 
@@ -3059,21 +3313,22 @@ def throat_prov(tw,f):
 
     throat_eqn.append(NoEscape(r'& = ' + f + '*'+ tw +r'\\'))
     throat_eqn.append(NoEscape(r't_t & = ' + t_t + r'\\}'))
-    throat_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-    throat_eqn.append(NoEscape(r'&and~Clause~10.5.3.1)&\end{aligned}'))
-
+    throat_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.5.3.1)&\end{aligned}'))
     return throat_eqn
 
 
 def eff_len_prov(l_eff, b_fp, t_w, l_w,con= None):
     """
+    Calculate required flange length
 
-    :param l_eff:
-    :param b_fp:
-    :param t_w:
-    :param l_w:
-    :param con:
-    :return:
+    Args:
+        l_eff:required flange length in mm (float)
+        b_fp:flange plate height in mm (float)
+        t_w:flange weld size in mm (float)
+        l_w:flange weld length in mm (float)
+        con:flange or web (str)
+    Returns:
+         required flange length
     """
     l_eff = str(l_eff)
     l_w = str(l_w)
@@ -3094,13 +3349,16 @@ def eff_len_prov(l_eff, b_fp, t_w, l_w,con= None):
 
 def eff_len_prov_out_in(l_eff, b_fp,b_ifp, t_w, l_w):
     """
+    Calculate effective length provided on outside
 
-    :param l_eff:
-    :param b_fp:
-    :param b_ifp:
-    :param t_w:
-    :param l_w:
-    :return:
+    Args:
+           l_eff:required length of flange in mm (float)
+           b_fp:flange plate height in mm (float)
+           b_ifp:flange plate innerheight in mm (float)
+           t_w:flange weld size in mm (float)
+           l_w:flange weld length in mm (float)
+    Returns:
+          effective length provided on outside
     """
     l_eff = str(l_eff)
     l_w = str(l_w)
@@ -3117,11 +3375,15 @@ def eff_len_prov_out_in(l_eff, b_fp,b_ifp, t_w, l_w):
 
 def eff_len_req(F_f, l_eff_req, F_wd):
     """
+    Calculate effective weld length required
 
-    :param F_f:
-    :param l_eff_req:
-    :param F_wd:
-    :return:
+    Args:
+           F_f:flange force in KN (float)
+           l_eff_req:effective weld length required in KN (float)
+           F_wd:flange weld stress in KN/mm (float)
+    Returns:
+        effective weld length required in mm (float)
+
     """
     F_f = str(F_f)
     l_eff_req = str(l_eff_req)
@@ -3136,10 +3398,13 @@ def eff_len_req(F_f, l_eff_req, F_wd):
 
 def plate_area_req(crs_area, flange_web_area):
     """
+    Calculate plate area required
 
-    :param crs_area:
-    :param flange_web_area:
-    :return:
+    Args:
+         crs_area:cross sectional area of plate in mm square (float)
+         flange_web_area:combined area of flange and web in mm square (float)
+    Returns:
+        plate area required
     """
     crs_area = str(crs_area)
     flange_web_area = str(flange_web_area)
@@ -3153,12 +3418,15 @@ def plate_area_req(crs_area, flange_web_area):
 
 def width_pt_chk(B,t,r_1,pref):
     """
+    Check the plate width
 
-    :param B:
-    :param t:
-    :param r_1:
-    :param pref:
-    :return:
+    Args:
+          B:flange width in mm (float)
+          t:web thickness in mm  (float)
+          r_1:root radius in mm  (float)
+          pref:"Outside" or "Outside +Inside" (str)
+    Returns:
+        the plate width
     """
     if pref == "Outside":
         outerwidth = round(B  - (2 * 21) ,2)
@@ -3184,11 +3452,14 @@ def width_pt_chk(B,t,r_1,pref):
 
 def width_pt_chk_bolted(B,t,r_1):
     """
+    Check the width of plate (bolted connection)
 
-    :param B:
-    :param t:
-    :param r_1:
-    :return:
+    Args:
+           B:flange width
+           t:web thickness
+           r_1:root radius
+    Returns:
+          width of plate
     """
     innerwidth =round((B -t - (2*r_1))/2 ,2)
     B = str(B)
@@ -3205,15 +3476,18 @@ def width_pt_chk_bolted(B,t,r_1):
 
 def web_width_chk_bolt (pref,D,tk,T,R_1,webplatewidth,webclearance = None):
     """
+    Calculate web plate width
 
-    :param pref:prefference (outside or outside+inside) (str)
-    :param D:Section depth in mm (float)
-    :param tk:flange plate thickness (provided) in mm (float)
-    :param T:flange thickness in mm (float)
-    :param R_1: root radius in mm (float)
-    :param webplatewidth: web width in mm (float)
-    :param webclearance: web clearance in mm (float)
-    :return:
+    Args:
+          pref:prefference (outside or outside+inside) (str)
+          D:Section depth in mm (float)
+          tk:flange plate thickness (provided) in mm (float)
+          T:flange thickness in mm (float)
+          R_1: root radius in mm (float)
+          webplatewidth: web width in mm (float)
+          webclearance: web clearance in mm (float)
+    Returns:
+          web plate width
     """
     T = str(T)
     tk = str(tk)
@@ -3246,13 +3520,16 @@ def web_width_chk_bolt (pref,D,tk,T,R_1,webplatewidth,webclearance = None):
 
 
 def web_width_chk_weld (D,tk,R_1,webplatewidth):
-    """Calculate web plate height in case of beam_beam welded connection
+    """
+    Calculate web plate height in case of beam_beam welded connection
 
-    :param D:Section depth in mm (float)
-    :param tk:flange thickness in mm (float)
-    :param R_1:root radius of the section in mm (float)
-    :param webplatewidth:web plate height in mm (float)
-    :return:
+     Args:
+         D:Section depth in mm (float)
+         tk:flange thickness in mm (float)
+         R_1:root radius of the section in mm (float)
+         webplatewidth:web plate height in mm (float)
+    Returns:
+         web plate height
     """
     tk = str(tk)
     R_1 = str(R_1)
@@ -3266,11 +3543,14 @@ def web_width_chk_weld (D,tk,R_1,webplatewidth):
 
 
 def web_width_min (D,min_req_width):
-    """Calculate minimum web plate height
+    """
+    Calculate minimum web plate height
 
-    :param D:Section depth in mm (float)
-    :param min_req_width:minimum web plate height in mm (float)
-    :return:
+    Args:
+         D:Section depth in mm (float)
+         min_req_width:minimum web plate height in mm (float)
+    Returns:
+         minimum web plate height
     """
     D = str(D)
     min_req_width = str(min_req_width)
@@ -3281,19 +3561,20 @@ def web_width_min (D,min_req_width):
     return web_width_min_eqn
 
 def flange_plate_area_prov(B,pref,y,outerwidth,fp_area,t,r_1,innerwidth =None):
-    """Calculate flange plate area
+    """
+    Calculate flange plate area
 
-
-
-    :param B:Width of the section in mm (float)
-    :param pref:Outside or OUtside +inside (str)
-    :param y:flange thickness in mm (float)
-    :param outerwidth:over width in mm (float)
-    :param fp_area:flange plate area in mm square (float)
-    :param t:web thickness in mm (float)
-    :param r_1:root radius in mm (float)
-    :param innerwidth:Innerwidth in mm (float)
-    :return:
+    Args:
+         B:Width of the section in mm (float)
+         pref:Outside or OUtside +inside (str)
+         y:flange thickness in mm (float)
+         outerwidth:over width in mm (float)
+         fp_area:flange plate area in mm square (float)
+         t:web thickness in mm (float)
+         r_1:root radius in mm (float)
+         innerwidth:Innerwidth in mm (float)
+    Returns:
+         flange plate area
     """
 
     outerwidth = str(outerwidth)
@@ -3325,7 +3606,22 @@ def flange_plate_area_prov(B,pref,y,outerwidth,fp_area,t,r_1,innerwidth =None):
     return flangeplate_crs_sec_area_eqn
 
 
-def plate_recheck_area_weld(outerwidth,innerwidth=None,f_tp=None,t_wp=None,conn=None,pref=None):
+def plate_recheck_area_weld(flange_plate_area,web_plate_area,outerwidth,innerwidth=None,f_tp=None,t_wp=None,conn=None,pref=None):
+    """
+    Re-check plate area
+
+    Args:
+          flange_plate_area: area of the flange plate in mm square (float)
+          web_plate_area:area of the web plate in mm square (float)
+          outerwidth: flange plate height in mm  (float)
+          innerwidth: flange plate Innerheight  in mm  (float)
+          f_tp: flange plate thickness provided  in mm  (float)
+          t_wp:None
+          conn:"flange" or "web" (str)
+          pref: "Outside+Inside" or "outside" (str)
+    Returns:
+          plate area
+    """
 
     if conn == "flange":
         if pref =="Outside":
@@ -3363,17 +3659,21 @@ def plate_recheck_area_weld(outerwidth,innerwidth=None,f_tp=None,t_wp=None,conn=
     return plate_recheck_area_weld_eqn
 
 def flange_plate_area_prov_bolt(B,pref,y,outerwidth,fp_area,t,r_1,innerwidth =None):
-    """ Calculate the flange plate area for column-column bolted connection
+    """
+     Calculate the flange plate area for column-column bolted connection
 
-    :param B:flange width of the section in mm (float)
-    :param pref:outside or (outside +inside) (string)
-    :param y: web thickness in mm (float)
-    :param outerwidth: outerwidth of flange width in mm (float)
-    :param fp_area:area of flange plate in mm square (float)
-    :param t: flange thickness in mm (float)
-    :param r_1:root radius of the section in mm (float)
-    :param innerwidth:innerwidth of flange plate in mm (float)
-    :return:
+     Args:
+
+          B:flange width of the section in mm (float)
+          pref:outside or (outside +inside) (string)
+          y: web thickness in mm (float)
+          outerwidth: outerwidth of flange width in mm (float)
+          fp_area:area of flange plate in mm square (float)
+          t: flange thickness in mm (float)
+          r_1:root radius of the section in mm (float)
+          innerwidth:innerwidth of flange plate in mm (float)
+     Returns:
+          flange plate area
     """
     outerwidth = str(outerwidth)
     B = str(B)
@@ -3403,17 +3703,19 @@ def flange_plate_area_prov_bolt(B,pref,y,outerwidth,fp_area,t,r_1,innerwidth =No
     return flangeplate_crs_sec_area_bolt_eqn
 
 def web_plate_area_prov(D, y, webwidth, wp_area, T, r_1):
-    """Calculate   area of provided plate for web in case of welded connection
+    """
+    Calculate   area of provided plate for web in case of welded connection
 
+    Args:
+           D:section depth in mm (float)
+           y:thickness of web in mm (float)
+           webwidth:width of web section  in mm (float)
+           wp_area:  area of provided plate for web in mm square (float)
+           T: flange thickness  in mm (float)
+           r_1:  section root radius in mm (float)
 
-    :param D:section depth in mm (float)
-    :param y:thickness of web in mm (float)
-    :param webwidth:width of web section  in mm (float)
-    :param wp_area:  area of provided plate for web in mm square (float)
-    :param T: flange thickness  in mm (float)
-    :param r_1:  section root radius in mm (float)
-
-    :return:
+    Returns:
+          area of provided plate for web
     """
     D = str(D)
     T = str(T)
@@ -3433,6 +3735,19 @@ def web_plate_area_prov(D, y, webwidth, wp_area, T, r_1):
 
 
 def tension_in_bolt_due_to_axial_load_n_moment(P,n,M,y_max,y_sqr,T_b):
+    """
+    Calculate tension in bolt due to axial load n moment
+
+    Args:
+          P: external axial load in KN (float)
+          n: no. of bolts (int)
+          M:external moment in KN-mm (float)
+          y_max:vertical distance of farthest bolt from center of flange in mm (float)
+          y_sqr: distance of each bolt from center of flange in mm square (float)
+          T_b: tension in bolt due to axial load n moment in KN (float)
+    Returns:
+          tension in bolt due to axial load n moment
+    """
     P= str(P)
     n = str(n)
     M = str(M)
@@ -3446,6 +3761,19 @@ def tension_in_bolt_due_to_axial_load_n_moment(P,n,M,y_max,y_sqr,T_b):
     return tension_in_bolt_due_to_axial_load_n_moment
 
 def moment_cap(beta,m_d,f_y,gamma_m0,m_fd,mom_cap):
+    """
+     Calculate  moment capacity of the column when (class_of_section == 1 or self.class_of_section == 2)
+
+     Args:
+             beta: value according to the class of section
+             m_d: bending moment acting on the column
+             f_y: yield strength of material
+             gamma_m0: partial safety factor
+             m_fd:factored bending moment acting on the column
+             mom_cap: moment capacity of the column
+    Returns:
+             moment capacity of the column
+    """
     beta= str(beta)
     m_d= str(m_d)
     f_y= str(f_y)
@@ -3460,6 +3788,19 @@ def moment_cap(beta,m_d,f_y,gamma_m0,m_fd,mom_cap):
     return moment_cap
 
 def moment_CAP( m_d, f_y, gamma_m0, Z_e, mom_cap):
+    """
+    Calculate  moment capacity of the column
+    Args:
+             beta: value according to the class of section
+             m_d: bending moment acting on the column
+             f_y: yield strength of material
+             gamma_m0: partial safety factor
+             m_fd:factored bending moment acting on the column
+             mom_cap: moment capacity of the column
+    Returns:
+             moment capacity of the column
+    """
+
     m_d = str(m_d)
     f_y = str(f_y)
     gamma_m0 = str(gamma_m0)
@@ -3473,6 +3814,18 @@ def moment_CAP( m_d, f_y, gamma_m0, Z_e, mom_cap):
     return moment_CAP
 
 def no_of_bolts_along_web(D,T_f,e,p,n_bw):
+    """
+    Calculate no. of bolts along web
+
+    Args:
+        D: section depth in mm  (float)
+        T_f:flange thickness in mm  (float)
+        e: end distance in mm  (float)
+        p:pitch distance in mm  (float)
+        n_bw: no. of bolts along web (int)
+    Returns:
+         no. of bolts along web
+    """
 
     D = str(D)
     e= str(e)
@@ -3486,6 +3839,18 @@ def no_of_bolts_along_web(D,T_f,e,p,n_bw):
     return no_of_bolts_along_web
 
 def no_of_bolts_along_flange(b,T_w,e,p,n_bf):
+    """
+    Calculate no of bolts along flange
+
+    Args:
+          b:flange width in mm  (float)
+          T_w:web thickness in mm  (float)
+          e: end distance in mm  (float)
+          p: pitch distance in mm  (float)
+          n_bf: no. of bolts along flange (int)
+    Returns:
+          no. of bolts along flange
+    """
     b = str(b)
     e= str(e)
     p = str(p)
@@ -3499,6 +3864,16 @@ def no_of_bolts_along_flange(b,T_w,e,p,n_bf):
 
 
 def shear_force_in_bolts_near_web(V,n_wb,V_sb):
+    """
+    Calculate shear force in each bolts near web
+
+    Args:
+           V: factored shear load in KN (float)
+           n_wb: no. of bolts in web (int)
+           V_sb:shear force in each bolts near web in KN (float)
+    Returns:
+        shear force in bolts near web
+    """
     V = str(V)
     n_wb = str(n_wb)
     V_sb = str(V_sb)
@@ -3509,6 +3884,17 @@ def shear_force_in_bolts_near_web(V,n_wb,V_sb):
     return shear_force_in_bolts_near_web
 
 def tension_capacity_of_bolt(f_ub,A_nb,T_db):
+     """
+     Calculate tensile capacity of bolt
+
+     Args:
+         f_ub: ultimate strength of bolt in N/mm square (float)
+         A_nb: net area of plate in mm square (float)
+         T_db: tension capacity of bolt  in N (float)
+     Returns:
+          tensile capacity of bolt
+
+     """
 
      f_ub= str(f_ub)
      A_nb= str(A_nb)
@@ -3522,15 +3908,18 @@ def tension_capacity_of_bolt(f_ub,A_nb,T_db):
 
 
 def web_plate_area_prov_bolt(D, y, webwidth, wp_area, T, r_1):
-    """Calculate   area of provided plate for web
+    """
+    Calculate   area of provided plate for web
 
-    :param D:section depth in mm (float)
-    :param y:thickness of web in mm (float)
-    :param webwidth:width of web section  in mm (float)
-    :param wp_area:  area of provided plate for web in mm square (float)
-    :param T: flange thickness  in mm (float)
-    :param r_1: root radius in mm (float)
-    :return:
+    Args:
+          D:section depth in mm (float)
+          y:thickness of web in mm (float)
+          webwidth:width of web section  in mm (float)
+          wp_area:  area of provided plate for web in mm square (float)
+          T: flange thickness  in mm (float)
+          r_1: root radius in mm (float)
+    Returns:
+         area of provided plate for web
     """
     D = str(D)
     T = str(T)
@@ -3574,12 +3963,16 @@ def web_plate_area_prov_bolt(D, y, webwidth, wp_area, T, r_1):
 
 
 def display_prov(v,t, ref = None):
-    """ Calculate bolt diameter provided for column end plate
+    """
+    Calculate bolt diameter provided for column end plate
 
-    :param v:Value of diamter which is provided in mm (float)
-    :param t:"d" in mm (float)
-    :param ref:None
-    :return:
+    Args:
+          v:Value of diamter which is provided in mm (float)
+          t:"d" in mm (float)
+          ref:None
+    Returns:
+          bolt diameter provided for column end plate
+
     """
 
     v = str(v)
@@ -3593,10 +3986,13 @@ def display_prov(v,t, ref = None):
 
 def gamma(v,t):
     """
+    Calculate gamma value
 
-    :param v:
-    :param t:
-    :return:
+    Args:
+        v:value of the gamma (float)
+        t:subscript (str)
+    Returns:
+        gamma value
     """
 
     v = str(v)
@@ -3608,19 +4004,18 @@ def gamma(v,t):
 
 
 def kb_prov(e, p, d, fub, fu):
-    """ Calculate kb provided to find bearing capacity of bolt
+    """
+    Calculate kb provided to find bearing capacity of bolt
+    Args:
+        e:End distance of the fastener along bearing direction in mm (float)
+        p:Pitch distance of the fastener along bearing direction in mm (float)
+        d: diameter of the bolt in mm (float)
+        fub: Ultimate tensile strength of the bolt in MPa (float)
+        fu:Ultimate tensile strength of the plate in MPa (float)
 
-    :param e:End distance of the fastener along bearing direction in mm (float)
-
-    :param p:Pitch distance of the fastener along bearing direction in mm (float)
-
-    :param d: diameter of the bolt in mm (float)
-    :param fub: Ultimate tensile strength of the bolt in MPa (float)
-
-    :param fu:Ultimate tensile strength of the plate in MPa (float)
-
-    :return:
-        Note:
+    Returns:
+         kb  to find bearing capacity of bolt
+    Note:
             Reference:
             IS 800:2007,  cl 10.3.4
 
@@ -3657,20 +4052,22 @@ def kb_prov(e, p, d, fub, fu):
         kb_eqn.append(NoEscape(r'& = min(\frac{' + e + '}{3*' + d + r'},\frac{' + fub + '}{' + fu + r'},1.0)\\'))
         kb_eqn.append(NoEscape(r'& = min(' + kb1 + ',' + kb3 + ',' + kb4 + r')\\'))
         kb_eqn.append(NoEscape(r'& = ' + kb_2 + r'\\}'))
-        kb_eqn.append(NoEscape(r'&(Ref~IS~800:2007,&\\'))
-        kb_eqn.append(NoEscape(r'&and~Clause~10.3.4)&\end{aligned}'))
+        kb_eqn.append(NoEscape(r'&(Ref~IS~800:2007,~Clause~10.3.4)&\end{aligned}'))
 
     return kb_eqn
 
 
 def depth_req(e, g, row, sec =None):
-    """ Calculate depth required for web spacing check
+    """
+    Calculate depth required for web spacing check
 
-    :param e:edge distance for web plate in mm (float)
-    :param g:gauge distance for web plate in mm (float)
-    :param row: row (float)
-    :param sec:coulmn or beam (str)
-    :return:
+    Args:
+        e:edge distance for web plate in mm (float)
+        g:gauge distance for web plate in mm (float)
+        row: row (float)
+        sec:coulmn or beam (str)
+    Returns:
+        depth required for web spacing check
     """
 
     d = 2*e + (row-1)*g
