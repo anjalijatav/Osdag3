@@ -3166,7 +3166,7 @@ class BeamCoverPlate(MomentConnection):
             t8 = (KEY_DISP_DP_BOLT_FY, "", display_prov(round(self.flange_bolt.bolt_fy, 2), "f_{yb}"), '')
             self.report_check.append(t8)
 
-            t8 = (KEY_DISP_BOLT_AREA, " ", display_prov(self.flange_bolt.bolt_net_area, "A_{nb}", " Ref~IS~1367-3~(2002)"), '')
+            t8 = (KEY_DISP_BOLT_AREA, " ", display_prov(self.flange_bolt.bolt_net_area, "A_{nb}", " [Ref~IS~1367-3~(2002)]"), '')
             self.report_check.append(t8)
             t8 = (KEY_DISP_BOLT_HOLE, " ", display_prov(self.flange_bolt.dia_hole, "d_0"), '')
             self.report_check.append(t8)
@@ -3504,9 +3504,11 @@ class BeamCoverPlate(MomentConnection):
                 t2 = (KEY_DISP_AREA_CHECK, plate_area_req(crs_area=round(self.flange_crs_sec_area, 2),
                                                           flange_web_area=round(self.Ap, 2)),
                       plate_recheck_area_weld(outerwidth=self.flange_plate.height,
-                                              f_tp=self.flange_plate.thickness_provided, conn="flange",
+                                              innerwidth=None,
+                                              f_tp=self.flange_plate.thickness_provided, t_wp=None, conn="flange",
                                               pref="Outside"),
                       get_pass_fail(self.Ap, self.Recheck_flange_pt_area_o, relation="leq"))
+
                 self.report_check.append(t2)
             else:
                 t1 = ('SubSection', 'Flange plates dimensions Checks-Outside/Inside', '|p{4cm}|p{5cm}|p{5cm}|p{1.5cm}|')
