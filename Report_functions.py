@@ -2439,32 +2439,33 @@ def shear_rupture_prov_beam(h, t, n_r, d_o, fu,v_dn,gamma_m1,multiple=1):
     gamma_m1 = str(gamma_m1)
     multiple = str(multiple)
     shear_rup_eqn = Math(inline=True)
-    shear_rup_eqn.append(NoEscape(r'\begin{aligned} V_{dn} &= \frac{0.9*A_{vn}*f_u}{\sqrt{3}*\gamma_{m1}}\\'))
-    shear_rup_eqn.append(NoEscape(r'&= \frac{'+ multiple+'*0.9 *('+h+'-('+n_r+'*'+d_o+'))*'+t+'*'+f_u+ '}{\sqrt{3}*'+gamma_m1+ r'}\\'))
 
+    shear_rup_eqn.append(NoEscape(r'\begin{aligned} V_{dn} &= \frac{0.75*A_{vn}*f_u}{\sqrt{3}*\gamma_{m1}}\\'))
+    shear_rup_eqn.append(NoEscape(r'&= \frac{'+ multiple+'*0.75 *('+h+'-('+n_r+'*'+d_o+'))*'+t+'*'+f_u+ '}{\sqrt{3}*'+gamma_m1+ r'}\\'))
     shear_rup_eqn.append(NoEscape(r'&=' + v_dn + r'\\'))
     shear_rup_eqn.append(NoEscape(r'&[Ref.~IS~800:2007,~Cl.~6.3]&\end{aligned}'))
     return shear_rup_eqn
 
 
-def shear_Rupture_prov_weld(h, t,  fu,v_dn,gamma_m1,multiple =1):  #weld
-    """
-    Calculate design strength in tension due to rupture of critical section in case of welded connection
-    Args:
-         h:Height of the flange in mm (float)
-         t:Thickness of the flange in mm (float)
-         fu:Ultimate stress of the material N/ mm square (float)
-         v_dn:Design strength due to ruoture in N (float)
-         gamma_m1:Partial safety factor for failure at ultimate stress (float)
-         multiple:1
-    Returns:
-        design strength in tension due to rupture of critical section in case of welded connection
-
-    Note:
-              Reference:
-              IS 800:2007,  cl 6.3
+def shear_Rupture_prov_weld(h, t,fu,v_dn,gamma_m1,multiple =1):  #weld
 
     """
+      Calculate design strength in tension due to rupture of critical section in case of welded connection
+      Args:
+           h:Height of the flange in mm (float)
+           t:Thickness of the flange in mm (float)
+           fu:Ultimate stress of the material N/ mm square (float)
+           v_dn:Design strength due to ruoture in N (float)
+           gamma_m1:Partial safety factor for failure at ultimate stress (float)
+           multiple:1
+      Returns:
+          design strength in tension due to rupture of critical section in case of welded connection
+
+      Note:
+                Reference:
+                IS 800:2007,  cl 6.3
+
+      """
 
     h = str(h)
     t = str(t)
@@ -2478,7 +2479,6 @@ def shear_Rupture_prov_weld(h, t,  fu,v_dn,gamma_m1,multiple =1):  #weld
     shear_rup_eqn.append(NoEscape(r'&=\frac{'+ multiple+'*0.75*'+h+'*'+t+'*'+f_u+'}{\sqrt{3}*' +gamma_m1+ r'}\\'))
     shear_rup_eqn.append(NoEscape(r'&=' + v_dn + r'\\'))
     shear_rup_eqn.append(NoEscape(r'&[Ref~IS~800:2007,~Cl.~6.3}&\end{aligned}'))
-
     return shear_rup_eqn
 
 def shear_capacity_prov(V_dy, V_dn, V_db=0.0):
