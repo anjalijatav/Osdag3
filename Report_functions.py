@@ -1717,12 +1717,8 @@ def height_of_inner_flange_cover_plate(b_fp,B,t_w,r_r,sp):
     return  ht_inner_flange_cover_plate_eqn
 
 
-<<<<<<< HEAD
-def mom_axial_IR_prov(M,M_d,N,N_d,IR):
-=======
 def IR_prov(M,M_d,N,N_d,IR,type=None):
 
->>>>>>> 49c4f932110d03aac8eabfee03aef706fb75f4a3
     """
     Calculate
     Args:
@@ -2630,11 +2626,7 @@ def shear_capacity_prov(V_dy, V_dn, V_db = 0.0):
         shear_capacity_eqn.append(NoEscape(r'\begin{aligned} V_d &= V_{dy}\\'))
         # shear_capacity_eqn.append(NoEscape(r'&=' + V_dy + r'\\'))
 
-<<<<<<< HEAD
-    else:
-=======
     elif V_db == 0.0 and V_dn != 0.0:
->>>>>>> 49c4f932110d03aac8eabfee03aef706fb75f4a3
         V_d = min(V_dy, V_dn)
         V_d = str(V_d)
         V_dy = str(V_dy)
@@ -2652,12 +2644,6 @@ def shear_capacity_prov(V_dy, V_dn, V_db = 0.0):
     shear_capacity_eqn.append(NoEscape(r'&='+V_d + r'\\'))
     shear_capacity_eqn.append(NoEscape(r'&[Ref.~IS~800:2007,~Cl.~6.1]&\end{aligned}'))
 
-<<<<<<< HEAD
-    shear_capacity_eqn.append(NoEscape(r'&='+V_d + r'\\'))
-    shear_capacity_eqn.append(NoEscape(r'&[Ref.~IS~800:2007,~Cl.~6.1]&\end{aligned}'))
-
-=======
->>>>>>> 49c4f932110d03aac8eabfee03aef706fb75f4a3
     return shear_capacity_eqn
 
 
